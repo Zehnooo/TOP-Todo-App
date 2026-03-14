@@ -1,4 +1,4 @@
-import { currentDate, placeholderDueDate } from './date.js';
+import {currentDate, dueDate} from './date.js';
 
 const allTodos = [];
 let listCount = 1;
@@ -18,7 +18,7 @@ export function createTodo(title, description, days, priority) {
         title,
         description,
         isCompleted: false,
-        due_date: placeholderDueDate(days),
+        due_date: dueDate(days),
         priority: String(priority).toLowerCase(),
         notes: [],
         checklist: [],
@@ -40,7 +40,7 @@ function createListItem(item){
     listCount++;
     return {
         id: `LI-${formatted}`,
-        date_created: currentDate(),
+        created: currentDate(),
         item,
     }
 }

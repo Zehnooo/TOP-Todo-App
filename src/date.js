@@ -1,13 +1,13 @@
 import { format, addDays } from 'date-fns';
 
 function formatDate(date) {
-    return format(date, 'MM/dd/yyyy');
+    return format(date, 'Pp');
 }
 
 export function currentDate(){
     return formatDate(new Date());
 }
 
-export function placeholderDueDate(days){
+export function dueDate(days){
     return formatDate(addDays(new Date(), Number(days)));
 }

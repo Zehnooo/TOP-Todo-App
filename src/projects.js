@@ -16,7 +16,7 @@ export function createProject(title, description){
         title,
         description,
         todos: [],
-        date_created: currentDate(),
+        created: currentDate(),
     }
     storeProject(project);
     return project;
