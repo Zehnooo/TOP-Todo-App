@@ -23,6 +23,6 @@ export function createProject(title, description){
 }
 
 export function addTodoToProject(projectId, todo){
-    const project = getProjects().find(project => project.id === projectId);
+    const project = getProjects().find(pj => pj.id === projectId);
     project.todos.push(todo);
 }
