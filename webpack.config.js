@@ -22,7 +22,7 @@ export default {
     module: {
         rules: [
             {
-                test: /\.css$/,
+                test: /\.css$/i,
                 use: ["style-loader", "css-loader"],
             },
             {
@@ -32,6 +32,13 @@ export default {
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: "asset/resource",
+            },
+            {
+                test: /\.(woff2?|ttf|eot|otf)$/i,
+                type: "asset/resource",
+                generator: {
+                    filename: "fonts/[name][ext]",
+                },
             },
         ],
     },

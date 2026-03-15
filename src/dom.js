@@ -2,8 +2,12 @@ import { getProjects } from './projects.js';
 import { formatDate } from './date.js';
 
 export const buildDom = (() => {
+
    return buildDefaultMain();
 })();
+
+
+
 
 function buildDefaultMain(){
     const grid = document.createElement('div');
@@ -17,9 +21,9 @@ function buildDefaultMain(){
 }
 
 function buildDefaultSidebar(){
+    const colors = ['#6F00FF', '#B284BE', '#0093AF','#011F5B','#007FFF','#FF4F00','#FFD700','#FDBCB4', '#FB607F','#FF0800', '#343434','#000000', '#00FFBF',  '#50C878', '#013220'];
     const projects = getProjects();
     console.log(projects);
-
     const sidebar = document.createElement('div');
         sidebar.classList.add('sidebar');
 
@@ -31,11 +35,20 @@ function buildDefaultSidebar(){
             item.id = pj.id;
             item.classList.add('sidebar-item');
             item.textContent = pj.title;
+
+            const mark = document.createElement('span');
+            mark.innerHTML = '&#9632';
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            colors.splice(colors.indexOf(color), 1);
+            mark.style.color = color;
+
+            item.prepend(mark);
             list.appendChild(item);
         })
         : list.textContent = 'No projects';
-
-    list.prepend(document.createElement('li').textContent = 'All Projects')
+    const all = document.createElement('li');
+    all.textContent = 'All Projects';
+    list.prepend(all);
     sidebar.appendChild(list);
     return sidebar;
 }
@@ -69,9 +82,14 @@ function buildProjectCard(project){
 
     head.append(title, date);
 
+    const desc = document.createElement('p');
+        desc.textContent = project.description;
+        desc.classList.add('project-desc');
+
     const todoCount = document.createElement('p');
         todoCount.textContent = `${project.todos.length} todos`;
+        todoCount.classList.add('project-count');
 
-    card.append(head, todoCount);
+    card.append(head, desc, todoCount);
     return card;
 }

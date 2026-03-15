@@ -27,8 +27,12 @@ export function addTodoToProject(projectId, todo){
     project.todos.push(todo);
 }
 
-createProject('Project X', 'This is project X');
-createProject('Project Y', 'This is project Y');
-createProject('Project A', 'This is project A');
-createProject('Project Z', 'This is project Z');
-createProject('Project B', 'This is project B');
+createProject('Work Tasks', 'Track job-related responsibilities and deadlines.');
+createProject('Classwork', 'Keep up with homework, exams, and study goals.');
+createProject('Household', 'Manage cleaning, maintenance, and home to-dos.');
+createProject('Errands', 'Store runs, appointments, and quick tasks while out.');
+createProject('Meal Planning', 'Plan meals, groceries, and food prep.');
+createProject('Fitness Goals', 'Track workouts, recovery, and health habits.');
+createProject('Budget', 'Monitor bills, payments, and financial reminders.');
+createProject('Website Project', 'Organize tasks for building and improving your website.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
