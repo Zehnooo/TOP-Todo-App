@@ -18,6 +18,7 @@ export function createTodo(title, description, days, priority) {
         title,
         description,
         isCompleted: false,
+        created: currentDate('date-time'),
         due_date: dueDate(days),
         priority: String(priority).toLowerCase(),
         notes: [],
@@ -40,7 +41,7 @@ function createListItem(item){
     listCount++;
     return {
         id: `LI-${formatted}`,
-        created: currentDate(),
+        created: currentDate('date-time'),
         item,
     }
 }
@@ -56,7 +57,7 @@ function createNote(note){
     noteCount++;
     return {
         id: `NOTE-${formatted}`,
-        date_created: currentDate(),
+        date_created: currentDate('date-time'),
         note,
     }
 }

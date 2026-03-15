@@ -1,6 +1,6 @@
-import { buildApp } from './index.js'
 
+import { buildDom }  from './dom.js'
 import "./styles.css";
-// const root = document.getElementById('root');
-
+const m = document.getElementById('root');
+m.append(buildDom);
 

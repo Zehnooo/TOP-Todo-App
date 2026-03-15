@@ -16,7 +16,7 @@ export function createProject(title, description){
         title,
         description,
         todos: [],
-        created: currentDate(),
+        created: currentDate('date-time'),
     }
     storeProject(project);
     return project;
@@ -26,3 +26,9 @@ export function addTodoToProject(projectId, todo){
     const project = getProjects().find(pj => pj.id === projectId);
     project.todos.push(todo);
 }
+
+createProject('Project X', 'This is project X');
+createProject('Project Y', 'This is project Y');
+createProject('Project A', 'This is project A');
+createProject('Project Z', 'This is project Z');
+createProject('Project B', 'This is project B');
