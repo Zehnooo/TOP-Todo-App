@@ -208,3 +208,12 @@ header h1 {
     color: white;
     justify-self: end;
 }
+
+.selected {
+    background-color: #007FFF !important;
+    color: white;
+}
+
+.selected span {
+    color: white !important;
+}

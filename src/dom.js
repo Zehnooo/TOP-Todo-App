@@ -29,10 +29,13 @@ function buildDefaultSidebar(){
     projects.length > 0 ?
         projects.forEach(pj => {
             const item = document.createElement('li');
-            item.id = pj.id;
-            item.classList.add('sidebar-item');
-            item.textContent = pj.title;
-
+                item.dataset.id = pj.id;
+                item.classList.add('sidebar-item');
+                item.textContent = pj.title;
+                item.addEventListener('click', (e) => {
+                    setSelectedItem(e.target.dataset.id);
+                    showProjectPage(e.target.dataset.id);
+                });
             const mark = document.createElement('span');
             mark.innerHTML = '&#9632';
             if (colors.length > 0){
@@ -55,7 +58,7 @@ function buildDefaultSidebar(){
 
 function buildDefaultDash(){
     const container = document.createElement('div');
-    container.classList.add('container');
+    container.id = 'project-dash';
 
     const head = document.createElement('div');
     head.classList.add('dash-top-bar');
@@ -111,17 +114,16 @@ function buildProjectCard(project){
         date.textContent = formatDate(project.created, 'date');
 
     const delBtn = document.createElement('button');
-    delBtn.innerHTML = '&#128465;️';
-    delBtn.classList.add('del-btn', 'btn');
-    delBtn.dataset.id = project.id;
-    delBtn.addEventListener('click',  async (e) => {
+        delBtn.innerHTML = '&#128465;️';
+        delBtn.classList.add('del-btn', 'btn');
+        delBtn.dataset.id = project.id;
+        delBtn.addEventListener('click',  async (e) => {
         const confirm = await confirmDelete(project);
-        console.log(confirm);
-        if (confirm.isConfirmed){
-            deleteProject(e.target.dataset.id);
-            removeDOMCard(e.target.parentElement.parentElement);
-            removeSidebarItem(e.target.dataset.id);
-        }
+            if (confirm.isConfirmed){
+                deleteProject(e.target.dataset.id);
+                removeDOMCard(e.target.parentElement.parentElement);
+                removeSidebarItem(e.target.dataset.id);
+            }
     });
 
     head.append(date, title, delBtn);
@@ -143,7 +145,90 @@ function removeDOMCard(card){
 }
 
 function removeSidebarItem(id){
-    const item = document.querySelector(`[id="${(id)}"]`);
+    const item = document.querySelector(`[data-id="${(id)}"]`);
     console.log(item);
     if (item) item.remove();
 }
+
+function setSelectedItem(id){
+    const selected = document.querySelector('.selected');
+    if (selected) selected.classList.remove('selected');
+
+    const item = document.querySelector(`[data-id="${(id)}"]`);
+    if (item) item.classList.add('selected');
+}
+
+function showProjectPage(id){
+    const dash = document.getElementById('project-dash');
+    const projectPage = buildProjectPage(getProjects().find(pj => pj.id === id));
+    dash.innerHTML = '';
+    dash.append(projectPage);
+}
+
+function buildProjectPage(project){
+    const container = document.createElement('div');
+        container.classList.add('project-page');
+
+    const pageHead = document.createElement('div');
+    pageHead.classList.add('project-page-head');
+
+    const title = document.createElement('h2');
+    title.textContent = project.title;
+
+    const date = document.createElement('p');
+    date.textContent = formatDate(project.created, 'date');
+
+    const desc = document.createElement('p');
+    desc.textContent = project.description;
+    let todoTable;
+    if (project.todos.length > 0) {
+         todoTable = buildProjectTodoList(project);
+    }
+
+
+    pageHead.append(title, date, desc);
+    container.append(pageHead);
+    if (todoTable) container.append(todoTable);
+    return container;
+}
+
+function buildProjectTodoList(project){
+    if (project.todos.length === 0) return;
+    const todos = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tr = document.createElement('tr');
+    const date = document.createElement('th');
+    date.textContent = 'Date';
+    const title = document.createElement('th');
+    title.textContent = 'Title';
+    const due = document.createElement('th');
+    due.textContent = 'Due';
+    const priority = document.createElement('th');
+    priority.textContent = 'Priority';
+
+    tr.append(date, title, due, priority);
+    thead.append(tr);
+    todos.append(thead);
+
+    project.todos.forEach(td => {
+        const row = document.createElement('tr');
+            row.dataset.id = td.id;
+
+        const date = document.createElement('td');
+            date.textContent = formatDate(td.created, 'date-time');
+
+        const title = document.createElement('td');
+            title.textContent = td.title;
+
+        const due = document.createElement('td');
+            due.textContent = td.due_date;
+
+        const priority = document.createElement('td');
+            priority.textContent = td.priority;
+
+        row.append(date, title, due, priority);
+        todos.append(row);
+    });
+    return todos;
+}
+
