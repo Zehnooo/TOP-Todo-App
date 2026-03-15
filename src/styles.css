@@ -44,6 +44,7 @@ header h1 {
 }
 
 .sidebar {
+
     grid-column: 1;
     overflow-Y: scroll;
     display: flex;
@@ -106,7 +107,9 @@ header h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     column-gap: 1rem;
+    row-gap: 2rem;
     padding: 1.2em;
+    height: max-content;
 }
 
 .project-card {
@@ -124,7 +127,7 @@ header h1 {
 .project-head {
     grid-column: 1;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
     gap: 1rem;
@@ -136,4 +139,19 @@ header h1 {
 
 .project-card > p {
     padding: .8rem;
+}
+
+.btn {
+    padding: .8em;
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.del-btn {
+    background: transparent;
+    justify-self: end;
 }

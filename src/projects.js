@@ -1,4 +1,5 @@
 import { currentDate } from './date.js';
+import Swal from 'sweetalert2';
 
 const allProjects = [];
 
@@ -10,6 +11,8 @@ export function getProjects(){
     return [...allProjects];
 }
 
+window.getProjects = getProjects;
+
 export function createProject(title, description){
     const project = {
         id: crypto.randomUUID(),
@@ -20,6 +23,26 @@ export function createProject(title, description){
     }
     storeProject(project);
     return project;
+}
+
+export function findProject(projectId){
+    return allProjects.find(pj => pj.id === projectId);
+}
+
+export async function confirmDelete(project){
+    return Swal.fire({
+        title: `Are you sure you want to delete ${project.title}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#ccc',
+        confirmButtonText: 'DELETE!',
+    });
+}
+
+export function deleteProject(projectId){
+    const project = findProject(projectId);
+    allProjects.splice(allProjects.indexOf(project), 1);
 }
 
 export function addTodoToProject(projectId, todo){

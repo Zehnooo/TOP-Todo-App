@@ -1,13 +1,10 @@
-import { getProjects } from './projects.js';
+import { getProjects, deleteProject, confirmDelete } from './projects.js';
 import { formatDate } from './date.js';
 
 export const buildDom = (() => {
 
    return buildDefaultMain();
 })();
-
-
-
 
 function buildDefaultMain(){
     const grid = document.createElement('div');
@@ -38,10 +35,13 @@ function buildDefaultSidebar(){
 
             const mark = document.createElement('span');
             mark.innerHTML = '&#9632';
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            colors.splice(colors.indexOf(color), 1);
-            mark.style.color = color;
-
+            if (colors.length > 0){
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                colors.splice(colors.indexOf(color), 1);
+                mark.style.color = color;
+            } else {
+                mark.style.color = '#000000';
+            }
             item.prepend(mark);
             list.appendChild(item);
         })
@@ -69,7 +69,6 @@ function buildDefaultDash(){
 function buildProjectCard(project){
     const card = document.createElement('div');
     card.classList.add('project-card');
-    console.log(project);
 
     const head = document.createElement('div');
         head.classList.add('project-head');
@@ -80,7 +79,21 @@ function buildProjectCard(project){
     const date = document.createElement('p');
         date.textContent = formatDate(project.created, 'date');
 
-    head.append(title, date);
+    const delBtn = document.createElement('button');
+    delBtn.innerHTML = '&#128465;️';
+    delBtn.classList.add('del-btn', 'btn');
+    delBtn.dataset.id = project.id;
+    delBtn.addEventListener('click',  async (e) => {
+        const confirm = await confirmDelete(project);
+        console.log(confirm);
+        if (confirm.isConfirmed){
+            deleteProject(e.target.dataset.id);
+            removeDOMCard(e.target.parentElement.parentElement);
+            removeSidebarItem(e.target.dataset.id);
+        }
+    });
+
+    head.append(date, title, delBtn);
 
     const desc = document.createElement('p');
         desc.textContent = project.description;
@@ -92,4 +105,14 @@ function buildProjectCard(project){
 
     card.append(head, desc, todoCount);
     return card;
+}
+
+function removeDOMCard(card){
+    card.remove();
+}
+
+function removeSidebarItem(id){
+    const item = document.querySelector(`[id="${(id)}"]`);
+    console.log(item);
+    if (item) item.remove();
 }
