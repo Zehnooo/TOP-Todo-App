@@ -47,15 +47,46 @@ function buildDefaultSidebar(){
         })
         : list.textContent = 'No projects';
     const all = document.createElement('li');
-    all.textContent = 'All Projects';
+    all.textContent = 'Home';
     list.prepend(all);
     sidebar.appendChild(list);
     return sidebar;
 }
 
 function buildDefaultDash(){
+    const container = document.createElement('div');
+    container.classList.add('container');
+
+    const head = document.createElement('div');
+    head.classList.add('dash-top-bar');
+
+    const label = document.createElement('label');
+        label.textContent = 'Search';
+        label.htmlFor = 'filter';
+
+    const filter = document.createElement('input');
+        filter.id = 'filter';
+        filter.type = 'text';
+        filter.placeholder = 'Project name...';
+
+    const newBtn = document.createElement('button');
+        newBtn.textContent = 'New Project';
+        newBtn.classList.add('btn', 'new-btn');
+        newBtn.addEventListener('click', () => {})
+
+    const plus = document.createElement('span');
+    plus.innerHTML = '&#43;';
+
+
+    newBtn.append(plus);
+    label.append(filter);
+    head.append(label, newBtn);
+    container.append(head);
+
     const dash = document.createElement('div');
     dash.classList.add('dash');
+    container.append(dash);
+
     const projects = getProjects();
     projects.length > 0 ?
         projects.forEach(pj => {
@@ -63,7 +94,7 @@ function buildDefaultDash(){
             dash.append(c);
         }) : dash.textContent = 'No projects';
 
-    return dash;
+    return container;
 }
 
 function buildProjectCard(project){

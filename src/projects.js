@@ -30,8 +30,9 @@ export function findProject(projectId){
 }
 
 export async function confirmDelete(project){
+    let prompt = `Are you sure you want to delete <span style="color: red;">${project.title}</span>?`
     return Swal.fire({
-        title: `Are you sure you want to delete ${project.title}?`,
+        title: prompt,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
