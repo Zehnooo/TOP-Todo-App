@@ -211,7 +211,7 @@ header h1 {
 
 .selected {
     background-color: #007FFF !important;
-    color: white;
+    color: white !important;
 }
 
 .selected span {

@@ -1,8 +1,11 @@
 import {currentDate, dueDate} from './date.js';
+import {addTodoToProject} from "./projects.js";
 
 const allTodos = [];
 let listCount = 1;
 let noteCount = 1;
+
+window.getTodos = getTodos;
 
 function storeTodo(todo){
     allTodos.push(todo);
@@ -27,8 +30,7 @@ export function createTodo(title, description, days, priority) {
     storeTodo(todo);
     return todo
 }
-window.updateChecklist = updateChecklist;
-window.updateNotes = updateNotes;
+
 
 function updateChecklist(todoId, listStr){
     const todo = getTodos().find(td => td.id === todoId);

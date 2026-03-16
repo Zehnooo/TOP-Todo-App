@@ -1,4 +1,5 @@
 import { currentDate } from './date.js';
+import { createTodo } from './todos.js';
 import Swal from 'sweetalert2';
 
 const allProjects = [];
@@ -51,8 +52,8 @@ export function addTodoToProject(projectId, todo){
     project.todos.push(todo);
 }
 
-createProject('Work Tasks', 'Track job-related responsibilities and deadlines.');
-createProject('Classwork', 'Keep up with homework, exams, and study goals.');
+const workTasks = createProject('Work Tasks', 'Track job-related responsibilities and deadlines.');
+const classWork = createProject('Classwork', 'Keep up with homework, exams, and study goals.');
 createProject('Household', 'Manage cleaning, maintenance, and home to-dos.');
 createProject('Errands', 'Store runs, appointments, and quick tasks while out.');
 createProject('Meal Planning', 'Plan meals, groceries, and food prep.');
@@ -60,3 +61,10 @@ createProject('Fitness Goals', 'Track workouts, recovery, and health habits.');
 createProject('Budget', 'Monitor bills, payments, and financial reminders.');
 createProject('Website Project', 'Organize tasks for building and improving your website.');
 createProject('Weekend Plans', 'Keep track of things to do on days off.');
+
+const workTodo = createTodo('Finish project', 'Finish the project by the deadline.', 1, 3);
+
+const classTodo = createTodo('Homework', 'Complete homework assignments by the due date.', 1, 2);
+
+addTodoToProject(workTasks.id, workTodo);
+addTodoToProject(classWork.id, classTodo);

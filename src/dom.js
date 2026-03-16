@@ -49,11 +49,21 @@ function buildDefaultSidebar(){
             list.appendChild(item);
         })
         : list.textContent = 'No projects';
-    const all = document.createElement('li');
-    all.textContent = 'Home';
-    list.prepend(all);
+
+    const home = document.createElement('li');
+        home.textContent = 'Home';
+        home.addEventListener('click', () => { goHome(); setSelectedItem('home'); });
+        home.id = 'home';
+
+    list.prepend(home);
     sidebar.appendChild(list);
     return sidebar;
+}
+
+function goHome(){
+    const dash = document.getElementById('project-dash');
+    dash.innerHTML = '';
+    dash.append(buildDefaultDash());
 }
 
 function buildDefaultDash(){
@@ -153,8 +163,8 @@ function removeSidebarItem(id){
 function setSelectedItem(id){
     const selected = document.querySelector('.selected');
     if (selected) selected.classList.remove('selected');
-
-    const item = document.querySelector(`[data-id="${(id)}"]`);
+    let item;
+    id !== "home" ? item = document.querySelector(`[data-id="${(id)}"]`) : item = document.getElementById('home');
     if (item) item.classList.add('selected');
 }
 
@@ -176,24 +186,29 @@ function buildProjectPage(project){
     title.textContent = project.title;
 
     const date = document.createElement('p');
-    date.textContent = formatDate(project.created, 'date');
+    const d = formatDate(project.created, 'date');
+    date.textContent = `Created on ${d}`;
 
     const desc = document.createElement('p');
     desc.textContent = project.description;
     let todoTable;
-    if (project.todos.length > 0) {
-         todoTable = buildProjectTodoList(project);
-    }
+    const todoHeading = document.createElement('h3');
+        todoHeading.textContent = 'Todo List';
 
+    if (project.todos.length > 0) {
+        todoTable = buildProjectTodoList(project);
+    } else {
+        todoTable = document.createElement('p');
+        todoTable.textContent = 'No todos';
+    }
 
     pageHead.append(title, date, desc);
     container.append(pageHead);
-    if (todoTable) container.append(todoTable);
+    if (todoTable) container.append(todoHeading, todoTable);
     return container;
 }
 
 function buildProjectTodoList(project){
-    if (project.todos.length === 0) return;
     const todos = document.createElement('table');
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
@@ -215,7 +230,7 @@ function buildProjectTodoList(project){
             row.dataset.id = td.id;
 
         const date = document.createElement('td');
-            date.textContent = formatDate(td.created, 'date-time');
+            date.textContent = formatDate(td.created, 'date');
 
         const title = document.createElement('td');
             title.textContent = td.title;
