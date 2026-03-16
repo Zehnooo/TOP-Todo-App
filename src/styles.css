@@ -192,6 +192,125 @@ header h1 {
     background-color: rgba(128,128,128, .2);
 }
 
+.project-page-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    gap: 2rem;
+    background-color: #E5E4E2;
+}
+
+.project-page-title {
+    grid-column: 1 / 2;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #007FFF;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.project-page-date {
+    grid-column: 2 / 3;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #808080;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.project-page-todo-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.project-page-todo-empty {
+    color: #808080;
+    background-color: rgba(128,128,128, .2);
+    width: max-content;
+    height: max-content;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin: 0;
+}
+
+.project-page-todo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-page-todo-table {
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    border-collapse: collapse;
+}
+
+.project-page-todo-table thead {
+    background-color: #F5F5F5;
+    color: #007FFF;
+    font-weight: 600;
+}
+
+.project-page-todo-table thead tr th, .project-page-todo-table tbody tr td {
+    width: 100%;
+    padding: .8em;
+    text-align: center;
+}
+
+.project-page-todo-table tbody tr:nth-child(even) {
+    background-color: #E5E4E2;
+}
+
+.project-page-todo-table tbody tr, .project-page-todo-table thead tr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2em;
+    width: 100%;
+    height: 100%;
+}
+
+.todo-checkbox {
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    border: solid 1px #808080;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: rgba(128,128,128, .2);
+
+}
+
+.project-page-todo-table tbody tr:nth-child(even) .todo-checkbox {
+    background-color: rgba(245,245,245, 1);
+}
+
+.todo-checkbox:focus,
+.todo-checkbox:active {
+    outline: none;
+    box-shadow: none;
+}
+
+.todo-checkbox:checked, .project-page-todo-table tbody tr:nth-child(even) .todo-checkbox:checked {
+    background-color: #007FFF;
+    border: none;
+}
+
 .btn {
     padding: .8em;
     border: none;
@@ -228,4 +347,28 @@ header h1 {
 
 .selected span {
     color: white !important;
+}
+
+.priority {
+    border-radius: 1rem;
+    padding: .6em;
+    margin: .4em;
+    font-weight: 600;
+    text-transform: uppercase;
+    width: 100px;
+}
+
+.low-priority {
+    color: #50C878;
+    background-color: rgba(80,200,120,.2);
+}
+
+.med-priority {
+    color: #FFA500;
+    background-color: rgba(255,165,0,.2);
+}
+
+.high-priority {
+    color: #FF0000;
+    background-color: rgba(255,0,0,.2);
 }

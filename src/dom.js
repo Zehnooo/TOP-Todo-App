@@ -39,8 +39,8 @@ function buildDefaultSidebar(){
             const mark = document.createElement('span');
             mark.innerHTML = '&#9632';
             if (colors.length > 0){
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                colors.splice(colors.indexOf(color), 1);
+                const color = colors[0];
+                colors.splice(0, 1);
                 mark.style.color = color;
             } else {
                 mark.style.color = '#000000';
@@ -54,6 +54,7 @@ function buildDefaultSidebar(){
         home.textContent = 'Home';
         home.addEventListener('click', () => { goHome(); setSelectedItem('home'); });
         home.id = 'home';
+        home.classList.add('selected');
 
     list.prepend(home);
     sidebar.appendChild(list);
@@ -157,7 +158,6 @@ function removeDOMCard(card){
 
 function removeSidebarItem(id){
     const item = document.querySelector(`[data-id="${(id)}"]`);
-    console.log(item);
     if (item) item.remove();
 }
 
@@ -165,7 +165,7 @@ function setSelectedItem(id){
     const selected = document.querySelector('.selected');
     if (selected) selected.classList.remove('selected');
     let item;
-    id !== "home" ? item = document.querySelector(`[data-id="${(id)}"]`) : item = document.getElementById('home');
+    id !== 'home' ? item = document.querySelector(`[data-id="${(id)}"]`) : item = document.getElementById('home');
     if (item) item.classList.add('selected');
 }
 
@@ -181,31 +181,57 @@ function buildProjectPage(project){
         container.classList.add('project-page');
 
     const pageHead = document.createElement('div');
-    pageHead.classList.add('project-page-head');
+        pageHead.classList.add('project-page-head');
 
     const title = document.createElement('h2');
-    title.textContent = project.title;
+        title.textContent = project.title;
+        title.classList.add('project-page-title');
 
     const date = document.createElement('p');
     const d = formatDate(project.created, 'date');
-    date.textContent = `Created on ${d}`;
+        date.textContent = `Created on ${d}`;
+        date.classList.add('project-page-date');
 
     const desc = document.createElement('p');
-    desc.textContent = project.description;
-    let todoTable;
+        desc.textContent = project.description;
+        desc.classList.add('project-page-desc');
+
+    const todoContainer = document.createElement('div');
+        todoContainer.classList.add('project-page-todo-container');
+
+     const todoHeader = document.createElement('div');
+        todoHeader.classList.add('project-page-todo-header');
+
     const todoHeading = document.createElement('h3');
         todoHeading.textContent = 'Todo List';
 
+    const newTodoBtn = document.createElement('button');
+        newTodoBtn.classList.add('new-btn', 'btn');
+        newTodoBtn.textContent = 'New Todo';
+        newTodoBtn.addEventListener('click', () => {});
+
+
+    const plus = document.createElement('span');
+        plus.innerHTML = '&#43;';
+
+    newTodoBtn.append(plus);
+
+    todoHeader.append(todoHeading, newTodoBtn);
+
+    let todoTable;
     if (project.todos.length > 0) {
         todoTable = buildProjectTodoList(project);
+        todoTable.classList.add('project-page-todo-table');
     } else {
         todoTable = document.createElement('p');
         todoTable.textContent = 'No todos';
+        todoTable.classList.add('project-page-todo-empty');
     }
 
     pageHead.append(title, date, desc);
     container.append(pageHead);
-    if (todoTable) container.append(todoHeading, todoTable);
+    if (todoTable) todoContainer.append(todoHeader, todoTable);
+    container.append(todoContainer);
     return container;
 }
 
@@ -235,12 +261,15 @@ function buildProjectTodoList(project){
     thead.append(tr);
     todos.append(thead);
 
+    const tbody = document.createElement('tbody');
+
     project.todos.forEach(td => {
         const row = document.createElement('tr');
             row.dataset.id = td.id;
 
         const checkbox = document.createElement('td');
         const check = document.createElement('input');
+        check.classList.add('todo-checkbox');
         check.type = 'checkbox';
         td.isCompleted ? check.checked = true : check.checked = false;
 
@@ -254,12 +283,16 @@ function buildProjectTodoList(project){
             due.textContent = td.due_date;
 
         const priority = document.createElement('td');
-            priority.textContent = td.priority;
+        const span = document.createElement('span');
+            span.classList.add(`${td.priority}-priority`, 'priority');
+            span.textContent = td.priority;
 
+        priority.append(span);
         checkbox.append(check);
         row.append(checkbox, date, title, due, priority);
-        todos.append(row);
+        tbody.append(row);
     });
+    todos.append(tbody);
     return todos;
 }
 
