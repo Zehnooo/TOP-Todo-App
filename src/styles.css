@@ -74,14 +74,13 @@ header h1 {
     display: flex;
     width: 100%;
     height: 100%;
-    padding: 1.2em;
-    font-size: 1.2rem;
+    padding: 1em;
+    font-size: 1rem;
     text-align: left;
     font-weight: 600;
     align-items: center;
     cursor: pointer;
     transition: background-color 0.3s ease;
-
 }
 
 .sidebar-list li:not(:first-child) {
@@ -96,10 +95,6 @@ header h1 {
     justify-content: start;
     align-items: center;
     max-height: 150px;
-}
-
-.sidebar-list li:not(:last-child) {
-    border-bottom: 1px solid #ccc;
 }
 
 .sidebar-list li:nth-child(odd) {
@@ -178,6 +173,23 @@ header h1 {
 
 .project-card > p {
     padding: .8rem;
+}
+
+.project-count {
+    border-radius: 1rem;
+    padding: .6em;
+    margin: .4em;
+    font-weight: 600;
+}
+
+.project-count.count {
+    color: #007FFF;
+    background-color: rgba(0,127,255,.2);
+}
+
+.project-count.empty {
+    color: #808080;
+    background-color: rgba(128,128,128, .2);
 }
 
 .btn {

@@ -62,9 +62,9 @@ createProject('Budget', 'Monitor bills, payments, and financial reminders.');
 createProject('Website Project', 'Organize tasks for building and improving your website.');
 createProject('Weekend Plans', 'Keep track of things to do on days off.');
 
-const workTodo = createTodo('Finish project', 'Finish the project by the deadline.', 1, 3);
+const workTodo = createTodo('Finish project', 'Finish the project by the deadline.', 12, 'Low', true);
 
-const classTodo = createTodo('Homework', 'Complete homework assignments by the due date.', 1, 2);
+const classTodo = createTodo('Homework', 'Complete homework assignments by the due date.', 13, 'High');
 
 addTodoToProject(workTasks.id, workTodo);
 addTodoToProject(classWork.id, classTodo);

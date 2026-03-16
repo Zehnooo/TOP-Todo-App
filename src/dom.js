@@ -142,9 +142,10 @@ function buildProjectCard(project){
         desc.textContent = project.description;
         desc.classList.add('project-desc');
 
+    const count = project.todos.length;
     const todoCount = document.createElement('p');
-        todoCount.textContent = `${project.todos.length} todos`;
-        todoCount.classList.add('project-count');
+        count === 1 ? todoCount.textContent = `${count} todo` : todoCount.textContent = `${count} todos`;
+        count > 0 ? todoCount.classList.add('project-count', 'count') : todoCount.classList.add('project-count', 'empty');
 
     card.append(head, desc, todoCount);
     return card;
@@ -212,22 +213,36 @@ function buildProjectTodoList(project){
     const todos = document.createElement('table');
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
-    const date = document.createElement('th');
-    date.textContent = 'Date';
-    const title = document.createElement('th');
-    title.textContent = 'Title';
-    const due = document.createElement('th');
-    due.textContent = 'Due';
-    const priority = document.createElement('th');
-    priority.textContent = 'Priority';
 
-    tr.append(date, title, due, priority);
+    const isComplete = document.createElement('th');
+    isComplete.textContent = 'Completed';
+
+    const date = document.createElement('th');
+        date.textContent = 'Date';
+
+    const title = document.createElement('th');
+        title.textContent = 'Title';
+
+    const due = document.createElement('th');
+        due.textContent = 'Due';
+
+    const priority = document.createElement('th');
+        priority.textContent = 'Priority';
+
+
+
+    tr.append(isComplete, date, title, due, priority);
     thead.append(tr);
     todos.append(thead);
 
     project.todos.forEach(td => {
         const row = document.createElement('tr');
             row.dataset.id = td.id;
+
+        const checkbox = document.createElement('td');
+        const check = document.createElement('input');
+        check.type = 'checkbox';
+        td.isCompleted ? check.checked = true : check.checked = false;
 
         const date = document.createElement('td');
             date.textContent = formatDate(td.created, 'date');
@@ -241,7 +256,8 @@ function buildProjectTodoList(project){
         const priority = document.createElement('td');
             priority.textContent = td.priority;
 
-        row.append(date, title, due, priority);
+        checkbox.append(check);
+        row.append(checkbox, date, title, due, priority);
         todos.append(row);
     });
     return todos;

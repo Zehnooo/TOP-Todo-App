@@ -1,5 +1,5 @@
 import {currentDate, dueDate} from './date.js';
-import {addTodoToProject} from "./projects.js";
+
 
 const allTodos = [];
 let listCount = 1;
@@ -15,12 +15,12 @@ export function getTodos(){
     return [...allTodos];
 }
 
-export function createTodo(title, description, days, priority) {
+export function createTodo(title, description, days, priority, isCompleted = false) {
     const todo = {
         id: crypto.randomUUID(),
         title,
         description,
-        isCompleted: false,
+        isCompleted,
         created: currentDate('date-time'),
         due_date: dueDate(days),
         priority: String(priority).toLowerCase(),
@@ -34,11 +34,11 @@ export function createTodo(title, description, days, priority) {
 
 function updateChecklist(todoId, listStr){
     const todo = getTodos().find(td => td.id === todoId);
-    const item = createListItem(listStr);
+    const item = createChecklistItem(listStr);
     todo.checklist.push(item);
 }
 
-function createListItem(item){
+function createChecklistItem(item){
     const formatted = String(listCount).padStart(3, '0');
     listCount++;
     return {
