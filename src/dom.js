@@ -223,9 +223,11 @@ function buildProjectPage(project){
         todoTable = buildProjectTodoList(project);
         todoTable.classList.add('project-page-todo-table');
     } else {
-        todoTable = document.createElement('p');
-        todoTable.textContent = 'No todos';
+        todoTable = document.createElement('div');
+        const p = document.createElement('p');
+        p.textContent = 'No todos';
         todoTable.classList.add('project-page-todo-empty');
+        todoTable.append(p);
     }
 
     pageHead.append(title, date, desc);
