@@ -62,14 +62,14 @@ function buildDefaultSidebar(){
 }
 
 function goHome(){
-    const dash = document.getElementById('project-dash');
-    dash.innerHTML = '';
-    dash.append(buildDefaultDash());
+    const root = document.getElementById('root');
+    root.innerHTML = '';
+    root.append(buildDefaultMain());
 }
 
 function buildDefaultDash(){
     const container = document.createElement('div');
-    container.id = 'project-dash';
+    container.id = 'default-dash';
 
     const head = document.createElement('div');
     head.classList.add('dash-top-bar');
@@ -125,7 +125,7 @@ function buildProjectCard(project){
         date.textContent = formatDate(project.created, 'date');
 
     const delBtn = document.createElement('button');
-        delBtn.innerHTML = '&#128465;️';
+        delBtn.innerHTML = '&#8942;';
         delBtn.classList.add('del-btn', 'btn');
         delBtn.dataset.id = project.id;
         delBtn.addEventListener('click',  async (e) => {
@@ -170,7 +170,10 @@ function setSelectedItem(id){
 }
 
 function showProjectPage(id){
-    const dash = document.getElementById('project-dash');
+
+    let dash = document.getElementById('default-dash');
+    if (dash === null) { dash = document.getElementById('project-dash') }
+    dash.id = 'project-dash';
     const projectPage = buildProjectPage(getProjects().find(pj => pj.id === id));
     dash.innerHTML = '';
     dash.append(projectPage);
@@ -243,7 +246,8 @@ function buildProjectTodoList(project){
     const tr = document.createElement('tr');
 
     const isComplete = document.createElement('th');
-    isComplete.textContent = 'Completed';
+        isComplete.textContent = 'Completed';
+        isComplete.classList.add('small-col');
 
     const date = document.createElement('th');
         date.textContent = 'Date';
@@ -257,23 +261,27 @@ function buildProjectTodoList(project){
     const priority = document.createElement('th');
         priority.textContent = 'Priority';
 
-
-
     tr.append(isComplete, date, title, due, priority);
     thead.append(tr);
     todos.append(thead);
 
     const tbody = document.createElement('tbody');
 
+    project.todos.sort((a, b) => {
+        return a.isCompleted - b.isCompleted
+    });
+
     project.todos.forEach(td => {
         const row = document.createElement('tr');
             row.dataset.id = td.id;
 
         const checkbox = document.createElement('td');
+            checkbox.classList.add('small-col');
+
         const check = document.createElement('input');
-        check.classList.add('todo-checkbox');
-        check.type = 'checkbox';
-        td.isCompleted ? check.checked = true : check.checked = false;
+            check.classList.add('todo-checkbox');
+            check.type = 'checkbox';
+            td.isCompleted ? check.checked = true : check.checked = false;
 
         const date = document.createElement('td');
             date.textContent = formatDate(td.created, 'date');
