@@ -174,17 +174,29 @@ header h1 {
 
 .dash-top-bar {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: start;
     align-items: center;
     padding: .8rem;
     background-color: #E5E4E2;
     width: 100%;
     border-radius: 1rem;
-    height: 80px;
+    height: auto;
     box-shadow: var(--shadow);
+    gap: 1.2em;
 }
 
-.dash-top-bar label {
+.dash-top-inputs {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dash-top-inputs label, .dash-top-bar form div label {
+    min-width: 0;
+    width: stretch;
+    max-width: 400px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -195,13 +207,30 @@ header h1 {
     padding: .4rem;
 }
 
-.dash-top-bar label input {
+.dash-top-inputs label input, .dash-top-bar form div label input {
     width: 100%;
+    field-sizing: content;
     padding: .4em;
     border: none;
     outline: none;
     border-radius: 1rem;
     background-color: #F5F5F5;
+}
+
+.dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder { opacity: .6; font-style: italic; padding: .2rem;}
+
+.dash-top-bar form {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dash-top-bar form div {
+    display: flex;
+    align-items: center;
+    width: 75%;
+    gap: 1.2em;
 }
 
 .project-card {
@@ -449,7 +478,7 @@ header h1 {
     border-radius: .4rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .del-btn {
@@ -457,21 +486,41 @@ header h1 {
     justify-self: end;
 }
 
-.new-btn {
-    display: flex;
-    justify-content: space-evenly;
+.new-btn, .save-btn {
+    display: inline-flex;
+    justify-content: center;
     align-items: center;
     gap: .5rem;
+    width: 150px;
+    background: transparent;
+}
+
+.new-btn {
     border: 1px solid #007FFF;
     color: #007FFF;
-    background: transparent;
-    justify-self: end;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .new-btn:hover {
     background-color: #007FFF;
     color: white;
+}
+
+.save-btn {
+    border: 1px solid #50C878;
+    color: #50C878;
+}
+
+.save-btn:hover {
+    background-color: #50C878;
+    color: white;
+}
+
+.save-btn span, .new-btn span {
+    display: flex;
+    align-items: center;
+    width: auto;
+    padding: .4rem;
+    margin: 0;
 }
 
 .selected {

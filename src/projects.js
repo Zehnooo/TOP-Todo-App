@@ -31,14 +31,14 @@ export function findProject(projectId){
 }
 
 export async function confirmDelete(project){
-    let prompt = `Are you sure you want to delete <span style="color: red;">${project.title}</span>?`
+    let prompt = `Are you sure you want to delete <span style="color: red; font-weight: 800;">${project.title}</span>?`
     return Swal.fire({
         title: prompt,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#ccc',
-        confirmButtonText: 'DELETE!',
+        cancelButtonColor: '#007FFF',
+        confirmButtonText: 'DELETE',
     });
 }
 
