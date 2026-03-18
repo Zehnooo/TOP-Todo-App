@@ -97,7 +97,7 @@ function buildDefaultDash(){
     container.append(buildProjectMeasures(projects));
 
     const dash = document.createElement('div');
-    dash.classList.add('dash');
+    dash.classList.add('dash', 'scroll');
     container.append(dash);
 
 
@@ -175,6 +175,9 @@ function buildProjectCard(project){
 
     head.append(title, delBtn);
 
+    const body = document.createElement('div');
+        body.classList.add('project-body');
+
     const desc = document.createElement('p');
         desc.textContent = project.description;
         desc.classList.add('project-desc');
@@ -188,10 +191,12 @@ function buildProjectCard(project){
     totalCount > 0 ? todoCount.classList.add('project-count', 'count') : todoCount.classList.add('project-count', 'empty');
 
     counts.append(todoCount);
+    body.append(desc, counts);
 
     if (project.todos.length > 0) {
 
         const completedCount = project.todos.filter(td => td.isCompleted).length;
+
         if (completedCount > 0) {
             const completed = document.createElement('span');
             completed.textContent = `${completedCount} completed`;
@@ -209,7 +214,7 @@ function buildProjectCard(project){
 
 
 
-    card.append(head, desc, counts);
+    card.append(head, body);
     return card;
 }
 
@@ -282,7 +287,7 @@ function buildProjectPage(project){
 
     let todoTable;
     if (project.todos.length > 0) {
-        todoTable = buildProjectTodoList(project);
+        todoTable = buildProjectTodoList(project, 'incomplete');
         todoTable.classList.add('project-page-todo-table');
     } else {
         todoTable = document.createElement('div');
@@ -299,7 +304,7 @@ function buildProjectPage(project){
     return container;
 }
 
-function buildProjectTodoList(project){
+function buildProjectTodoList(project, status){
     const todos = document.createElement('table');
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
@@ -329,6 +334,9 @@ function buildProjectTodoList(project){
     project.todos.sort((a, b) => {
         return a.isCompleted - b.isCompleted
     });
+
+    status === 'incomplete' ? project.todos = project.todos.filter(td => !td.isCompleted ) : project.todos = project.todos.filter(td => td.isCompleted );
+
 
     project.todos.forEach(td => {
         const row = document.createElement('tr');
