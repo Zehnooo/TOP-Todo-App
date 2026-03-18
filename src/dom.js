@@ -212,8 +212,6 @@ function buildProjectCard(project){
         }
     }
 
-
-
     card.append(head, body);
     return card;
 }
@@ -246,6 +244,7 @@ function showProjectPage(id){
 }
 
 function buildProjectPage(project){
+    const copy = {...project};
     const container = document.createElement('div');
         container.classList.add('project-page');
 
@@ -253,17 +252,22 @@ function buildProjectPage(project){
         pageHead.classList.add('project-page-head');
 
     const title = document.createElement('h2');
-        title.textContent = project.title;
+        title.textContent = copy.title;
         title.classList.add('project-page-title');
 
     const date = document.createElement('p');
-    const d = formatDate(project.created, 'date');
+    const d = formatDate(copy.created, 'date');
         date.textContent = `Created on ${d}`;
         date.classList.add('project-page-date');
 
     const desc = document.createElement('p');
-        desc.textContent = project.description;
+        desc.textContent = copy.description;
         desc.classList.add('project-page-desc');
+
+    const newTodoBtn = document.createElement('button');
+        newTodoBtn.classList.add('new-btn', 'btn');
+        newTodoBtn.textContent = 'New Todo';
+        newTodoBtn.addEventListener('click', () => {});
 
     const todoContainer = document.createElement('div');
         todoContainer.classList.add('project-page-todo-container');
@@ -271,47 +275,69 @@ function buildProjectPage(project){
      const todoHeader = document.createElement('div');
         todoHeader.classList.add('project-page-todo-header');
 
-    const todoHeading = document.createElement('h3');
-        todoHeading.textContent = 'Todo List';
-
-    const newTodoBtn = document.createElement('button');
-        newTodoBtn.classList.add('new-btn', 'btn');
-        newTodoBtn.textContent = 'New Todo';
-        newTodoBtn.addEventListener('click', () => {});
+    const todoHeading = document.createElement('h2');
+        todoHeading.textContent = 'Todos';
 
     const plus = document.createElement('span');
         plus.innerHTML = '+';
 
     newTodoBtn.prepend(plus);
-    todoHeader.append(todoHeading, newTodoBtn);
+    todoHeader.append(todoHeading);
+
+    const tdTableHead = document.createElement('h3');
+    tdTableHead.textContent = 'Incomplete Todos';
 
     let todoTable;
-    if (project.todos.length > 0) {
-        todoTable = buildProjectTodoList(project, 'incomplete');
+    if (copy.todos.length > 0) {
+        todoTable = buildProjectTodoList(copy, 'incomplete');
         todoTable.classList.add('project-page-todo-table');
-    } else {
-        todoTable = document.createElement('div');
-        const p = document.createElement('p');
-        p.textContent = 'No todos';
-        todoTable.classList.add('project-page-todo-empty');
-        todoTable.append(p);
-    }
+    } else { todoTable = buildTablePlaceholder(); }
 
-    pageHead.append(title, date, desc);
+    const complTableHead = document.createElement('h3');
+    complTableHead.textContent = 'Complete Todos';
+
+    let completeTable;
+    if (copy.todos.filter(td => td.isCompleted).length > 0){
+        completeTable = buildProjectTodoList(copy, 'complete');
+        completeTable.classList.add('project-page-todo-table');
+    } else { completeTable = buildTablePlaceholder(); }
+
+    pageHead.append(title, date, desc, newTodoBtn);
     container.append(pageHead);
-    if (todoTable) todoContainer.append(todoHeader, todoTable);
+    if (todoTable) {
+        let tableWrap = document.createElement('div');
+        tableWrap.classList.add('project-page-table-wrap');
+        tableWrap.append(tdTableHead, todoTable);
+        todoContainer.append(tableWrap)
+    }
+    if (completeTable) {
+        let tableWrap = document.createElement('div');
+        tableWrap.append(complTableHead, completeTable);
+        tableWrap.classList.add('project-page-table-wrap');
+        todoContainer.append(tableWrap);
+    }
     container.append(todoContainer);
     return container;
 }
 
+function buildTablePlaceholder(){
+    const placeholder = document.createElement('div');
+    const p = document.createElement('p');
+    p.textContent = 'No todos';
+    placeholder.classList.add('project-page-todo-empty');
+    placeholder.append(p);
+    return placeholder;
+}
+
 function buildProjectTodoList(project, status){
+    const copy = {...project};
     const todos = document.createElement('table');
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
 
-    const isComplete = document.createElement('th');
-        isComplete.textContent = 'Completed';
-        isComplete.classList.add('small-col');
+    const mark = document.createElement('th');
+        mark.textContent = ' ';
+        mark.classList.add('small-col');
 
     const date = document.createElement('th');
         date.textContent = 'Date';
@@ -325,20 +351,20 @@ function buildProjectTodoList(project, status){
     const priority = document.createElement('th');
         priority.textContent = 'Priority';
 
-    tr.append(isComplete, date, title, due, priority);
+    tr.append(mark, date, title, due, priority);
     thead.append(tr);
     todos.append(thead);
 
     const tbody = document.createElement('tbody');
 
-    project.todos.sort((a, b) => {
+    copy.todos.sort((a, b) => {
         return a.isCompleted - b.isCompleted
     });
 
-    status === 'incomplete' ? project.todos = project.todos.filter(td => !td.isCompleted ) : project.todos = project.todos.filter(td => td.isCompleted );
+    status === 'incomplete' ? copy.todos = copy.todos.filter(td => !td.isCompleted ) : copy.todos = copy.todos.filter(td => td.isCompleted );
 
 
-    project.todos.forEach(td => {
+    copy.todos.forEach(td => {
         const row = document.createElement('tr');
             row.dataset.id = td.id;
 
@@ -348,7 +374,7 @@ function buildProjectTodoList(project, status){
         const check = document.createElement('input');
             check.classList.add('todo-checkbox');
             check.type = 'checkbox';
-            td.isCompleted ? check.checked = true : check.checked = false;
+            check.checked = false;
 
         const date = document.createElement('td');
             date.textContent = formatDate(td.created, 'date');
