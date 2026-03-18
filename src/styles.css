@@ -124,10 +124,8 @@ header h1 {
     font-weight: 600;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
     border-radius: 1rem;
-    background-color: #E5E4E2;
-    box-shadow: var(--shadow);
 }
 
 .sidebar-list li:not(:first-child) {
@@ -146,8 +144,9 @@ header h1 {
 }
 
 .sidebar-list li:hover:not(.selected) {
-    background-color: #F5F5F5;
     color: #536878;
+    background-color: #E5E4E2;
+    box-shadow: var(--shadow);
 }
 
 .sidebar-list li:hover:not(.selected) span {
@@ -169,7 +168,7 @@ header h1 {
 .dash {
     grid-column: 2 / 3;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     column-gap: 2rem;
     row-gap: 2rem;
     padding: 2rem;
@@ -458,6 +457,7 @@ header h1 {
 .selected {
     background-color: #007FFF !important;
     color: white !important;
+    box-shadow: var(--shadow);
 }
 
 .selected span {

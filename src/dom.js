@@ -1,6 +1,6 @@
 import { getProjects, deleteProject, confirmDelete } from './projects.js';
 import { formatDate } from './date.js';
-import { colors } from './tools.js'
+import { getColor } from './tools.js'
 
 export const buildDom = (() => {
    return buildDefaultMain();
@@ -38,14 +38,8 @@ function buildDefaultSidebar(){
 
             const mark = document.createElement('span');
             mark.innerHTML = '&#9632';
+            mark.style.color = getColor();
 
-            if (colors.length > 0){
-                const color = colors[0];
-                colors.splice(0, 1);
-                mark.style.color = color;
-            } else {
-                mark.style.color = '#000000';
-            }
             item.prepend(mark);
             list.appendChild(item);
         })
@@ -138,7 +132,7 @@ function buildProjectCard(project){
             }
     });
 
-    head.append(date, title, delBtn);
+    head.append(title, delBtn);
 
     const desc = document.createElement('p');
         desc.textContent = project.description;
