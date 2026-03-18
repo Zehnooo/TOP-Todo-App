@@ -18,8 +18,6 @@ function buildDefaultMain(){
 }
 
 function buildDefaultSidebar(){
-    const options = colors;
-    console.log(options);
     const projects = getProjects();
 
     const sidebar = document.createElement('div');
@@ -37,8 +35,10 @@ function buildDefaultSidebar(){
                     setSelectedItem(e.target.dataset.id);
                     showProjectPage(e.target.dataset.id);
                 });
+
             const mark = document.createElement('span');
             mark.innerHTML = '&#9632';
+
             if (colors.length > 0){
                 const color = colors[0];
                 colors.splice(0, 1);
