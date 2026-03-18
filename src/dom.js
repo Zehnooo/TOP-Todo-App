@@ -1,8 +1,8 @@
 import { getProjects, deleteProject, confirmDelete } from './projects.js';
 import { formatDate } from './date.js';
+import { colors } from './tools.js'
 
 export const buildDom = (() => {
-
    return buildDefaultMain();
 })();
 
@@ -18,14 +18,15 @@ function buildDefaultMain(){
 }
 
 function buildDefaultSidebar(){
-    const colors = ['#6F00FF', '#B284BE', '#0093AF','#011F5B','#007FFF','#FF4F00','#FFD700','#FDBCB4', '#FB607F','#FF0800', '#343434','#000000', '#00FFBF',  '#50C878', '#013220'];
+    const options = colors;
+    console.log(options);
     const projects = getProjects();
-    console.log(projects);
+
     const sidebar = document.createElement('div');
         sidebar.classList.add('sidebar');
 
     const list = document.createElement('ul');
-    list.classList.add('sidebar-list');
+    list.classList.add('sidebar-list', 'scroll');
     projects.length > 0 ?
         projects.forEach(pj => {
             const item = document.createElement('li');
@@ -143,12 +144,37 @@ function buildProjectCard(project){
         desc.textContent = project.description;
         desc.classList.add('project-desc');
 
-    const count = project.todos.length;
-    const todoCount = document.createElement('p');
-        count === 1 ? todoCount.textContent = `${count} todo` : todoCount.textContent = `${count} todos`;
-        count > 0 ? todoCount.classList.add('project-count', 'count') : todoCount.classList.add('project-count', 'empty');
+    const counts = document.createElement('div');
+    counts.classList.add('project-counts');
 
-    card.append(head, desc, todoCount);
+    const totalCount = project.todos.length;
+    const todoCount = document.createElement('span');
+    totalCount === 1 ? todoCount.textContent = `${totalCount} todo` : todoCount.textContent = `${totalCount} todos`;
+    totalCount > 0 ? todoCount.classList.add('project-count', 'count') : todoCount.classList.add('project-count', 'empty');
+
+    counts.append(todoCount);
+
+    if (project.todos.length > 0) {
+
+        const completedCount = project.todos.filter(td => td.isCompleted).length;
+        if (completedCount > 0) {
+            const completed = document.createElement('span');
+            completed.textContent = `${completedCount} completed`;
+            completed.classList.add('project-count', 'completed');
+            counts.append(completed);
+        }
+        const incompleteCount = totalCount - completedCount;
+        if (incompleteCount > 0) {
+            const incomplete = document.createElement('span');
+            incomplete.textContent = `${incompleteCount} incomplete`;
+            incomplete.classList.add('project-count', 'incomplete');
+            counts.append(incomplete);
+        }
+    }
+
+
+
+    card.append(head, desc, counts);
     return card;
 }
 

@@ -61,13 +61,30 @@ createProject('Fitness Goals', 'Track workouts, recovery, and health habits.');
 createProject('Budget', 'Monitor bills, payments, and financial reminders.');
 createProject('Website Project', 'Organize tasks for building and improving your website.');
 createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+createProject('Weekend Plans', 'Keep track of things to do on days off.');
+
 
 const workTodo = createTodo('Finish project', 'Finish the project by the deadline.', 12, 'Low', true);
 const workTodo2 = createTodo('Finish project2', 'Finish the project by the deadline.', 4, 'Med');
 const workTodo3 = createTodo('Finish project2', 'Finish the project by the deadline.', 4, 'High');
 const workTodo4 = createTodo('Finish project2', 'Finish the project by the deadline.', 4, 'High');
 const workTodo5 = createTodo('Finish project2', 'Finish the project by the deadline.', 4, 'High');
-const workTodo6 = createTodo('Finish project2', 'Finish the project by the deadline.', 4, 'High');
+const workTodo6 = createTodo('Finish project2', 'Finish the project by the deadline.', 4, 'High', true);
 
 const classTodo = createTodo('Homework', 'Complete homework assignments by the due date.', 13, 'High');
 
@@ -76,5 +93,8 @@ addTodoToProject(workTasks.id, workTodo2);
 addTodoToProject(workTasks.id, workTodo3);
 addTodoToProject(workTasks.id, workTodo4);
 addTodoToProject(workTasks.id, workTodo5);
+addTodoToProject(workTasks.id, workTodo6);
+addTodoToProject(workTasks.id, workTodo6);
+addTodoToProject(workTasks.id, workTodo6);
 addTodoToProject(workTasks.id, workTodo6);
 addTodoToProject(classWork.id, classTodo);
