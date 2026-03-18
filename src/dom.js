@@ -1,6 +1,6 @@
 import { getProjects, deleteProject, confirmDelete } from './projects.js';
 import { formatDate } from './date.js';
-import { getColor } from './tools.js'
+import {getColor, sumTodos} from './tools.js'
 
 export const buildDom = (() => {
    return buildDefaultMain();
@@ -63,6 +63,7 @@ function goHome(){
 }
 
 function buildDefaultDash(){
+    const projects = getProjects();
     const container = document.createElement('div');
     container.id = 'default-dash';
 
@@ -92,11 +93,14 @@ function buildDefaultDash(){
     head.append(label, newBtn);
     container.append(head);
 
+
+    container.append(buildProjectMeasures(projects));
+
     const dash = document.createElement('div');
     dash.classList.add('dash');
     container.append(dash);
 
-    const projects = getProjects();
+
     projects.length > 0 ?
         projects.forEach(pj => {
             const c = buildProjectCard(pj);
@@ -104,6 +108,40 @@ function buildDefaultDash(){
         }) : dash.textContent = 'No projects';
 
     return container;
+}
+
+function buildProjectMeasures(projects){
+    const measures = document.createElement('div');
+    measures.classList.add('measures');
+    console.log(projects);
+
+    const projectMeasure = buildMeasureCard('Projects', projects.length);
+        projectMeasure.classList.add('project-count', 'empty');
+
+    const allTodos = buildMeasureCard('Todos', sumTodos(projects, 'all'));
+        allTodos.classList.add('project-count', 'count');
+
+    const incompleteMeasure = buildMeasureCard('Incomplete Todos',  sumTodos(projects, 'incomplete'));
+        incompleteMeasure.classList.add('project-count', 'incomplete');
+
+    const completeMeasure = buildMeasureCard('Complete Todos', sumTodos(projects, 'complete'));
+        completeMeasure.classList.add('project-count', 'completed');
+
+    measures.append(projectMeasure, allTodos, completeMeasure, incompleteMeasure)
+    return measures
+}
+
+function buildMeasureCard(title, count){
+    const card = document.createElement('div');
+        card.classList.add('measure-card');
+
+    const t = document.createElement('h3');
+        t.textContent = String(title);
+    const c = document.createElement('p');
+        c.textContent = String(count);
+
+    card.append(t, c);
+    return card;
 }
 
 function buildProjectCard(project){
@@ -233,12 +271,10 @@ function buildProjectPage(project){
         newTodoBtn.textContent = 'New Todo';
         newTodoBtn.addEventListener('click', () => {});
 
-
     const plus = document.createElement('span');
-        plus.innerHTML = '&#43;';
+        plus.innerHTML = '+';
 
-    newTodoBtn.append(plus);
-
+    newTodoBtn.prepend(plus);
     todoHeader.append(todoHeading, newTodoBtn);
 
     let todoTable;
