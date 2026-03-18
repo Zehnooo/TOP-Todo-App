@@ -171,7 +171,7 @@ header h1 {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     column-gap: 2rem;
     row-gap: 2rem;
-    padding: 2rem;
+    padding: .8rem;
     height: auto;
     width: 100%;
     background-color: #E5E4E2;
@@ -184,27 +184,28 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: .8rem;
     background-color: #E5E4E2;
     width: 100%;
     border-radius: 1rem;
-    max-height: 150px;
+    height: 80px;
     box-shadow: var(--shadow);
 }
 
 .dash-top-bar label {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     gap: 1.2em;
-    font-size: 1.2rem;
+    font-size: .8rem;
     font-weight: 600;
     color: #007FFF;
+    padding: .4rem;
 }
 
 .dash-top-bar label input {
     width: 100%;
-    padding: .5rem;
+    padding: .4em;
     border: none;
     outline: none;
     border-radius: 1rem;
@@ -216,7 +217,7 @@ header h1 {
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    gap: 1.5em;
+    gap: .8rem 0;
     width: 100%;
     height: 100%;
     background-color: #E5E4E2;
@@ -236,14 +237,21 @@ header h1 {
     color: black;
     border-radius: 1rem;
     border-bottom: 2px solid #ccc;
+    font-size: .8rem;
+}
+
+.project-desc {
+    text-wrap: pretty;
+    padding: 0 .8rem;
+    font-size: .8rem;
 }
 
 .project-counts {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
+    gap: .4em;
+    padding: 0;
     width: 100%;
 }
 
@@ -419,17 +427,13 @@ header h1 {
 }
 
 .btn {
-    padding: .8em;
+    padding: .4em;
     border: none;
     outline: none;
-    border-radius: 1rem;
+    border-radius: .4rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-
-.btn span {
-    font-size: 1.2rem;
 }
 
 .del-btn {

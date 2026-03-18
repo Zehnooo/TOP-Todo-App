@@ -84,10 +84,10 @@ function buildDefaultDash(){
         newBtn.addEventListener('click', () => {})
 
     const plus = document.createElement('span');
-    plus.innerHTML = '&#43;';
+    plus.textContent = '+';
 
 
-    newBtn.append(plus);
+    newBtn.prepend(plus);
     label.append(filter);
     head.append(label, newBtn);
     container.append(head);
