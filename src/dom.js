@@ -135,12 +135,15 @@ function buildMeasureCard(title, count){
     const card = document.createElement('div');
         card.classList.add('measure-card');
 
+    const hr = document.createElement('hr');
+        hr.classList.add('measure-hr');
+
     const t = document.createElement('h3');
         t.textContent = String(title);
     const c = document.createElement('p');
         c.textContent = String(count);
 
-    card.append(t, c);
+    card.append(t, hr, c);
     return card;
 }
 

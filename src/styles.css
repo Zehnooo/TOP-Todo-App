@@ -492,7 +492,7 @@ header h1 {
 }
 
 .measures {
-    width: 100%;
+    width: auto;
     display: flex;
     flex-direction: row;
     gap: .8rem;
@@ -500,6 +500,8 @@ header h1 {
     background-color: #E5E4E2;
     border-radius: 1rem;
     padding: .8rem;
+    height: auto;
+    margin: 0 auto;
 }
 
 .measure-card {
@@ -519,4 +521,28 @@ header h1 {
 
 .measure-card p {
     text-align: center;
+}
+
+.measure-hr {
+    width: 80%;
+    height: 2px;
+    border: none;
+    outline: none;
+}
+
+
+.completed hr {
+    background-color: #50C878;
+}
+
+.count hr {
+    background-color: #007FFF;
+}
+
+.incomplete hr {
+    background-color: #FFA500;
+}
+
+.empty hr {
+    background-color: #808080;
 }
