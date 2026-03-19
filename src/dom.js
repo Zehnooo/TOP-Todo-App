@@ -85,10 +85,7 @@ function buildDefaultDash(){
     const newBtn = document.createElement('button');
         newBtn.textContent = 'New Project';
         newBtn.classList.add('btn', 'new-btn');
-        newBtn.addEventListener('click', () => {
-            let form = document.querySelector('#new-project-form');
-            !form ? head.appendChild(buildNewProjectForm()) : form.remove();
-        });
+        newBtn.addEventListener('click', () => handleNewProjectForm());
 
     const plus = document.createElement('span');
     plus.innerHTML = `<svg width="18px" height="18px" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000">
@@ -449,4 +446,20 @@ function buildNewProjectForm(){
     container.append(label1, label2)
     form.append(container, btn);
     return form;
+}
+
+function handleNewProjectForm(){
+    const head = document.querySelector('.dash-top-bar');
+    let wrap = document.querySelector('#new-project-form-wrap');
+    if (!wrap){
+        const wrap = document.createElement('div');
+        wrap.id = 'new-project-form-wrap';
+        let form = buildNewProjectForm();
+        wrap.append(form);
+        head.append(wrap);
+        setTimeout(() => wrap.classList.add('reveal'), 25);
+    } else {
+        wrap.classList.remove('reveal');
+        setTimeout(() => wrap.remove(), 200);
+    }
 }
