@@ -209,7 +209,7 @@ header h1 {
 #new-project-form-wrap form {
     transform: translateY(-8px);
     opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 #new-project-form-wrap.reveal form {

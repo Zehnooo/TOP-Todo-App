@@ -1,4 +1,4 @@
-import { getProjects, deleteProject, confirmDelete } from './projects.js';
+import {getProjects, deleteProject, confirmDelete, createProject} from './projects.js';
 import { formatDate } from './date.js';
 import {getColor, sumTodos} from './tools.js';
 
@@ -27,20 +27,7 @@ function buildDefaultSidebar(){
     list.classList.add('sidebar-list', 'scroll');
     projects.length > 0 ?
         projects.forEach(pj => {
-            const item = document.createElement('li');
-                item.dataset.id = pj.id;
-                item.classList.add('sidebar-item');
-                item.textContent = pj.title;
-                item.addEventListener('click', (e) => {
-                    setSelectedItem(e.target.dataset.id);
-                    showProjectPage(e.target.dataset.id);
-                });
-
-            const mark = document.createElement('span');
-            mark.innerHTML = '&#9632';
-            mark.style.color = getColor();
-
-            item.prepend(mark);
+            const item = createSidebarItem(pj);
             list.appendChild(item);
         })
         : list.textContent = 'No projects';
@@ -94,14 +81,11 @@ function buildDefaultDash(){
 <g id="SVGRepo_iconCarrier"> <title>plus_circle [#1427]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-179.000000, -600.000000)" fill="currentColor"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M137.7,450 C137.7,450.552 137.2296,451 136.65,451 L134.55,451 L134.55,453 C134.55,453.552 134.0796,454 133.5,454 C132.9204,454 132.45,453.552 132.45,453 L132.45,451 L130.35,451 C129.7704,451 129.3,450.552 129.3,450 C129.3,449.448 129.7704,449 130.35,449 L132.45,449 L132.45,447 C132.45,446.448 132.9204,446 133.5,446 C134.0796,446 134.55,446.448 134.55,447 L134.55,449 L136.65,449 C137.2296,449 137.7,449.448 137.7,450 M133.5,458 C128.86845,458 125.1,454.411 125.1,450 C125.1,445.589 128.86845,442 133.5,442 C138.13155,442 141.9,445.589 141.9,450 C141.9,454.411 138.13155,458 133.5,458 M133.5,440 C127.70085,440 123,444.477 123,450 C123,455.523 127.70085,460 133.5,460 C139.29915,460 144,455.523 144,450 C144,444.477 139.29915,440 133.5,440" id="plus_circle-[#1427]"> </path> </g> </g> </g> </g>
 </svg>`;
 
-
     newBtn.prepend(plus);
     label.append(filter);
     headContainer.append(label, newBtn);
     head.append(headContainer);
     container.append(head);
-
-
     container.append(buildProjectMeasures(projects));
 
     const dash = document.createElement('div');
@@ -410,6 +394,8 @@ function buildProjectTodoList(project, status){
 function buildNewProjectForm(){
     const form = document.createElement('form');
     form.id = 'new-project-form';
+    form.addEventListener('submit', (e) => {handleFormSubmission(e)})
+
     const container = document.createElement('div');
 
     const label1 = document.createElement('label');
@@ -417,6 +403,7 @@ function buildNewProjectForm(){
 
     const titleInput = document.createElement('input');
         titleInput.type = 'text';
+        titleInput.name = 'title';
         titleInput.placeholder = 'Household';
         titleInput.id = 'input-project-title';
         label1.htmlFor = 'input-project-title';
@@ -426,6 +413,7 @@ function buildNewProjectForm(){
         label2.textContent = 'Description';
     const descInput = document.createElement('input');
         descInput.type = 'text';
+        descInput.name = 'desc';
         descInput.placeholder = 'Manage cleaning, maintenance, etc.';
         descInput.id = 'input-project-desc';
         label2.htmlFor = 'input-project-desc';
@@ -462,4 +450,47 @@ function handleNewProjectForm(){
         wrap.classList.remove('reveal');
         setTimeout(() => wrap.remove(), 200);
     }
+}
+
+function handleFormSubmission(e){
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const n = data.get('title');
+    const d = data.get('desc');
+    const newProject = createProject(n, d);
+    document.querySelector('#new-project-form').reset();
+    addNewCard(newProject);
+    addNewSidebarOption(newProject);
+    console.log(newProject);
+    console.log(getProjects());
+}
+
+function addNewCard(project){
+    const dash = document.querySelector('.dash');
+    const c = buildProjectCard(project);
+    dash.append(c);
+}
+
+function addNewSidebarOption(project){
+    const list = document.querySelector('.sidebar-list');
+    const item = createSidebarItem(project);
+    list.append(item);
+}
+
+function createSidebarItem(project){
+    const item = document.createElement('li');
+    item.dataset.id = project.id;
+    item.classList.add('sidebar-item');
+    item.textContent = project.title;
+    item.addEventListener('click', (e) => {
+        setSelectedItem(e.target.dataset.id);
+        showProjectPage(e.target.dataset.id);
+    });
+
+    const mark = document.createElement('span');
+    mark.innerHTML = '&#9632';
+    mark.style.color = getColor();
+
+    item.prepend(mark);
+    return item;
 }
