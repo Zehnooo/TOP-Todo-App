@@ -3,6 +3,16 @@
     --smlshadow: 2px 2px 5px rgba(0,0, 0, 0.3);
     --blue: #007FFF;
     --blue-light: rgba(0,127,255,.2);
+    --gry-light: #E5E4E2;
+    --gry-light-2: rgba(128, 128, 128, .2);
+    --gry-dark: #808080;
+    --white: #F5F5F5;
+    --green: #50C878;
+    --green-light: rgba(80,200,120,.2);
+    --orng: #FFA500;
+    --orng-light: rgba(255,165,0,.2);
+    --red: #FF0000;
+    --red-light: rgba(255,0,0,.2);
 }
 
 
@@ -14,7 +24,7 @@
 }
 
 body {
-    background-color: #F5F5F5;
+    background-color: var(--white);
     color: #343434;
 }
 
@@ -38,7 +48,7 @@ body {
     height: 100%;
     margin: 0 auto;
     padding: 1rem;
-    color: #007FFF;
+    color: var(--blue);
     text-align: center;
 
 }
@@ -61,7 +71,7 @@ header h1 {
     margin-right: 2rem;
     font-size: 2rem;
     font-weight: 700;
-    color: #007FFF;
+    color: var(--blue);
 }
 
 .grid {
@@ -110,7 +120,7 @@ header h1 {
 }
 
 .scroll::-webkit-scrollbar-thumb:hover {
-    background: #536878;
+    background: var(--gry-dark);
 }
 
 .sidebar-list li {
@@ -137,7 +147,7 @@ header h1 {
 .sidebar-list li:first-child{
     font-size: 1rem;
     font-weight: 700;
-    color: #007FFF;
+    color: var(--blue);
     text-align: left;
     justify-content: start;
     align-items: center;
@@ -179,7 +189,7 @@ header h1 {
     justify-content: start;
     align-items: center;
     padding: .8rem;
-    background-color: #E5E4E2;
+    background-color: var(--gry-light);
     width: 100%;
     border-radius: 1rem;
     height: auto;
@@ -228,7 +238,7 @@ header h1 {
     gap: 1.2em;
     font-size: .8rem;
     font-weight: 600;
-    color: #007FFF;
+    color: var(--blue);
     padding: .4rem;
 }
 
@@ -239,7 +249,7 @@ header h1 {
     border: none;
     outline: none;
     border-radius: 1rem;
-    background-color: #F5F5F5;
+    background-color: var(--white);
 }
 
 .dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder { opacity: .6; font-style: italic; padding: .2rem;}
@@ -265,9 +275,9 @@ header h1 {
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: #E5E4E2;
+    background-color: var(--gry-light);
     border-radius: 1rem;
-    box-shadow: var(--shadow);
+    box-shadow: var(--smlshadow);
 }
 
 .project-head {
@@ -278,10 +288,10 @@ header h1 {
     width: 100%;
     gap: 1rem;
     padding: 1rem;
-    background-color: #F5F5F5;
+    background-color: var(--white);
     color: black;
     border-radius: 1rem;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 1px solid var(--gry-dark);
     font-size: .8rem;
 }
 
@@ -311,7 +321,6 @@ header h1 {
 
 .project-count {
     border-radius: 1rem;
-
     margin: .4em;
     font-weight: 600;
 }
@@ -322,23 +331,23 @@ header h1 {
 }
 
 .project-count.count {
-    color: rgba(0,127,255,1);
-    background-color: rgba(0,127,255,.2);
+    color: var(--blue);
+    background-color: var(--blue-light);
 }
 
 .project-count.empty {
-    color: #808080;
-    background-color: rgba(128,128,128, .2);
+    color: var(--gry-dark);
+    background-color: var(--gry-light-2);
 }
 
 .project-count.completed {
-    color: rgba(80,200,120, 1);
-    background-color: rgba(80,200,120,.2);
+    color: var(--green);
+    background-color: var(--green-light);
 }
 
 .project-count.incomplete {
-    color: rgba(255,165,0,1);
-    background-color: rgba(255,165,0,.2);
+    color: var(--orng);
+    background-color: var(--orng-light);
 }
 
 .project-page {
@@ -364,7 +373,7 @@ header h1 {
     height: auto;
     padding: 1rem;
     gap: 2rem;
-    background-color: #E5E4E2;
+    background-color: var(--gry-light);
     border-radius: 1rem;
     box-shadow: var(--bigshadow);
     position: sticky;
@@ -376,7 +385,7 @@ header h1 {
     grid-column: 1 / 2;
     font-size: 2rem;
     font-weight: 700;
-    color: #007FFF;
+    color: var(--blue);
     display: flex;
     justify-content: start;
     align-items: center;
@@ -386,7 +395,7 @@ header h1 {
     grid-column: 2 / 3;
     font-size: .8rem;
     font-weight: 600;
-    color: #808080;
+    color: var(--gry-dark);
     display: flex;
     justify-content: end;
     align-items: center;
@@ -401,13 +410,13 @@ header h1 {
     height: auto;
     gap: 1rem;
     border-radius: 1rem;
-    background-color: #E5E4E2;
+    background-color: var(--gry-light);
     box-shadow: var(--bigshadow);
 }
 
 .empty-placeholder {
-    color: #808080;
-    background-color: rgba(128, 128, 128, .2);
+    color: var(--gry-dark);
+    background-color: var(--gry-light-2);
     height: auto;
     padding: 4em;
     border-radius: 1rem;
@@ -453,10 +462,10 @@ header h1 {
 }
 
 .project-page-todo-table thead tr {
-    background-color: #F5F5F5;
-    color: #007FFF;
+    background-color: var(--white);
+    color: var(--blue);
     font-weight: 600;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid var(--gry-dark);
 }
 
 .project-page-todo-table thead tr th, .project-page-todo-table tbody tr td {
@@ -465,7 +474,7 @@ header h1 {
 }
 
 .project-page-todo-table tbody tr:nth-child(even) {
-    background-color: #F5F5F5;
+    background-color: var(--white);
 }
 
 .project-page-todo-table tbody tr, .project-page-todo-table thead tr {
@@ -481,7 +490,7 @@ header h1 {
     width: 1.2em;
     height: 1.2em;
     border-radius: 50%;
-    border: solid 1px #808080;
+    border: solid 1px var(--gry-dark);
     outline: none;
     cursor: pointer;
     appearance: none;
@@ -491,7 +500,7 @@ header h1 {
 }
 
 .project-page-todo-table tbody tr:nth-child(even) .todo-checkbox {
-    background-color: rgba(245,245,245, 1);
+    background-color: var(--white);
 }
 
 .todo-checkbox:focus,
@@ -501,7 +510,7 @@ header h1 {
 }
 
 .todo-checkbox:checked, .project-page-todo-table tbody tr:nth-child(even) .todo-checkbox:checked {
-    background-color: #007FFF;
+    background-color: var(--blue);
     border: none;
 }
 
@@ -530,23 +539,23 @@ header h1 {
 }
 
 .new-btn {
-    border: 1px solid #007FFF;
-    color: #007FFF;
+    border: 1px solid var(--blue);
+    color: var(--blue);
 }
 
 .new-btn:hover {
-    background-color: #007FFF;
-    color: white;
+    background-color: var(--blue);
+    color: var(--white);
 }
 
 .save-btn {
-    border: 1px solid #50C878;
-    color: #50C878;
+    border: 1px solid var(--green);
+    color: var(--green);
 }
 
 .save-btn:hover {
-    background-color: #50C878;
-    color: white;
+    background-color: var(--green);
+    color: var(--white);
 }
 
 .save-btn span, .new-btn span {
@@ -558,13 +567,13 @@ header h1 {
 }
 
 .selected {
-    background-color: #007FFF !important;
-    color: white !important;
+    background-color: var(--blue) !important;
+    color: var(--white) !important;
     box-shadow: var(--smlshadow);
 }
 
 .selected span {
-    color: white !important;
+    color: var(--white) !important;
 }
 
 .priority {
@@ -577,18 +586,18 @@ header h1 {
 }
 
 .low-priority {
-    color: #50C878;
-    background-color: rgba(80,200,120,.2);
+    color: var(--green);
+    background-color: var(--green-light);
 }
 
 .med-priority {
-    color: #FFA500;
-    background-color: rgba(255,165,0,.2);
+    color: var(--orng);
+    background-color: var(--orng-light);
 }
 
 .high-priority {
-    color: #FF0000;
-    background-color: rgba(255,0,0,.2);
+    color: var(--red);
+    background-color: var(--red-light);
 }
 
 .small-col {
