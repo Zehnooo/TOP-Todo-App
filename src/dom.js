@@ -25,13 +25,16 @@ function buildDefaultSidebar(){
 
     const list = document.createElement('ul');
     list.classList.add('sidebar-list', 'scroll');
-    projects.length > 0 ?
+    if (projects.length > 0) {
         projects.forEach(pj => {
             const item = createSidebarItem(pj);
             list.appendChild(item);
-        })
-        : list.textContent = 'No projects';
-
+        });
+    } else {
+        const placeholder = buildPlaceholder('No projects');
+        placeholder.classList.add('sidebar-placeholder');
+        list.append(placeholder);
+    }
     const home = document.createElement('li');
         home.textContent = 'Home';
         home.addEventListener('click', () => { goHome(); setSelectedItem('home'); });
@@ -97,7 +100,7 @@ function buildDefaultDash(){
         projects.forEach(pj => {
             const c = buildProjectCard(pj);
             dash.append(c);
-        }) : dash.textContent = 'No projects';
+        }) : dash.append(buildPlaceholder("No projects"));
 
     return container;
 }
@@ -283,7 +286,7 @@ function buildProjectPage(project){
     if (copy.todos.length > 0) {
         todoTable = buildProjectTodoList(copy, 'incomplete');
         todoTable.classList.add('project-page-todo-table');
-    } else { todoTable = buildTablePlaceholder(); }
+    } else { todoTable = buildPlaceholder("No incomplete todos"); }
 
     const complTableHead = document.createElement('h3');
     complTableHead.textContent = 'Complete Todos';
@@ -292,7 +295,7 @@ function buildProjectPage(project){
     if (copy.todos.filter(td => td.isCompleted).length > 0){
         completeTable = buildProjectTodoList(copy, 'complete');
         completeTable.classList.add('project-page-todo-table');
-    } else { completeTable = buildTablePlaceholder(); }
+    } else { completeTable = buildPlaceholder("No complete todos"); }
 
     pageHead.append(title, date, desc, newTodoBtn);
     container.append(pageHead);
@@ -312,11 +315,11 @@ function buildProjectPage(project){
     return container;
 }
 
-function buildTablePlaceholder(){
+function buildPlaceholder(text){
     const placeholder = document.createElement('div');
     const p = document.createElement('p');
-    p.textContent = 'No todos';
-    placeholder.classList.add('project-page-todo-empty');
+    p.textContent = String(text);
+    placeholder.classList.add('empty-placeholder');
     placeholder.append(p);
     return placeholder;
 }

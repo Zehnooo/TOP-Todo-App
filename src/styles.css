@@ -404,7 +404,7 @@ header h1 {
     box-shadow: var(--shadow);
 }
 
-.project-page-todo-empty {
+.empty-placeholder {
     color: #808080;
     background-color: rgba(128, 128, 128, .2);
     height: auto;
@@ -413,6 +413,15 @@ header h1 {
     margin: 0;
     width: 100%;
     text-align: center;
+}
+
+.empty-placeholder {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: .8rem;
 }
 
 .project-page-todo-header {
