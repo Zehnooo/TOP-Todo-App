@@ -15,4 +15,13 @@ export function sumTodos(projects, type) {
     }
 }
 
+export function saveTheme(){
+    const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+}
+
+export function getTheme(){
+    return localStorage.getItem('theme') || 'light';
+}
+
 

@@ -1,9 +1,11 @@
 import {loadProjectStorage, getProjects, deleteProject, confirmDelete, createProject} from './projects.js';
 import { formatDate } from './date.js';
-import {getColor, sumTodos} from './tools.js';
+import {getColor, getTheme, saveTheme, sumTodos} from './tools.js';
 
 export const buildDom = (() => {
     loadProjectStorage();
+    getTheme() === 'dark' ? document.body.classList.add('dark') : document.body.classList.remove('dark');
+    document.body.append(buildFooter());
     return buildDefaultMain();
 })();
 
@@ -14,7 +16,6 @@ function buildDefaultMain(){
     const sidebar = buildDefaultSidebar();
     const dash = buildDefaultDash();
     grid.append(sidebar, dash);
-
     return grid;
 }
 
@@ -508,4 +509,46 @@ function createSidebarItem(project){
 
     item.append(mark, label);
     return item;
+}
+function buildFooter(){
+    const footer = document.createElement('footer');
+    footer.classList.add('site-footer');
+
+    const footerWrap = document.createElement('div');
+    footerWrap.classList.add('footer-wrap');
+
+    const textContainer = document.createElement('div');
+    textContainer.classList.add('footer-text-container');
+    const p = document.createElement('p');
+    p.innerHTML = `Zehno's Todo App &copy; 2026 Zehno All Rights Reserved.`;
+
+    const a = document.createElement('a');
+    a.href = 'https://github.com/Zehnooo';
+    a.target = '_blank';
+    a.textContent = 'My Github';
+    a.classList.add('footer-link');
+
+    const options = buildOptions();
+
+    textContainer.append(p, a);
+    footerWrap.append(options, textContainer);
+    footer.append(footerWrap);
+    return footer;
+}
+function buildOptions(){
+    const options = document.createElement('div');
+    options.id = 'options';
+
+    const themeToggle = document.createElement('button');
+    themeToggle.classList.add('theme-toggle', 'btn');
+    themeToggle.innerHTML = `<svg height="64px" width="64px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 47.54 47.54" xml:space="preserve" fill="currentColor"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path style="fill:currentColor;" d="M24.997,47.511C11.214,47.511,0,36.298,0,22.515C0,12.969,5.314,4.392,13.869,0.132 c0.385-0.191,0.848-0.117,1.151,0.186s0.381,0.766,0.192,1.15C13.651,4.64,12.86,8.05,12.86,11.601 c0,12.681,10.316,22.997,22.997,22.997c3.59,0,7.033-0.809,10.236-2.403c0.386-0.191,0.848-0.117,1.151,0.186 c0.304,0.303,0.381,0.766,0.192,1.15C43.196,42.153,34.597,47.511,24.997,47.511z M12.248,3.372C5.862,7.608,2,14.709,2,22.515 c0,12.68,10.316,22.996,22.997,22.996c7.854,0,14.981-3.898,19.207-10.343c-2.668,0.95-5.464,1.43-8.346,1.43 c-13.783,0-24.997-11.214-24.997-24.997C10.861,8.761,11.327,6.005,12.248,3.372z"></path> </g> </g> </g></svg>`
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark')
+        saveTheme();
+    });
+
+
+    options.append(themeToggle);
+    return options;
 }
