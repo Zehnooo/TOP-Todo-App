@@ -3,10 +3,11 @@
     --smlshadow: 2px 2px 5px rgba(0,0, 0, 0.3);
     --blue: #007FFF;
     --blue-light: rgba(0,127,255,.2);
-    --gry-light: #E5E4E2;
-    --gry-light-2: rgba(128, 128, 128, .2);
-    --gry-dark: #808080;
-    --white: #F5F5F5;
+    --bodybg: #F5F5F5;
+    --parentbg: #E5E4E2;
+    --parentbg-light: rgba(128, 128, 128, .2);
+    --text: #343434;
+    --text-1: #808080;
     --green: #50C878;
     --green-light: rgba(80,200,120,.2);
     --orng: #FFA500;
@@ -15,6 +16,15 @@
     --red-light: rgba(255,0,0,.2);
 }
 
+.dark {
+    --bodybg: black;
+    --parentbg: #808080;
+    --parentbg-light: rgba(128, 128, 128, .2);
+    --text: #F5F5F5;
+    --text-1: #BEBFC5;
+    --bigshadow: 0px 0px 10px rgba(0,0,0,0.3);
+    --smlshadow: 2px 2px 5px rgba(0,0,0,0.08);
+}
 
 * {
     box-sizing: border-box;
@@ -24,7 +34,7 @@
 }
 
 body {
-    background-color: var(--white);
+    background-color: var(--bodybg);
     color: #343434;
 }
 
@@ -75,7 +85,7 @@ header h1 {
 }
 
 .grid {
-    grid-template-columns: minmax(140px, auto) 3fr;
+    grid-template-columns: minmax(180px, 240px) 3fr;
     display: grid;
     width: 100%;
     height: 100%;
@@ -90,37 +100,48 @@ header h1 {
 }
 
 .sidebar {
+    display: flex;
     grid-column: 1;
     width: 100%;
     height: 100%;
     overflow-y: hidden;
+    flex-direction: column;
+    padding: 1rem;
+    gap: .6rem;
 }
 
 .sidebar-list {
+    padding: .6rem;
     direction: rtl;
     margin: 0;
-    padding: .8rem;
     list-style-type: none;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     gap: .8em;
-    overflow-y: scroll;
+    background-color: var(--parentbg);
+    border-radius: 1rem;
+    box-shadow: var(--bigshadow);
+}
+
+.scroll {
+    scroll-behavior: smooth;
+    overflow-y: auto;
 }
 
 .scroll::-webkit-scrollbar {
     width: 10px;
-
 }
 
 .scroll::-webkit-scrollbar-thumb {
     background: #BEBFC5;
     border-radius: 1rem;
+
 }
 
 .scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--gry-dark);
+    background: var(--text-1);
 }
 
 .sidebar-list li {
@@ -129,33 +150,47 @@ header h1 {
     display: flex;
     width: 100%;
     height: auto;
-    padding: 1rem;
+    padding: .8rem;
     font-size: .8rem;
-    text-align: left;
+    text-align: center;
+    justify-content: start;
+    gap: .6rem;
     font-weight: 600;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     border-radius: 1rem;
+    overflow: hidden;
 }
 
-.sidebar-list li:not(:first-child) {
+.sidebar-item-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.sidebar-list-container li {
     justify-content: start;
     gap: 1.2em;
 }
 
-.sidebar-list li:first-child{
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--blue);
-    text-align: left;
-    justify-content: start;
-    align-items: center;
-    max-height: 150px;
+.sidebar-list-container li:not(.selected) {
+    color: var(--text);
+}
+
+.sidebar-list-container .selected:hover {
+    cursor: default;
 }
 
 .sidebar-list li:hover:not(.selected) {
     box-shadow: var(--smlshadow);
+}
+
+.sidebar-list-container li:active, .sidebar-list li:focus {
+    outline: none;
+    border: none;
+    transform: scale(0.97);
 }
 
 #default-dash {
@@ -181,6 +216,8 @@ header h1 {
     width: 100%;
     border-radius: 1rem;
     overflow-y: scroll;
+    background-color: var(--parentbg);
+    box-shadow: var(--bigshadow);
 }
 
 .dash-top-bar {
@@ -189,7 +226,7 @@ header h1 {
     justify-content: start;
     align-items: center;
     padding: .8rem;
-    background-color: var(--gry-light);
+    background-color: var(--parentbg);
     width: 100%;
     border-radius: 1rem;
     height: auto;
@@ -249,7 +286,7 @@ header h1 {
     border: none;
     outline: none;
     border-radius: 1rem;
-    background-color: var(--white);
+    background-color: var(--bodybg);
 }
 
 .dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder { opacity: .6; font-style: italic; padding: .2rem;}
@@ -275,7 +312,7 @@ header h1 {
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: var(--gry-light);
+    background-color: var(--parentbg);
     border-radius: 1rem;
     box-shadow: var(--smlshadow);
 }
@@ -288,10 +325,10 @@ header h1 {
     width: 100%;
     gap: 1rem;
     padding: 1rem;
-    background-color: var(--white);
+    background-color: var(--bodybg);
     color: black;
     border-radius: 1rem;
-    border-bottom: 1px solid var(--gry-dark);
+    border-bottom: 1px solid var(--text-1);
     font-size: .8rem;
 }
 
@@ -336,8 +373,8 @@ header h1 {
 }
 
 .project-count.empty {
-    color: var(--gry-dark);
-    background-color: var(--gry-light-2);
+    color: var(--text-1);
+    background-color: var(--parentbg-light);
 }
 
 .project-count.completed {
@@ -373,7 +410,7 @@ header h1 {
     height: auto;
     padding: 1rem;
     gap: 2rem;
-    background-color: var(--gry-light);
+    background-color: var(--parentbg);
     border-radius: 1rem;
     box-shadow: var(--bigshadow);
     position: sticky;
@@ -395,7 +432,7 @@ header h1 {
     grid-column: 2 / 3;
     font-size: .8rem;
     font-weight: 600;
-    color: var(--gry-dark);
+    color: var(--text-1);
     display: flex;
     justify-content: end;
     align-items: center;
@@ -410,13 +447,13 @@ header h1 {
     height: auto;
     gap: 1rem;
     border-radius: 1rem;
-    background-color: var(--gry-light);
+    background-color: var(--parentbg);
     box-shadow: var(--bigshadow);
 }
 
 .empty-placeholder {
-    color: var(--gry-dark);
-    background-color: var(--gry-light-2);
+    color: var(--text-1);
+    background-color: var(--parentbg-light);
     height: auto;
     padding: 4em;
     border-radius: 1rem;
@@ -462,10 +499,10 @@ header h1 {
 }
 
 .project-page-todo-table thead tr {
-    background-color: var(--white);
+    background-color: var(--bodybg);
     color: var(--blue);
     font-weight: 600;
-    border-bottom: 2px solid var(--gry-dark);
+    border-bottom: 2px solid var(--text-1);
 }
 
 .project-page-todo-table thead tr th, .project-page-todo-table tbody tr td {
@@ -474,7 +511,7 @@ header h1 {
 }
 
 .project-page-todo-table tbody tr:nth-child(even) {
-    background-color: var(--white);
+    background-color: var(--bodybg);
 }
 
 .project-page-todo-table tbody tr, .project-page-todo-table thead tr {
@@ -490,7 +527,7 @@ header h1 {
     width: 1.2em;
     height: 1.2em;
     border-radius: 50%;
-    border: solid 1px var(--gry-dark);
+    border: solid 1px var(--text-1);
     outline: none;
     cursor: pointer;
     appearance: none;
@@ -500,7 +537,7 @@ header h1 {
 }
 
 .project-page-todo-table tbody tr:nth-child(even) .todo-checkbox {
-    background-color: var(--white);
+    background-color: var(--bodybg);
 }
 
 .todo-checkbox:focus,
@@ -538,6 +575,22 @@ header h1 {
     background: transparent;
 }
 
+.home-btn.selected {
+    border: none;
+    outline: none;
+}
+
+.home-btn {
+    width: auto;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+}
+
+.home-btn:hover {
+    background-color: var(--blue);
+    color: var(--bodybg);
+}
+
 .new-btn {
     border: 1px solid var(--blue);
     color: var(--blue);
@@ -545,7 +598,7 @@ header h1 {
 
 .new-btn:hover {
     background-color: var(--blue);
-    color: var(--white);
+    color: var(--bodybg);
 }
 
 .save-btn {
@@ -555,7 +608,7 @@ header h1 {
 
 .save-btn:hover {
     background-color: var(--green);
-    color: var(--white);
+    color: var(--bodybg);
 }
 
 .save-btn span, .new-btn span {
@@ -568,12 +621,12 @@ header h1 {
 
 .selected {
     background-color: var(--blue) !important;
-    color: var(--white) !important;
+    color: var(--bodybg) !important;
     box-shadow: var(--smlshadow);
 }
 
 .selected span {
-    color: var(--white) !important;
+    color: var(--bodybg) !important;
 }
 
 .priority {
@@ -658,5 +711,5 @@ header h1 {
 }
 
 .empty hr {
-    background-color: #808080;
+    background-color:  var(--parentbg-light);
 }

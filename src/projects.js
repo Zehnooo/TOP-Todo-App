@@ -8,6 +8,20 @@ function storeProject(project){
     allProjects.push(project);
 }
 
+function updateProjectStorage(){
+     localStorage.setItem('user-projects', JSON.stringify(allProjects));
+}
+
+export function loadProjectStorage(){
+    const projects = JSON.parse(localStorage.getItem('user-projects'));
+    console.log(projects);
+    if (projects) {
+        projects.forEach(pj => {
+            storeProject(pj);
+        });
+    }
+}
+
 export function getProjects(){
     return [...allProjects];
 }
@@ -23,6 +37,7 @@ export function createProject(title, description){
         created: currentDate('date-time'),
     }
     storeProject(project);
+    updateProjectStorage();
     return project;
 }
 
@@ -45,6 +60,8 @@ export async function confirmDelete(project){
 export function deleteProject(projectId){
     const project = findProject(projectId);
     allProjects.splice(allProjects.indexOf(project), 1);
+    updateProjectStorage();
+    return project;
 }
 
 export function addTodoToProject(projectId, todo){

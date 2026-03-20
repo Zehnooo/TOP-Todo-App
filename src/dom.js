@@ -1,9 +1,10 @@
-import {getProjects, deleteProject, confirmDelete, createProject} from './projects.js';
+import {loadProjectStorage, getProjects, deleteProject, confirmDelete, createProject} from './projects.js';
 import { formatDate } from './date.js';
 import {getColor, sumTodos} from './tools.js';
 
 export const buildDom = (() => {
-   return buildDefaultMain();
+    loadProjectStorage();
+    return buildDefaultMain();
 })();
 
 function buildDefaultMain(){
@@ -19,9 +20,12 @@ function buildDefaultMain(){
 
 function buildDefaultSidebar(){
     const projects = getProjects();
-
+    console.log(projects);
     const sidebar = document.createElement('div');
         sidebar.classList.add('sidebar');
+
+    const listContainer = document.createElement('div');
+    listContainer.classList.add('sidebar-list-container');
 
     const list = document.createElement('ul');
     list.classList.add('sidebar-list', 'scroll');
@@ -35,13 +39,13 @@ function buildDefaultSidebar(){
         placeholder.classList.add('sidebar-placeholder');
         list.append(placeholder);
     }
-    const home = document.createElement('li');
-        home.textContent = 'Home';
+        const home = document.createElement('button');
+        home.innerHTML = `<svg width="48px" height="48px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M19 9.77806V16.2C19 17.8801 19 18.7202 18.673 19.3619C18.3854 19.9264 17.9265 20.3854 17.362 20.673C17.2111 20.7499 17.0492 20.8087 16.868 20.8537M5 9.7774V16.2C5 17.8801 5 18.7202 5.32698 19.3619C5.6146 19.9264 6.07354 20.3854 6.63803 20.673C6.78894 20.7499 6.95082 20.8087 7.13202 20.8537M21 12L15.5668 5.96393C14.3311 4.59116 13.7133 3.90478 12.9856 3.65138C12.3466 3.42882 11.651 3.42887 11.0119 3.65153C10.2843 3.90503 9.66661 4.59151 8.43114 5.96446L3 12M7.13202 20.8537C7.65017 18.6447 9.63301 17 12 17C14.367 17 16.3498 18.6447 16.868 20.8537M7.13202 20.8537C7.72133 21 8.51495 21 9.8 21H14.2C15.485 21 16.2787 21 16.868 20.8537M14 12C14 13.1045 13.1046 14 12 14C10.8954 14 10 13.1045 10 12C10 10.8954 10.8954 9.99996 12 9.99996C13.1046 9.99996 14 10.8954 14 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>`;
         home.addEventListener('click', () => { goHome(); setSelectedItem('home'); });
         home.id = 'home';
-        home.classList.add('selected');
+        home.classList.add('selected', 'btn', 'home-btn');
 
-    list.prepend(home);
+    sidebar.prepend(home);
     sidebar.appendChild(list);
     return sidebar;
 }
@@ -469,12 +473,16 @@ function handleFormSubmission(e){
 }
 
 function addNewCard(project){
+    const placeholder = document.querySelector('.dash .empty-placeholder');
+    if (placeholder) placeholder.remove();
     const dash = document.querySelector('.dash');
     const c = buildProjectCard(project);
     dash.append(c);
 }
 
 function addNewSidebarOption(project){
+    const placeholder = document.querySelector('.sidebar-placeholder');
+    if (placeholder) placeholder.remove();
     const list = document.querySelector('.sidebar-list');
     const item = createSidebarItem(project);
     list.append(item);
@@ -484,16 +492,20 @@ function createSidebarItem(project){
     const item = document.createElement('li');
     item.dataset.id = project.id;
     item.classList.add('sidebar-item');
-    item.textContent = project.title;
-    item.addEventListener('click', (e) => {
-        setSelectedItem(e.target.dataset.id);
-        showProjectPage(e.target.dataset.id);
+
+    const label = document.createElement('span');
+    label.textContent = project.title;
+    label.classList.add('sidebar-item-label');
+
+    item.addEventListener('click', () => {
+        setSelectedItem(item.dataset.id);
+        showProjectPage(item.dataset.id);
     });
 
     const mark = document.createElement('span');
     mark.innerHTML = '&#9632';
     mark.style.color = getColor();
 
-    item.prepend(mark);
+    item.append(mark, label);
     return item;
 }
