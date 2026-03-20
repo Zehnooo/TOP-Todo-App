@@ -15,14 +15,14 @@ export function getTodos(){
     return [...allTodos];
 }
 
-export function createTodo(title, description, days, priority, isCompleted = false) {
+export function createTodo(title, description, due_date, priority, isCompleted = false) {
     const todo = {
         id: crypto.randomUUID(),
         title,
         description,
         isCompleted,
         created: currentDate('date-time'),
-        due_date: dueDate(days),
+        due_date,
         priority: String(priority).toLowerCase(),
         notes: [],
         checklist: [],

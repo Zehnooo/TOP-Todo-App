@@ -262,7 +262,6 @@ header h1 {
     height: auto;
     width: 100%;
     border-radius: 1rem;
-    overflow-y: scroll;
     background-color: var(--parentbg);
     box-shadow: var(--bigshadow);
 }
@@ -289,30 +288,30 @@ header h1 {
     justify-content: space-between;
 }
 
-#new-project-form-wrap {
+#new-project-form-wrap, #todo-form-wrap {
     opacity: 0;
     transition: max-height 0.4s ease, opacity 0.3s ease;
     max-height: 0;
     width: 100%;
 }
 
-#new-project-form-wrap.reveal {
+#new-project-form-wrap.reveal, #todo-form-wrap.reveal {
     max-height: 200px;
     opacity: 1;
 }
 
-#new-project-form-wrap form {
+#new-project-form-wrap form, #todo-form-wrap form {
     transform: translateY(-8px);
     opacity: 0;
     transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-#new-project-form-wrap.reveal form {
+#new-project-form-wrap.reveal form, #todo-form-wrap.reveal form {
     transform: translateY(0);
     opacity: 1;
 }
 
-.dash-top-inputs label, .dash-top-bar form div label {
+.dash-top-inputs label, .dash-top-bar form div label, #new-todo-form div label {
     min-width: 0;
     width: stretch;
     max-width: 400px;
@@ -339,9 +338,9 @@ header h1 {
     font-weight: 600;
 }
 
-.dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder { opacity: .6; font-style: italic; padding: .2rem;}
+.dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder, .todo-input::placeholder { opacity: .6; font-style: italic; padding: .2rem;}
 
-.dash-top-bar form {
+.dash-top-bar form, #new-todo-form {
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -353,6 +352,47 @@ header h1 {
     align-items: center;
     width: 75%;
     gap: 1.2em;
+}
+
+#todo-form-wrap {
+    grid-column: 1 / 3;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--parentbg-light);
+    border-radius: 1rem;
+    align-items: center;
+}
+
+#new-todo-form div {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: .6rem;
+}
+
+#new-todo-form div label {
+    min-width: 0;
+    width: stretch;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--blue);
+    padding: .4rem;
+}
+
+.todo-input {
+    width: 100%;
+    padding: .4em;
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    background-color: var(--bodybg);
+    color: var(--text);
+    font-size: .8rem;
+    font-weight: 600;
 }
 
 .project-card {
@@ -378,7 +418,6 @@ header h1 {
     background-color: var(--parentbg-light);
     color: var(--text);
     border-radius: 1rem;
-    border-bottom: 1px solid var(--text-1);
     font-size: .8rem;
 }
 
@@ -432,7 +471,7 @@ header h1 {
 
 .project-count.empty {
     color: var(--text-1);
-    background-color: var(--parentbg-light);
+    background-color: var(--parentbg);
 }
 
 .project-count.completed {
@@ -496,6 +535,10 @@ header h1 {
     align-items: center;
 }
 
+.project-page-desc {
+    color: var(--text);
+}
+
 .project-page-todo-container {
     display: flex;
     flex-direction: column;
@@ -546,6 +589,7 @@ header h1 {
 .project-page-table-wrap h3 {
     font-size: 1rem;
     padding: .8rem;
+    color: var(--text);
 }
 
 .project-page-todo-table {
@@ -687,7 +731,7 @@ header h1 {
 }
 
 .selected svg {
-    color: var(--text) !important;
+    color: white !important;
 }
 
 .selected span {

@@ -1,4 +1,8 @@
 import randomcolor from 'randomcolor';
+import {addNewCard, addNewSidebarOption, buildPlaceholder} from './dom.js';
+import {createProject, getProjects} from "./projects.js";
+import { createTodo } from "./todos.js";
+import Swal from "sweetalert2";
 
 export function getColor(){
     return randomcolor({luminosity: 'bright', hue: 'random'});
@@ -24,4 +28,53 @@ export function getTheme(){
     return localStorage.getItem('theme') || 'light';
 }
 
+export function validateContent(arr, contentName){
+    if (arr.length === 0) {
+        return buildPlaceholder(String(contentName));
+    } else return null
+}
 
+export function handleProjectFormSubmission(e){
+    const data = collectFormData(e);
+    const n = data.get('title').trim();
+    const d = data.get('desc').trim();
+    if (n === '' || d === '') {
+       fireMissingDataError();
+       return;
+    }
+    const newProject = createProject(n, d);
+    document.querySelector('#new-project-form').reset();
+    addNewCard(newProject);
+    addNewSidebarOption(newProject);
+}
+
+export function handleTodoFormSubmission(e){
+    const data = collectFormData(e);
+    const title = data.get('title').trim();
+    const desc = data.get('desc').trim();
+    const due = data.get('due-date');
+    const prio = data.get('priority');
+    if ( title === '' || desc === '' || due === null || prio === String(0)) {
+        fireMissingDataError();
+        return;
+    }
+    const newTodo = createTodo(title, desc, due, prio);
+    document.querySelector('#new-todo-form').reset();
+    console.log(newTodo);
+    console.log(getTodos());
+}
+
+function collectFormData(e){
+    e.preventDefault();
+    return new FormData(e.target);
+}
+
+function fireMissingDataError(){
+    const theme = getTheme();
+    Swal.fire({
+        title: 'Missing Data',
+        icon: 'error',
+        text: 'Please fill out all options before saving',
+        theme: String(theme)
+    });
+}

@@ -1,6 +1,6 @@
 import {loadProjectStorage, getProjects, deleteProject, confirmDelete, createProject} from './projects.js';
 import { formatDate } from './date.js';
-import {getColor, getTheme, saveTheme, sumTodos} from './tools.js';
+import {getColor, getTheme, saveTheme, sumTodos, validateContent, handleProjectFormSubmission, handleTodoFormSubmission} from './tools.js';
 
 export const buildDom = (() => {
     loadProjectStorage();
@@ -216,13 +216,19 @@ function buildProjectCard(project){
     return card;
 }
 
-function removeDOMCard(card){
+function removeDOMCard(card) {
+    const dash = document.querySelector('.dash');
+    const check = validateContent(getProjects(), 'No projects');
+    if (check) {  dash.append(check); }
     card.remove();
 }
 
 function removeSidebarItem(id){
     const item = document.querySelector(`[data-id="${(id)}"]`);
+    const list = item.parentElement;
+    const check = validateContent(getProjects(), 'No projects');
     if (item) item.remove();
+    if (check) { check.classList.add('sidebar-placeholder'); list.append(check); }
 }
 
 function setSelectedItem(id){
@@ -234,7 +240,6 @@ function setSelectedItem(id){
 }
 
 function showProjectPage(id){
-
     let dash = document.getElementById('default-dash');
     if (dash === null) { dash = document.getElementById('project-dash') }
     dash.id = 'project-dash';
@@ -244,7 +249,9 @@ function showProjectPage(id){
 }
 
 function buildProjectPage(project){
+
     const copy = {...project};
+    const todos = copy.todos;
     const container = document.createElement('div');
         container.classList.add('project-page');
 
@@ -267,7 +274,7 @@ function buildProjectPage(project){
     const newTodoBtn = document.createElement('button');
         newTodoBtn.classList.add('new-btn', 'btn');
         newTodoBtn.textContent = 'New Todo';
-        newTodoBtn.addEventListener('click', () => {});
+        newTodoBtn.addEventListener('click', () => handleTodoForm());
 
     const todoContainer = document.createElement('div');
         todoContainer.classList.add('project-page-todo-container');
@@ -283,44 +290,51 @@ function buildProjectPage(project){
 
     newTodoBtn.prepend(plus);
     todoHeader.append(todoHeading);
-
-    const tdTableHead = document.createElement('h3');
-    tdTableHead.textContent = 'Incomplete Todos';
-
-    let todoTable;
-    if (copy.todos.length > 0) {
-        todoTable = buildProjectTodoList(copy, 'incomplete');
-        todoTable.classList.add('project-page-todo-table');
-    } else { todoTable = buildPlaceholder("No incomplete todos"); }
-
-    const complTableHead = document.createElement('h3');
-    complTableHead.textContent = 'Complete Todos';
-
-    let completeTable;
-    if (copy.todos.filter(td => td.isCompleted).length > 0){
-        completeTable = buildProjectTodoList(copy, 'complete');
-        completeTable.classList.add('project-page-todo-table');
-    } else { completeTable = buildPlaceholder("No complete todos"); }
-
     pageHead.append(title, date, desc, newTodoBtn);
     container.append(pageHead);
-    if (todoTable) {
-        let tableWrap = document.createElement('div');
-        tableWrap.classList.add('project-page-table-wrap');
-        tableWrap.append(tdTableHead, todoTable);
-        todoContainer.append(tableWrap)
-    }
-    if (completeTable) {
-        let tableWrap = document.createElement('div');
-        tableWrap.append(complTableHead, completeTable);
-        tableWrap.classList.add('project-page-table-wrap');
-        todoContainer.append(tableWrap);
-    }
+
+   const incompleteTable = buildTodoTable(todos, 'Incomplete');
+   if (incompleteTable) todoContainer.append(incompleteTable);
+   const completeTable = buildTodoTable(todos, 'Complete');
+    if (completeTable) todoContainer.append(completeTable);
+
+
     container.append(todoContainer);
     return container;
 }
 
-function buildPlaceholder(text){
+function buildTodoTable(todos, type){
+
+    const wrap = document.createElement('div');
+    wrap.classList.add('project-page-table-wrap');
+
+    const tableHead = document.createElement('h3');
+        tableHead.textContent = `${type} Todos`;
+
+        type = type.toLowerCase();
+        tableHead.id = `${type}-heading`;
+
+    switch (type){
+        case 'incomplete':
+            todos = todos.filter(td => !td.isCompleted);
+            break;
+        case 'complete':
+            todos = todos.filter(td => td.isCompleted);
+    }
+    let table;
+    if (todos.length > 0) {
+        table = buildProjectTodoList(todos, String(type));
+        table.classList.add('project-page-todo-table');
+    } else {
+        table = buildPlaceholder(`No ${type} todos`);
+        table.id = `empty-${type}-todos`;
+    }
+
+    wrap.append(tableHead, table);
+    return wrap;
+}
+
+export function buildPlaceholder(text){
     const placeholder = document.createElement('div');
     const p = document.createElement('p');
     p.textContent = String(text);
@@ -329,8 +343,8 @@ function buildPlaceholder(text){
     return placeholder;
 }
 
-function buildProjectTodoList(project, status){
-    const copy = {...project};
+function buildProjectTodoList(todoList, status){
+
     const todos = document.createElement('table');
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
@@ -356,45 +370,16 @@ function buildProjectTodoList(project, status){
     todos.append(thead);
 
     const tbody = document.createElement('tbody');
-
-    copy.todos.sort((a, b) => {
+    tbody.id = `todo-table-tbody-${status}`
+    todoList.sort((a, b) => {
         return a.isCompleted - b.isCompleted
     });
 
-    status === 'incomplete' ? copy.todos = copy.todos.filter(td => !td.isCompleted ) : copy.todos = copy.todos.filter(td => td.isCompleted );
-
-
-    copy.todos.forEach(td => {
-        const row = document.createElement('tr');
-            row.dataset.id = td.id;
-
-        const checkbox = document.createElement('td');
-            checkbox.classList.add('small-col');
-
-        const check = document.createElement('input');
-            check.classList.add('todo-checkbox');
-            check.type = 'checkbox';
-            check.checked = false;
-
-        const date = document.createElement('td');
-            date.textContent = formatDate(td.created, 'date');
-
-        const title = document.createElement('td');
-            title.textContent = td.title;
-
-        const due = document.createElement('td');
-            due.textContent = td.due_date;
-
-        const priority = document.createElement('td');
-        const span = document.createElement('span');
-            span.classList.add(`${td.priority}-priority`, 'priority');
-            span.textContent = td.priority;
-
-        priority.append(span);
-        checkbox.append(check);
-        row.append(checkbox, date, title, due, priority);
+    todoList.todos.forEach(td => {
+        const row = createTodoRow(td);
         tbody.append(row);
     });
+
     todos.append(tbody);
     return todos;
 }
@@ -402,7 +387,7 @@ function buildProjectTodoList(project, status){
 function buildNewProjectForm(){
     const form = document.createElement('form');
     form.id = 'new-project-form';
-    form.addEventListener('submit', (e) => {handleFormSubmission(e)})
+    form.addEventListener('submit', (e) => {handleProjectFormSubmission(e)})
 
     const container = document.createElement('div');
 
@@ -427,6 +412,13 @@ function buildNewProjectForm(){
         label2.htmlFor = 'input-project-desc';
     label2.append(descInput);
 
+    const btn = createSaveButton();
+    container.append(label1, label2)
+    form.append(container, btn);
+    return form;
+}
+
+function createSaveButton(){
     const btn = document.createElement('button');
     btn.textContent = 'Save';
     btn.classList.add('btn', 'save-btn');
@@ -439,9 +431,7 @@ function buildNewProjectForm(){
 </svg>`
 
     btn.prepend(span);
-    container.append(label1, label2)
-    form.append(container, btn);
-    return form;
+    return btn;
 }
 
 function handleNewProjectForm(){
@@ -460,30 +450,17 @@ function handleNewProjectForm(){
     }
 }
 
-function handleFormSubmission(e){
-    e.preventDefault();
-    const data = new FormData(e.target);
-    const n = data.get('title');
-    const d = data.get('desc');
-    const newProject = createProject(n, d);
-    document.querySelector('#new-project-form').reset();
-    addNewCard(newProject);
-    addNewSidebarOption(newProject);
-    console.log(newProject);
-    console.log(getProjects());
-}
 
-function addNewCard(project){
-    const placeholder = document.querySelector('.dash .empty-placeholder');
-    if (placeholder) placeholder.remove();
+
+export function addNewCard(project){
+    removePlaceholder('.dash .empty-placeholder');
     const dash = document.querySelector('.dash');
     const c = buildProjectCard(project);
     dash.append(c);
 }
 
-function addNewSidebarOption(project){
-    const placeholder = document.querySelector('.sidebar-placeholder');
-    if (placeholder) placeholder.remove();
+export function addNewSidebarOption(project){
+    removePlaceholder('.sidebar-list .sidebar-placeholder');
     const list = document.querySelector('.sidebar-list');
     const item = createSidebarItem(project);
     list.append(item);
@@ -535,6 +512,7 @@ function buildFooter(){
     footer.append(footerWrap);
     return footer;
 }
+
 function buildOptions(){
     const options = document.createElement('div');
     options.id = 'options';
@@ -551,4 +529,137 @@ function buildOptions(){
 
     options.append(themeToggle);
     return options;
+}
+
+function buildTodoForm(){
+    const form = document.createElement('form');
+    form.id = 'new-todo-form';
+    form.addEventListener('submit', (e) => {handleTodoFormSubmission(e)});
+    const container = document.createElement('div');
+
+    const label1 = createBasicElement('label', 'Title');
+        label1.htmlFor = 'input-todo-title';
+    const titleInput = createInput('input-todo-title', 'text', 'title', 'Clean Kitchen');
+    titleInput.classList.add('todo-input');
+    label1.append(titleInput);
+
+    const label2 = createBasicElement('label', 'Description');
+        label2.htmlFor = 'input-todo-desc';
+    const descInput = createInput('input-todo-desc', 'text', 'desc', 'Do the dishes, mop the floor...');
+    descInput.classList.add('todo-input');
+    label2.append(descInput);
+
+    const label3 = createBasicElement('label', 'Due Date');
+        label3.htmlFor = 'input-todo-date';
+    const dueDateInput = createInput('input-todo-date', 'datetime-local', 'due-date');
+    dueDateInput.classList.add('todo-input');
+    label3.append(dueDateInput);
+
+    const label4 = createBasicElement('label', 'Priority');
+    const priorityInput = document.createElement('select');
+    priorityInput.name = 'priority';
+    priorityInput.classList.add('todo-input');
+        const priorityOptions = [
+            {value: 0, text: '-'},
+            {value: 1, text: 'Low'},
+            {value: 2, text: 'Med'},
+            {value: 3, text: 'High'}
+        ];
+        priorityOptions.forEach(op => {
+            const x = document.createElement('option');
+            x.value = op.value;
+            x.textContent = op.text;
+            priorityInput.appendChild(x);
+        });
+    label4.append(priorityInput);
+
+    const btn = createSaveButton();
+
+    container.append(label1, label2, label3, label4)
+    form.append(container, btn);
+    return form;
+}
+
+function handleTodoForm(){
+    const head = document.querySelector('.project-page-head');
+    let wrap = document.querySelector('#todo-form-wrap');
+    if (!wrap) {
+        const wrap = document.createElement('div');
+        wrap.id = 'todo-form-wrap';
+        let form = buildTodoForm();
+        wrap.append(form);
+        head.append(wrap);
+        setTimeout(() => wrap.classList.add('reveal'), 25);
+    } else {
+        wrap.classList.remove('reveal');
+        setTimeout(() => wrap.remove(), 200);
+    }
+}
+
+function createTodoRow(todo){
+    const row = document.createElement('tr');
+    row.dataset.id = todo.id;
+
+    const checkbox = document.createElement('td');
+    checkbox.classList.add('small-col');
+
+    const check = document.createElement('input');
+    check.classList.add('todo-checkbox');
+    check.type = 'checkbox';
+    check.checked = false;
+
+    const date = document.createElement('td');
+    date.textContent = formatDate(todo.created, 'date');
+
+    const title = document.createElement('td');
+    title.textContent = todo.title;
+
+    const due = document.createElement('td');
+    due.textContent = todo.due_date;
+
+    const priority = document.createElement('td');
+    const span = document.createElement('span');
+    span.classList.add(`${todo.priority}-priority`, 'priority');
+    span.textContent = todo.priority;
+
+    priority.append(span);
+    checkbox.append(check);
+    row.append(checkbox, date, title, due, priority);
+    return row;
+}
+
+function addTodoToList(td){
+    const newRow = createTodoRow(td);
+    const tableName = td.isCompleted ? "Complete"  : "Incomplete";
+    const tbody = document.querySelector(`todo-table-tbody-${tableName}`);
+    if (tbody) {
+        tbody.appendChild(newRow)
+    } else {
+    removePlaceholder(`#empty-${tableName.toLowerCase()}-todos`);
+    const sibling = document.querySelector(`#${tableName}-heading`);
+    sibling.after(buildTodoTable())
+    }
+
+}
+
+function createBasicElement(name, text){
+    const el = document.createElement(String(name));
+    el.textContent = String(text);
+    return el;
+}
+
+function createInput(id, type, name, placeholder = null){
+    const input = document.createElement('input');
+    input.id = id;
+    input.type = type;
+    input.name = name;
+    if (placeholder) input.placeholder = placeholder;
+    return input;
+}
+
+function removePlaceholder(selector) {
+    console.log(selector);
+    const placeholder = document.querySelector(String(selector));
+    console.log(placeholder);
+    if (placeholder) placeholder.remove();
 }
