@@ -612,8 +612,8 @@ header h1 {
     text-align: center;
 }
 
-.project-page-todo-table tbody tr:nth-child(even) {
-    background-color: var(--bodybg);
+.project-page-todo-table tbody tr:nth-child(odd) {
+    background-color: var(--parentbg-light);
 }
 
 .project-page-todo-table tbody tr, .project-page-todo-table thead tr {
@@ -625,11 +625,15 @@ header h1 {
     height: 100%;
 }
 
+.project-page-todo-table tbody tr {
+    color: var(--text);
+}
+
 .todo-checkbox {
     width: 1.2em;
     height: 1.2em;
     border-radius: 50%;
-    border: solid 1px var(--text-1);
+    border: solid 1px var(--text);
     outline: none;
     cursor: pointer;
     appearance: none;
@@ -639,7 +643,7 @@ header h1 {
 }
 
 .project-page-todo-table tbody tr:nth-child(even) .todo-checkbox {
-    background-color: var(--bodybg);
+    background-color: var(--text-1);
 }
 
 .todo-checkbox:focus,
@@ -650,7 +654,7 @@ header h1 {
 
 .todo-checkbox:checked, .project-page-todo-table tbody tr:nth-child(even) .todo-checkbox:checked {
     background-color: var(--blue);
-    border: none;
+    border: solid 1px var(--text);
 }
 
 .btn {
@@ -752,7 +756,7 @@ header h1 {
     background-color: var(--green-light);
 }
 
-.med-priority {
+.medium-priority {
     color: var(--orng);
     background-color: var(--orng-light);
 }

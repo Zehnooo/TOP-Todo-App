@@ -5,7 +5,19 @@ const allTodos = [];
 let listCount = 1;
 let noteCount = 1;
 
-window.getTodos = getTodos;
+function updateTodoStorage(){
+    localStorage.setItem('user-todos', JSON.stringify(allTodos));
+}
+
+export function loadTodoStorage(){
+    const todos = JSON.parse(localStorage.getItem('user-todos'));
+    console.log(todos);
+    if (todos) {
+        todos.forEach(td => {
+            storeTodo(td);
+        });
+    }
+}
 
 function storeTodo(todo){
     allTodos.push(todo);
@@ -28,6 +40,7 @@ export function createTodo(title, description, due_date, priority, isCompleted =
         checklist: [],
     }
     storeTodo(todo);
+    updateTodoStorage();
     return todo
 }
 

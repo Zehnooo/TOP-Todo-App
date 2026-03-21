@@ -1,21 +1,26 @@
 import randomcolor from 'randomcolor';
-import {addNewCard, addNewSidebarOption, buildPlaceholder} from './dom.js';
-import {createProject, getProjects} from "./projects.js";
-import { createTodo } from "./todos.js";
+import {buildPlaceholder} from './dom.js';
+import {createProject, loadProjectStorage} from "./projects.js";
+import { createTodo, loadTodoStorage } from "./todos.js";
 import Swal from "sweetalert2";
 
 export function getColor(){
     return randomcolor({luminosity: 'bright', hue: 'random'});
 }
 
+export function loadLocalStorage(){
+    loadProjectStorage();
+    loadTodoStorage();
+}
+
 export function sumTodos(projects, type) {
     switch(type) {
         case 'incomplete':
-            return projects.reduce((sum, pj) => sum + (pj.todos.filter(td => !td.isCompleted)?.length || 0), 0);
+            return projects.reduce((sum, pj) => sum + (pj?.todos?.filter(td => !td.isCompleted)?.length || 0), 0);
         case 'complete':
-            return projects.reduce((sum, pj) => sum + (pj.todos.filter(td => td.isCompleted)?.length || 0), 0);
+            return projects.reduce((sum, pj) => sum + (pj?.todos?.filter(td => td.isCompleted)?.length || 0), 0);
         case 'all':
-            return projects.reduce((sum, pj) => sum + (pj.todos?.length || 0), 0);
+            return projects.reduce((sum, pj) => sum + (pj?.todos?.length || 0), 0);
     }
 }
 
@@ -42,10 +47,8 @@ export function handleProjectFormSubmission(e){
        fireMissingDataError();
        return;
     }
-    const newProject = createProject(n, d);
     document.querySelector('#new-project-form').reset();
-    addNewCard(newProject);
-    addNewSidebarOption(newProject);
+    return createProject(n, d);
 }
 
 export function handleTodoFormSubmission(e){
@@ -54,14 +57,13 @@ export function handleTodoFormSubmission(e){
     const desc = data.get('desc').trim();
     const due = data.get('due-date');
     const prio = data.get('priority');
-    if ( title === '' || desc === '' || due === null || prio === String(0)) {
+    if ( title === '' || desc === '' || prio === String(0)) {
         fireMissingDataError();
         return;
     }
-    const newTodo = createTodo(title, desc, due, prio);
+
     document.querySelector('#new-todo-form').reset();
-    console.log(newTodo);
-    console.log(getTodos());
+    return createTodo(title, desc, due, prio);
 }
 
 function collectFormData(e){
