@@ -1,6 +1,7 @@
-import {loadProjectStorage, getProjects, deleteProject, confirmDelete, createProject} from './projects.js';
+import { getProjects, deleteProject, confirmDelete} from './projects.js';
+import { getTodos } from './todos.js'
 import { formatDate } from './date.js';
-import {getColor, getTheme, saveTheme, sumTodos, validateContent, handleProjectFormSubmission, handleTodoFormSubmission, loadLocalStorage} from './tools.js';
+import {getColor, getTheme, saveTheme, sumTodos, validateContent, handleProjectFormSubmission, handleTodoFormSubmission, loadLocalStorage, addTodoToProject} from './tools.js';
 
 export const buildDom = (() => {
     loadLocalStorage();
@@ -254,6 +255,7 @@ function buildProjectPage(project){
     const todos = copy.todos;
     const container = document.createElement('div');
         container.classList.add('project-page');
+        container.dataset.project_id = project.id;
 
     const pageHead = document.createElement('div');
         pageHead.classList.add('project-page-head');
@@ -518,8 +520,10 @@ function buildTodoForm(){
     const form = document.createElement('form');
     form.id = 'new-todo-form';
     form.addEventListener('submit', (e) => {
-        const newTodo = handleTodoFormSubmission(e);
+        const projectId = document.querySelector('.project-page').dataset.project_id;
+        const newTodo = handleTodoFormSubmission(e, projectId);
         addTodoToList(newTodo);
+        addTodoToProject(newTodo);
     });
     const container = document.createElement('div');
 

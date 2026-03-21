@@ -27,8 +27,9 @@ export function getTodos(){
     return [...allTodos];
 }
 
-export function createTodo(title, description, due_date, priority, isCompleted = false) {
+export function createTodo(project_id, title, description, due_date, priority, isCompleted = false) {
     const todo = {
+        project_id,
         id: crypto.randomUUID(),
         title,
         description,

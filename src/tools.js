@@ -1,6 +1,6 @@
 import randomcolor from 'randomcolor';
 import {buildPlaceholder} from './dom.js';
-import {createProject, loadProjectStorage} from "./projects.js";
+import {createProject, loadProjectStorage, updateProjectStorage} from "./projects.js";
 import { createTodo, loadTodoStorage } from "./todos.js";
 import Swal from "sweetalert2";
 
@@ -51,7 +51,7 @@ export function handleProjectFormSubmission(e){
     return createProject(n, d);
 }
 
-export function handleTodoFormSubmission(e){
+export function handleTodoFormSubmission(e, id){
     const data = collectFormData(e);
     const title = data.get('title').trim();
     const desc = data.get('desc').trim();
@@ -63,7 +63,17 @@ export function handleTodoFormSubmission(e){
     }
 
     document.querySelector('#new-todo-form').reset();
-    return createTodo(title, desc, due, prio);
+    return createTodo(id, title, desc, due, prio);
+}
+
+export function addTodoToProject(todo){
+    try {
+        const project = getProjects().find(pj => pj.id === todo.project_id);
+        if (project) project?.todos?.push(todo);
+        updateProjectStorage();
+    } catch (err) {
+        throw err
+    }
 }
 
 function collectFormData(e){

@@ -8,7 +8,7 @@ function storeProject(project){
     allProjects.push(project);
 }
 
-function updateProjectStorage(){
+export function updateProjectStorage(){
      localStorage.setItem('user-projects', JSON.stringify(allProjects));
 }
 
