@@ -296,14 +296,16 @@ function buildProjectPage(project){
     container.append(pageHead);
 
     let incompleteTable;
+    let incompleteTodos = todos.filter(td => !td.isCompleted);
     const incompleteWrap = buildTableWrap('Incomplete');
-    todos.filter(td => !td.isCompleted) > 0 ? incompleteTable = buildProjectTodoTable('incomplete') : incompleteTable = buildPlaceholder('No incomplete todos', 'empty-incomplete-todos');
+    incompleteTodos.length > 0 ? incompleteTable = buildProjectTodoTable('incomplete', incompleteTodos) : incompleteTable = buildPlaceholder('No incomplete todos', 'empty-incomplete-todos');
     if (incompleteTable) { incompleteWrap.append(incompleteTable); todoContainer.append(incompleteWrap);
     }
 
     let completeTable;
+    let completeTodos = todos.filter(td => td.isCompleted);
     const completeWrap = buildTableWrap('Complete');
-    todos.filter(td => td.isCompleted) > 0 ? completeTable = buildProjectTodoTable : completeTable = buildPlaceholder('No complete todos', 'empty-complete-todos');
+    completeTodos.length > 0 ? completeTable = buildProjectTodoTable('complete', completeTodos) : completeTable = buildPlaceholder('No complete todos', 'empty-complete-todos');
     if (completeTable) { completeWrap.append(completeTable); todoContainer.append(completeWrap)
     }
 
@@ -332,7 +334,7 @@ export function buildPlaceholder(text, id = null){
     return placeholder;
 }
 
-function buildProjectTodoTable(type){
+function buildProjectTodoTable(type, todos){
     const table = document.createElement('table');
     table.id = `project-page-${type}-table`;
     table.classList.add('project-page-todo-table');
@@ -359,7 +361,11 @@ function buildProjectTodoTable(type){
     table.append(thead);
 
     const tbody = document.createElement('tbody');
-    tbody.id = `todo-table-tbody-${type}`
+    tbody.id = `todo-table-tbody-${type}`;
+
+    if (todos?.length > 0) {
+        todos.forEach(td => {const row = createTodoRow(td); tbody.append(row);});
+    }
 
     table.append(tbody);
     return table;

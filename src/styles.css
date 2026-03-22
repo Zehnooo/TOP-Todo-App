@@ -98,10 +98,15 @@ body {
     box-shadow: var(--bigshadow);
 }
 
-.site-footer p {
+.site-footer p, .footer-link {
     font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: 0.02em;
+}
+
+.footer-link {
+    text-decoration: none;
+    color: var(--text);
 }
 
 .footer-text-container {
