@@ -196,7 +196,7 @@ header h1 {
 }
 
 .sidebar-list li {
-    color: var(--text);
+    color: var(--text-1);
     direction: ltr;
     margin: 0;
     display: flex;
@@ -343,7 +343,7 @@ header h1 {
     font-weight: 600;
 }
 
-.dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder, .todo-input::placeholder { opacity: .6; font-style: italic; padding: .2rem;}
+.dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder, .todo-input::placeholder {  font-style: italic; padding: .2rem; color: var(--text);}
 
 .dash-top-bar form, #new-todo-form {
     width: 100%;
@@ -386,18 +386,22 @@ header h1 {
     font-weight: 600;
     color: var(--blue);
     padding: .4rem;
+    text-wrap: nowrap;
 }
 
 .todo-input {
     width: 100%;
     padding: .4em;
-    border: none;
+    border: solid 1px var(--text-1);
     outline: none;
     border-radius: 1rem;
     background-color: var(--bodybg);
     color: var(--text);
     font-size: .8rem;
-    font-weight: 600;
+    font-weight: 400;
+}
+body.dark .todo-input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
 }
 
 .project-card {
@@ -503,15 +507,13 @@ header h1 {
     position: relative;
 }
 
-.project-page-head {
-    display: grid;
-    margin: 0 auto;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(2, 1fr);
+.project-page-head-container {
     width: 100%;
+    display: flex;
+    flex-direction: column;
     height: auto;
     padding: 1rem;
-    gap: 2rem;
+    gap: .8rem;
     background-color: var(--parentbg);
     border-radius: 1rem;
     box-shadow: var(--bigshadow);
@@ -520,28 +522,71 @@ header h1 {
     z-index: 1000;
 }
 
+.project-page-head {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.project-page-head > * {
+    margin: 0;
+    display: flex;
+    width: 100%;
+}
+
+.project-page-head-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 400px;
+    gap: .8rem;
+    text-wrap: nowrap;
+    text-align: left;
+}
+
+.project-page-head-counts {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: .8rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.project-page-head-counts > * {
+    font-size: 14px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: start;
+    gap: 1rem;
+    width: 100%;
+    max-width: 100px;
+    margin: 0;
+    padding: .2rem;
+}
+
 .project-page-title {
     grid-column: 1 / 2;
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--blue);
-    display: flex;
-    justify-content: start;
-    align-items: center;
 }
 
 .project-page-date {
     grid-column: 2 / 3;
+    grid-row: 1 / 2;
     font-size: .8rem;
     font-weight: 600;
     color: var(--text-1);
-    display: flex;
-    justify-content: end;
-    align-items: center;
+    justify-self: end;
 }
 
 .project-page-desc {
     color: var(--text);
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
 }
 
 .project-page-todo-container {
@@ -589,11 +634,12 @@ header h1 {
     flex-direction: column;
     width: 100%;
     height: 100%;
+    gap: .8rem;
 }
 
 .project-page-table-wrap h3 {
     font-size: 1rem;
-    padding: .8rem;
+    padding: 1rem;
     color: var(--text);
 }
 
@@ -625,7 +671,7 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: .6em;
     width: 100%;
     height: 100%;
 }
@@ -734,7 +780,7 @@ header h1 {
 
 .selected {
     background-color: var(--blue) !important;
-    color: var(--bodybg) !important;
+    color: var(--text) !important;
     box-shadow: var(--smlshadow);
     cursor: default;
 }
@@ -744,16 +790,26 @@ header h1 {
 }
 
 .selected span {
-    color: var(--bodybg) !important;
+    color: var(--text) !important;
 }
 
 .priority {
     border-radius: 1rem;
-    padding: .6em;
-    margin: .4em;
+    padding: .4em .6em;
+    margin: 0;
     font-weight: 600;
     text-transform: uppercase;
-    width: 100px;
+    width: 200px;
+}
+
+.none-priority {
+    color: var(--text-1);
+    background-color: var(--parentbg);
+}
+
+.project-page-todo-table tbody tr:nth-child(even) .none-priority {
+    color: var(--text-1);
+    background-color: var(--parentbg-light);
 }
 
 .low-priority {

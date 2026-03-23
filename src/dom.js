@@ -2,11 +2,17 @@ import { getProjects, deleteProject, confirmDelete} from './projects.js';
 import { getTodos } from './todos.js'
 import { formatDate } from './date.js';
 import {getColor, getTheme, saveTheme, sumTodos, validateContent, handleProjectFormSubmission, handleTodoFormSubmission, loadLocalStorage, addTodoToProject} from './tools.js';
+import completesvg from './assets/complete.svg';
+import copysvg from './assets/copy.svg';
+import deletesvg from './assets/delete.svg';
+import editsvg from './assets/edit.svg';
+import refreshsvg from './assets/refresh.svg';
 
 export const buildDom = (() => {
     loadLocalStorage();
     getTheme() === 'dark' ? document.body.classList.add('dark') : document.body.classList.remove('dark');
     document.body.append(buildFooter());
+
     return buildDefaultMain();
 })();
 
@@ -254,29 +260,12 @@ function buildProjectPage(project){
     const copy = {...project};
     const todos = copy.todos;
     const container = document.createElement('div');
-        container.classList.add('project-page');
+        container.classList.add('project-page', 'scroll');
         container.dataset.project_id = project.id;
 
-    const pageHead = document.createElement('div');
-        pageHead.classList.add('project-page-head');
+    const pageHead = buildProjectPageHead(copy);
 
-    const title = document.createElement('h2');
-        title.textContent = copy.title;
-        title.classList.add('project-page-title');
 
-    const date = document.createElement('p');
-    const d = formatDate(copy.created, 'date');
-        date.textContent = `Created on ${d}`;
-        date.classList.add('project-page-date');
-
-    const desc = document.createElement('p');
-        desc.textContent = copy.description;
-        desc.classList.add('project-page-desc');
-
-    const newTodoBtn = document.createElement('button');
-        newTodoBtn.classList.add('new-btn', 'btn');
-        newTodoBtn.textContent = 'New Todo';
-        newTodoBtn.addEventListener('click', () => handleTodoForm());
 
     const todoContainer = document.createElement('div');
         todoContainer.classList.add('project-page-todo-container');
@@ -287,12 +276,10 @@ function buildProjectPage(project){
     const todoHeading = document.createElement('h2');
         todoHeading.textContent = 'Todos';
 
-    const plus = document.createElement('span');
-        plus.innerHTML = '+';
 
-    newTodoBtn.prepend(plus);
+
+
     todoHeader.append(todoHeading);
-    pageHead.append(title, date, desc, newTodoBtn);
     container.append(pageHead);
 
     let incompleteTable;
@@ -313,14 +300,80 @@ function buildProjectPage(project){
     return container;
 }
 
+function buildProjectPageHead(project){
+    const pageHeadCon = document.createElement('div');
+    pageHeadCon.classList.add('project-page-head-container');
+
+    const pageHead = document.createElement('div');
+    pageHead.classList.add('project-page-head');
+
+    const details = document.createElement('div');
+    details.classList.add('project-page-head-details');
+
+    const title = document.createElement('h2');
+    title.textContent = project.title;
+    title.classList.add('project-page-title');
+
+    const date = document.createElement('p');
+    const d = formatDate(project.created, 'date');
+    date.textContent = `Created on ${d}`;
+    date.classList.add('project-page-date');
+
+    const desc = document.createElement('p');
+    desc.textContent = project.description;
+    desc.classList.add('project-page-desc');
+
+
+
+    const todoCounts = document.createElement('div');
+        todoCounts.classList.add('project-page-head-counts');
+    let todos = project.todos;
+        const p1 = createBasicElement('p', 'Todos');
+        p1.classList.add('project-count', 'count');
+        const totalTodos = createBasicElement('span', String(todos.length));
+        p1.append(totalTodos);
+    let completed = todos.filter(td => td.isCompleted);
+        const p2 = createBasicElement('p', 'Complete');
+        p2.classList.add('project-count', 'completed');
+        const completeTodos = createBasicElement('span', String(completed.length));
+        p2.append(completeTodos);
+    let incomplete = todos.filter(td => !td.isCompleted);
+        const p3 = createBasicElement('p', 'Incomplete');
+        p3.classList.add('project-count', 'incomplete');
+        const incompleteTodos = createBasicElement('span', String(incomplete.length));
+        p3.append(incompleteTodos);
+
+    const newTodoBtn = document.createElement('button');
+    newTodoBtn.classList.add('new-btn', 'btn');
+    newTodoBtn.textContent = 'New Todo';
+    newTodoBtn.addEventListener('click', () => handleTodoForm());
+
+    const plus = document.createElement('span');
+    plus.innerHTML = '+';
+
+
+    details.append(title, date, desc);
+    newTodoBtn.prepend(plus);
+    todoCounts.append(p1, p2, p3);
+    pageHead.append(details, todoCounts, newTodoBtn);
+    pageHeadCon.append(pageHead);
+
+    return pageHeadCon;
+}
+
 function buildTableWrap(type){
     const wrap = document.createElement('div');
         wrap.id = `project-page-${type.toLowerCase()}-table-wrap`;
         wrap.classList.add('project-page-table-wrap');
+
+    const headWrap = document.createElement('div');
+    headWrap.classList.add('project-page-table-head');
     const tableHead = document.createElement('h3');
         tableHead.textContent = `${type} Todos`;
         tableHead.id = `${type}-heading`;
-    wrap.append(tableHead);
+
+    headWrap.append(tableHead);
+    wrap.append(headWrap);
     return wrap;
 }
 
@@ -371,11 +424,24 @@ function buildProjectTodoTable(type, todos){
     return table;
 }
 
+function buildTodoOptions(){
+    const head = document.querySelector('.project-page-head-container');
+    const options = document.createElement('div');
+    options.classList.add('project-page-todo-options');
+    const buttonTypes = ['delete', 'edit', 'copy', 'complete', 'reuse'];
+    buttonTypes.forEach(type => {
+        const btn = document.createElement('button');
+
+    });
+}
+
+
 function buildNewProjectForm(){
     const form = document.createElement('form');
     form.id = 'new-project-form';
     form.addEventListener('submit', (e) => {
         let newProject = handleProjectFormSubmission(e);
+        if (newProject === undefined) return;
         addNewCard(newProject);
         addNewSidebarOption(newProject);
     });
@@ -528,6 +594,7 @@ function buildTodoForm(){
     form.addEventListener('submit', (e) => {
         const projectId = document.querySelector('.project-page').dataset.project_id;
         const newTodo = handleTodoFormSubmission(e, projectId);
+        if (newTodo === undefined) return;
         addTodoToList(newTodo);
         addTodoToProject(newTodo);
     });
@@ -556,7 +623,7 @@ function buildTodoForm(){
     priorityInput.name = 'priority';
     priorityInput.classList.add('todo-input');
         const priorityOptions = [
-            {value: null, text: '-'},
+            {value: 'None', text: '-'},
             {value: 'Low', text: 'Low'},
             {value: 'Medium', text: 'Medium'},
             {value: 'High', text: 'High'}
@@ -577,14 +644,14 @@ function buildTodoForm(){
 }
 
 function handleTodoForm(){
-    const head = document.querySelector('.project-page-head');
+    const head = document.querySelector('.project-page-head-container');
     let wrap = document.querySelector('#todo-form-wrap');
     if (!wrap) {
         const wrap = document.createElement('div');
         wrap.id = 'todo-form-wrap';
         let form = buildTodoForm();
         wrap.append(form);
-        head.append(wrap);
+        head.appendChild(wrap);
         setTimeout(() => wrap.classList.add('reveal'), 25);
     } else {
         wrap.classList.remove('reveal');

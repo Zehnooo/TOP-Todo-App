@@ -40,30 +40,33 @@ export function validateContent(arr, contentName){
 }
 
 export function handleProjectFormSubmission(e){
+    e.preventDefault();
     const data = collectFormData(e);
-    const n = data.get('title').trim();
-    const d = data.get('desc').trim();
-    if (n === '' || d === '') {
+    const title = data.get('title').trim() || null;
+    const desc = data.get('desc').trim() || null;
+    console.log("t", title);
+    console.log("d", desc);
+    if (title === null || desc === null) {
        fireMissingDataError();
-       return;
+    } else {
+        document.querySelector('#new-project-form').reset();
+        return createProject(title, desc);
     }
-    document.querySelector('#new-project-form').reset();
-    return createProject(n, d);
 }
 
 export function handleTodoFormSubmission(e, id){
+    e.preventDefault();
     const data = collectFormData(e);
-    const title = data.get('title').trim();
-    const desc = data.get('desc').trim();
-    const due = data.get('due-date');
-    const prio = data.get('priority');
-    if ( title === '' || desc === '' || prio === String(0)) {
+    const title = data.get('title').trim() || null;
+    const desc = data.get('desc').trim() || null;
+    const due = data.get('due-date') || null;
+    const prio = data.get('priority') || null;
+    if ( title === '' || desc === '' || prio === String(0) || prio === null)  {
         fireMissingDataError();
-        return;
+    } else {
+        document.querySelector('#new-todo-form').reset();
+        return createTodo(id, title, desc, due, prio);
     }
-
-    document.querySelector('#new-todo-form').reset();
-    return createTodo(id, title, desc, due, prio);
 }
 
 export function addTodoToProject(todo){
@@ -77,7 +80,6 @@ export function addTodoToProject(todo){
 }
 
 function collectFormData(e){
-    e.preventDefault();
     return new FormData(e.target);
 }
 
