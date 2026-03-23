@@ -196,7 +196,6 @@ header h1 {
 }
 
 .sidebar-list li {
-    color: var(--text-1);
     direction: ltr;
     margin: 0;
     display: flex;
@@ -222,16 +221,16 @@ header h1 {
     min-width: 0;
 }
 
-.sidebar-list-container li {
+.sidebar-list li {
     justify-content: start;
     gap: 1.2em;
 }
 
-.sidebar-list-container li:not(.selected) {
-    color: var(--text);
+.sidebar-list li:not(.selected) {
+    color: var(--text-1);
 }
 
-.sidebar-list-container .selected:hover {
+.sidebar-list .selected:hover {
     cursor: default;
 }
 
