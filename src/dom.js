@@ -1,18 +1,28 @@
 import { getProjects, deleteProject, confirmDelete} from './projects.js';
 import { getTodos } from './todos.js'
 import { formatDate } from './date.js';
-import {getColor, getTheme, saveTheme, sumTodos, validateContent, handleProjectFormSubmission, handleTodoFormSubmission, loadLocalStorage, addTodoToProject} from './tools.js';
+import {
+    getColor,
+    getTheme,
+    saveTheme,
+    sumTodos,
+    validateContent,
+    handleProjectFormSubmission,
+    handleTodoFormSubmission,
+    loadLocalStorage,
+    addTodoToProject,
+    handleTodoCheck
+} from './tools.js';
 import completesvg from './assets/complete.svg';
 import copysvg from './assets/copy.svg';
 import deletesvg from './assets/delete.svg';
 import editsvg from './assets/edit.svg';
-import refreshsvg from './assets/refresh.svg';
+
 
 export const buildDom = (() => {
     loadLocalStorage();
     getTheme() === 'dark' ? document.body.classList.add('dark') : document.body.classList.remove('dark');
     document.body.append(buildFooter());
-
     return buildDefaultMain();
 })();
 
@@ -425,27 +435,33 @@ function buildProjectTodoTable(type, todos){
 }
 
 
-function handleTodoCheck(e){
-    try{
-        const rowId = e.target.parentElement.parentElement.dataset.todo_id;
-    } catch (err) {
-        throw err
+function handleTodoOptions(){
+    const head = document.querySelector('.project-page-head-container');
+    const exists = document.querySelector('.project-page-todo-options');
+    if (!exists) {
+        const options = buildTodoOptions();
+        head.append(options);
     }
 }
 
 
 function buildTodoOptions(){
-
-
-    const head = document.querySelector('.project-page-head-container');
     const options = document.createElement('div');
     options.classList.add('project-page-todo-options');
     const buttonTypes = [
-        {'delete': deletesvg}, {'edit': editsvg}, {'copy': copysvg}, {'complete': completesvg}, {'reuse': refreshsvg}];
-    buttonTypes.forEach(type => {
-        const btn = document.createElement('button');
-        console.log(type);
+        {name: 'delete', img: deletesvg}, {name: 'edit', img: editsvg}, {name: 'copy', img: copysvg}, {name: 'complete', img: completesvg}];
+    buttonTypes.forEach(btn => {
+        const b = document.createElement('button');
+        const s = document.createElement('span');
+        s.innerHTML = btn.img;
+        b.id = `todo-${btn.name}`;
+        b.classList.add('btn','todo-option');
+        b.addEventListener("click", (e) => {useTodoOption(e);})
+        b.append(s);
+        options.append(b);
     });
+
+    return options;
 }
 
 
@@ -681,7 +697,10 @@ function createTodoRow(todo){
 
     const check = document.createElement('input');
     check.classList.add('todo-checkbox');
-    check.addEventListener('change', (e) => {handleTodoCheck(e);});
+    check.addEventListener('change', (e) => {
+        const check = handleTodoCheck(e);
+        if (check !== null) {handleTodoOptions();} else {document.querySelector('.project-page-todo-options')?.remove();}
+    });
     check.type = 'checkbox';
     check.checked = false;
 

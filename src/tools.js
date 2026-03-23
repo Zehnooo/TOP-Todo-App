@@ -92,3 +92,39 @@ function fireMissingDataError(){
         theme: String(theme)
     });
 }
+
+
+const selectedTodos = [];
+export function handleTodoCheck(e){
+    try {
+        const status = e.target.checked || false;
+        const todoId = e.target.parentElement.parentElement.dataset.todo_id;
+        if (status) {
+            selectedTodos.push(todoId);
+        } else {
+            selectedTodos.splice(selectedTodos.indexOf(todoId));
+        }
+    } catch (err) {
+        throw err
+    }
+    return selectedTodos.length > 0 ? selectedTodos : null;
+}
+
+export function useTodoOption(e){
+    console.log(selectedTodos);
+    const op = String(e.target.id).replace('todo-','');
+    switch(op){
+        case 'delete':
+            console.log('a');
+            break;
+        case 'edit':
+            console.log('b');
+            break;
+        case 'copy':
+            console.log('c');
+            break;
+        case 'complete':
+            console.log('d');
+            break;
+    }
+}

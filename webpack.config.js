@@ -30,7 +30,7 @@ export default {
                 use: ["html-loader"],
             },
             {
-                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                test: /\.(png|jpg|jpeg|gif)$/i,
                 type: "asset/resource",
             },
             {
@@ -39,6 +39,10 @@ export default {
                 generator: {
                     filename: "fonts/[name][ext]",
                 },
+            },
+            {
+                test: /\.svg$/i,
+                type: 'asset/source'
             },
         ],
     },
