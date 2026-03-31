@@ -788,13 +788,21 @@ function handleTodoModal(todo){
     const modal = buildModal();
     const container = modal.querySelector('#cust-modal-container');
     container.append(buildTodoModalContent(todo));
+    const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'X';
+        closeBtn.classList.add('btn', 'close-modal');
+    closeBtn.addEventListener('click', () => document.querySelector('#cust-modal').close());
+    modal.appendChild(closeBtn);
     if (modal) document.body.append(modal); modal.showModal();
 }
 
 function buildTodoModalContent(todo){
+    const prefix = 'cust-modal-';
     const container = document.createElement('div');
     const head = document.createElement('div');
-    const prefix = 'cust-modal-';
+    const status = document.createElement('div');
+    status.classList.add(`${prefix}status`)
+
 
     const title = createBasicElement('h2', String(todo.title));
     title.classList.add(`${prefix}title`)
@@ -810,18 +818,21 @@ function buildTodoModalContent(todo){
     const completed = createBasicElement('span', String(todo.isCompleted ? 'Complete' : 'Incomplete'));
     completed.classList.add(`${prefix}check`);
     todo.isCompleted ? completed.classList.add('completed') : completed.classList.add('incomplete');
-    head.append(title, desc, cDate, dDate, prio, completed);
+
+
+    head.append(title, desc);
+    status.append(cDate, dDate, prio, completed);
 
     const section = document.createElement('div');
-
+    section.classList.add(`${prefix}main`);
     const noteCon = document.createElement('div');
     const noteHead = createBasicElement('h3', 'Notes');
     noteCon.append(noteHead);
-    todo.notes?.forEach(note => {
-        noteCon.appendChild(createBasicElement('p', String(note)));
-    });
+    todo?.notes?.length > 0 ? todo.notes.forEach(note => { noteCon.appendChild(createBasicElement('p', String(note))) }) : noteCon.appendChild(buildPlaceholder('No Notes'))
 
-    section.append(noteCon);
+
+
+    section.append(status, noteCon);
     container.append(head, section);
     return container
 }
