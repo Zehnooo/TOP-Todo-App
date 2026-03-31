@@ -286,7 +286,7 @@ header h1 {
 }
 
 #new-project-form-wrap.reveal, #todo-form-wrap.reveal {
-    max-height: 200px;
+    max-height: 400px;
     opacity: 1;
 }
 
@@ -350,6 +350,8 @@ header h1 {
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-end;
+    padding: .6rem;
+    gap: 1rem;
 }
 
 #todo-form-wrap {
@@ -362,9 +364,11 @@ header h1 {
 }
 
 #new-todo-form div {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px, 1fr));
     align-items: center;
     width: 100%;
+    height: auto;
 }
 
 #new-todo-form div label {
@@ -372,6 +376,7 @@ header h1 {
     width: stretch;
     max-width: 300px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 1.2em;
     font-size: .8rem;
@@ -379,6 +384,11 @@ header h1 {
     color: var(--blue);
     padding: .4rem;
     text-wrap: nowrap;
+}
+
+#new-todo-form div label span {
+    width: 100%;
+    text-align: left;
 }
 
 .todo-input {
@@ -391,6 +401,7 @@ header h1 {
     color: var(--text);
     font-size: .8rem;
     font-weight: 400;
+    min-width: 200px;
 }
 body.dark .todo-input[type='datetime-local']::-webkit-calendar-picker-indicator {
     filter: invert(1);
@@ -463,13 +474,10 @@ select.todo-input {
     width: 100%;
 }
 
-.project-count {
+.project-count, .cust-modal-check{
     border-radius: 1rem;
     margin: .4em;
     font-weight: 600;
-}
-
-.project-counts .project-count {
     font-size: min(12px, .8rem);
     padding:  .2em .4em;
 }
@@ -484,7 +492,7 @@ select.todo-input {
     background-color: var(--parentbg);
 }
 
-.project-count.completed {
+.project-count.completed, .cust-modal-check.completed {
     color: var(--green);
     background-color: var(--green-light);
 }
@@ -492,6 +500,10 @@ select.todo-input {
 .project-count.incomplete {
     color: var(--orng);
     background-color: var(--orng-light);
+}
+.cust-modal-check.incomplete {
+    color: var(--red);
+    background-color: var(--red-light);
 }
 
 .project-page {
@@ -771,7 +783,6 @@ select.todo-input {
 .save-btn {
     border: 1px solid var(--green);
     color: var(--green);
-    justify-self: flex-end;
 }
 
 .save-btn:hover {
@@ -866,23 +877,26 @@ select.todo-input {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     place-items: center;
-    gap: .4rem;
+    gap: .8rem;
     border-radius: 1rem;
-    padding: .8rem;
+    padding: .6rem;
     height: auto;
     margin: 0 auto;
 }
 
 .measure-card {
     align-items: center;
+    justify-content: center;
     display: flex;
     flex-direction: column;
     gap: .4rem;
     border: none;
     border-radius: .8rem;
-    padding: 2rem;
-    min-width: 100px;
+    padding: .6rem;
     max-width: 250px;
+    min-height: 100px;
+    max-height: 200px;
+    height: 100%;
     width: 100%;
 }
 
@@ -918,3 +932,14 @@ select.todo-input {
     background-color:  var(--parentbg-light);
 }
 
+#cust-modal {
+    background: var(--bodybg);
+    color: var(--text);
+    width: 50%;
+    height: max-content;
+    margin: auto;
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    padding: 1rem;
+}

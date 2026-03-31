@@ -629,25 +629,29 @@ function buildTodoForm(){
     });
     const container = document.createElement('div');
 
-    const label1 = createBasicElement('label', 'Title');
+    const label1 = createBasicElement('label');
+    const span1 = createBasicElement('span', 'Title');
         label1.htmlFor = 'input-todo-title';
     const titleInput = createInput('input-todo-title', 'text', 'title', 'Clean Kitchen');
     titleInput.classList.add('todo-input');
-    label1.append(titleInput);
+    label1.append(span1, titleInput);
 
-    const label2 = createBasicElement('label', 'Description');
+    const label2 = createBasicElement('label');
+    const span2 = createBasicElement('span', 'Description');
         label2.htmlFor = 'input-todo-desc';
     const descInput = createInput('input-todo-desc', 'text', 'desc', 'Do the dishes, mop the floor...');
     descInput.classList.add('todo-input');
-    label2.append(descInput);
+    label2.append(span2, descInput);
 
-    const label3 = createBasicElement('label', 'Due Date');
+    const label3 = createBasicElement('label');
+    const span3 = createBasicElement('span', 'Due Date');
         label3.htmlFor = 'input-todo-date';
     const dueDateInput = createInput('input-todo-date', 'datetime-local', 'due-date');
     dueDateInput.classList.add('todo-input');
-    label3.append(dueDateInput);
+    label3.append(span3, dueDateInput);
 
-    const label4 = createBasicElement('label', 'Priority');
+    const label4 = createBasicElement('label');
+    const span4 = createBasicElement('span', 'Priority');
     const priorityInput = document.createElement('select');
     priorityInput.name = 'priority';
     priorityInput.classList.add('todo-input');
@@ -663,7 +667,7 @@ function buildTodoForm(){
             x.textContent = op.text;
             priorityInput.appendChild(x);
         });
-    label4.append(priorityInput);
+    label4.append(span4, priorityInput);
 
     const btn = createSaveButton();
 
@@ -691,12 +695,14 @@ function handleTodoForm(){
 function createTodoRow(todo){
     const row = document.createElement('tr');
     row.dataset.todo_id = todo.id;
+    row.addEventListener('click', () => handleTodoModal(todo));
 
     const checkbox = document.createElement('td');
     checkbox.classList.add('small-col');
 
     const check = document.createElement('input');
     check.classList.add('todo-checkbox');
+    check.addEventListener('click', (e) => e.stopPropagation());
     check.addEventListener('change', (e) => {
         const check = handleTodoCheck(e);
         if (check !== null) {handleTodoOptions();} else {document.querySelector('.project-page-todo-options')?.remove();}
@@ -748,9 +754,9 @@ function updateTable(name){
     return document.querySelector(`#todo-table-tbody-${name}`)
 }
 
-function createBasicElement(name, text){
+function createBasicElement(name, text = null){
     const el = document.createElement(String(name));
-    el.textContent = String(text);
+    if (text) el.textContent = String(text);
     return el;
 }
 
@@ -766,4 +772,56 @@ function createInput(id, type, name, placeholder = null){
 function removePlaceholder(selector) {
     const placeholder = document.querySelector(String(selector));
     if (placeholder) placeholder.remove();
+}
+
+function buildModal(){
+    const dialog = document.createElement('dialog');
+    dialog.id = 'cust-modal';
+    dialog.addEventListener('close', () => dialog.remove())
+    const container = document.createElement('div');
+    container.id = 'cust-modal-container';
+    dialog.append(container);
+    return dialog
+}
+
+function handleTodoModal(todo){
+    const modal = buildModal();
+    const container = modal.querySelector('#cust-modal-container');
+    container.append(buildTodoModalContent(todo));
+    if (modal) document.body.append(modal); modal.showModal();
+}
+
+function buildTodoModalContent(todo){
+    const container = document.createElement('div');
+    const head = document.createElement('div');
+    const prefix = 'cust-modal-';
+
+    const title = createBasicElement('h2', String(todo.title));
+    title.classList.add(`${prefix}title`)
+    const cDate = createBasicElement('p', `Created On: ${String(todo.created)}`);
+    cDate.classList.add(`${prefix}cdate`);
+    const dDate = createBasicElement('p', `Due On: ${String(todo.due_date)}`);
+    dDate.classList.add(`${prefix}ddate`);
+    const desc = createBasicElement('p', String(todo.description));
+    desc.classList.add(`${prefix}desc`);
+    const prio = createBasicElement('span', String(todo.priority));
+
+    prio.classList.add(`${todo.priority}-priority`, 'priority');
+    const completed = createBasicElement('span', String(todo.isCompleted ? 'Complete' : 'Incomplete'));
+    completed.classList.add(`${prefix}check`);
+    todo.isCompleted ? completed.classList.add('completed') : completed.classList.add('incomplete');
+    head.append(title, desc, cDate, dDate, prio, completed);
+
+    const section = document.createElement('div');
+
+    const noteCon = document.createElement('div');
+    const noteHead = createBasicElement('h3', 'Notes');
+    noteCon.append(noteHead);
+    todo.notes?.forEach(note => {
+        noteCon.appendChild(createBasicElement('p', String(note)));
+    });
+
+    section.append(noteCon);
+    container.append(head, section);
+    return container
 }
