@@ -257,7 +257,6 @@ header h1 {
 }
 
 .dash {
-    grid-column: 2 / 3;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     column-gap: 2rem;
@@ -344,7 +343,7 @@ header h1 {
 
 .dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder, .todo-input::placeholder {  font-style: italic; padding: .2rem; color: var(--text);}
 
-.dash-top-bar form, #new-todo-form {
+.dash-top-bar form  {
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -356,6 +355,14 @@ header h1 {
     align-items: center;
     width: 75%;
     gap: 1.2em;
+}
+
+#new-todo-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
 #todo-form-wrap {
@@ -371,7 +378,6 @@ header h1 {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: .6rem;
 }
 
 #new-todo-form div label {
@@ -401,6 +407,15 @@ header h1 {
 }
 body.dark .todo-input[type='datetime-local']::-webkit-calendar-picker-indicator {
     filter: invert(1);
+}
+
+select.todo-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 0.5em center;
+    background-size: 1em;
 }
 
 .project-card {
@@ -769,6 +784,7 @@ body.dark .todo-input[type='datetime-local']::-webkit-calendar-picker-indicator 
 .save-btn {
     border: 1px solid var(--green);
     color: var(--green);
+    justify-self: flex-end;
 }
 
 .save-btn:hover {
