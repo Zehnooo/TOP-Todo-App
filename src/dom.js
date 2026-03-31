@@ -11,7 +11,7 @@ import {
     handleTodoFormSubmission,
     loadLocalStorage,
     addTodoToProject,
-    handleTodoCheck
+    handleTodoCheck, useTodoOption
 } from './tools.js';
 import completesvg from './assets/complete.svg';
 import copysvg from './assets/copy.svg';
