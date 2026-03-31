@@ -52,26 +52,13 @@ body {
 
 #options {
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     gap: 1rem;
-    min-width: 180px;
+    width: 100%;
+    max-width: 180px;
     height: auto;
     border-radius: 1rem;
-}
-
-#options button {
-    background-color: transparent;
-    border: 1px solid var(--text-1);
-    cursor: pointer;
-    border-radius: 1rem;
-    transition: background-color 0.3s ease;
-}
-
-#options button svg {
-    color: var(--text);
-    width: 24px;
-    height: 24px;
 }
 
 .site-footer {
@@ -800,7 +787,7 @@ select.todo-input {
     margin: 0;
 }
 
-.todo-option {
+.todo-option, #options button {
     background: var(--parentbg-light);
     cursor: pointer;
 }
@@ -810,7 +797,7 @@ select.todo-input {
     cursor: default;
 }
 
-.todo-option svg {
+.todo-option svg, #options button svg {
     color: var(--text);
     width: 24px;
     height: auto;
@@ -877,9 +864,9 @@ select.todo-input {
 .measures {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     place-items: center;
-    gap: .8rem;
+    gap: .4rem;
     border-radius: 1rem;
     padding: .8rem;
     height: auto;
@@ -894,12 +881,13 @@ select.todo-input {
     border: none;
     border-radius: .8rem;
     padding: 2rem;
-    min-width: 250px;
+    min-width: 100px;
+    max-width: 250px;
     width: 100%;
 }
 
 .measure-card h3 {
-    text-align: left;
+    text-align: center;
 }
 
 .measure-card p {

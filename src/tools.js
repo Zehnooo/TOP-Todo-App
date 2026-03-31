@@ -1,7 +1,7 @@
 import randomcolor from 'randomcolor';
 import {buildPlaceholder} from './dom.js';
-import {createProject, loadProjectStorage, updateProjectStorage} from "./projects.js";
-import { createTodo, loadTodoStorage } from "./todos.js";
+import {createProject, loadProjectStorage, removeTodoFromProject} from "./projects.js";
+import { createTodo } from "./todos.js";
 import Swal from "sweetalert2";
 
 export function getColor(){
@@ -10,7 +10,7 @@ export function getColor(){
 
 export function loadLocalStorage(){
     loadProjectStorage();
-    loadTodoStorage();
+    localStorage.removeItem('user-todos');
 }
 
 export function sumTodos(projects, type) {
@@ -69,16 +69,6 @@ export function handleTodoFormSubmission(e, id){
     }
 }
 
-export function addTodoToProject(todo){
-    try {
-        const project = getProjects().find(pj => pj.id === todo.project_id);
-        if (project) project?.todos?.push(todo);
-        updateProjectStorage();
-    } catch (err) {
-        throw err
-    }
-}
-
 function collectFormData(e){
     return new FormData(e.target);
 }
@@ -110,12 +100,15 @@ export function handleTodoCheck(e){
     return selectedTodos.length > 0 ? selectedTodos : null;
 }
 
-export function useTodoOption(e){
-    console.log(selectedTodos);
-    const op = String(e.target.id).replace('todo-','');
-    switch(op){
+export async function useTodoOption(e) {
+    const todos = selectedTodos;
+
+    const op = String(e.target.id).replace('todo-', '');
+    switch (op) {
         case 'delete':
-            console.log('a');
+            const confirm = await confirmDelete('Are you sure you want to delete the selected todos?');
+            if (!confirm.isConfirmed) return;
+            deleteTodos(selectedTodos);
             break;
         case 'edit':
             console.log('b');
@@ -126,5 +119,40 @@ export function useTodoOption(e){
         case 'complete':
             console.log('d');
             break;
+    }
+}
+
+async function confirmDelete(str){
+    const prompt = String(str);
+    return Swal.fire({
+        title: prompt,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#007FFF',
+        confirmButtonText: 'DELETE',
+    });
+}
+
+export async function confirmProjectDelete(project){
+    let prompt = `Are you sure you want to delete <span style="color: red; font-weight: 800;">${project.title}</span>?`
+    return Swal.fire({
+        title: prompt,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#007FFF',
+        confirmButtonText: 'DELETE',
+    });
+}
+
+function deleteTodos(arr) {
+    if (arr.length > 0) {
+        for (const todoId of arr) {
+            removeTodoFromProject(todoId);
+            const row = document.querySelector(`[data-todo_id="${todoId}"]`);
+            if (row) row.remove();
+        }
+        selectedTodos.length = 0;
     }
 }

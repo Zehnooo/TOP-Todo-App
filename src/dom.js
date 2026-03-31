@@ -1,5 +1,4 @@
-import { getProjects, deleteProject, confirmDelete} from './projects.js';
-import { getTodos } from './todos.js'
+import { getProjects, deleteProject, addTodoToProject } from './projects.js';
 import { formatDate } from './date.js';
 import {
     getColor,
@@ -10,8 +9,9 @@ import {
     handleProjectFormSubmission,
     handleTodoFormSubmission,
     loadLocalStorage,
-    addTodoToProject,
-    handleTodoCheck, useTodoOption
+    handleTodoCheck,
+    useTodoOption,
+    confirmProjectDelete,
 } from './tools.js';
 import completesvg from './assets/complete.svg';
 import copysvg from './assets/copy.svg';
@@ -182,7 +182,7 @@ function buildProjectCard(project){
         delBtn.classList.add('del-btn', 'btn');
         delBtn.dataset.id = project.id;
         delBtn.addEventListener('click',  async (e) => {
-        const confirm = await confirmDelete(project);
+        const confirm = await confirmProjectDelete(project);
             if (confirm.isConfirmed){
                 deleteProject(e.target.dataset.id);
                 removeDOMCard(e.target.parentElement.parentElement);
@@ -456,7 +456,7 @@ function buildTodoOptions(){
         s.innerHTML = btn.img;
         b.id = `todo-${btn.name}`;
         b.classList.add('btn','todo-option');
-        b.addEventListener("click", (e) => {useTodoOption(e);})
+        b.addEventListener("click",  (e) => {useTodoOption(e);})
         b.append(s);
         options.append(b);
     });
