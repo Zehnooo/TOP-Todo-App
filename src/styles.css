@@ -39,7 +39,7 @@
 
 body {
     background-color: var(--bodybg);
-    color: #343434;
+    color: var(--text);
 }
 
 @font-face {
@@ -306,7 +306,7 @@ header h1 {
     opacity: 1;
 }
 
-.dash-top-inputs label, .dash-top-bar form div label, #new-todo-form div label {
+.dash-top-inputs label, .dash-top-bar form div label {
     min-width: 0;
     width: stretch;
     max-width: 400px;
@@ -382,8 +382,8 @@ header h1 {
     max-width: 300px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1.2em;
+    justify-content: center;
+    gap: 0;
     font-size: .8rem;
     font-weight: 600;
     color: var(--blue);
@@ -394,19 +394,20 @@ header h1 {
 #new-todo-form div label span {
     width: 100%;
     text-align: left;
+    padding: .6em;
 }
 
 .todo-input {
-    width: 100%;
-    padding: .4em;
-    border: solid 1px var(--text-1);
+    padding: .6em;
+    border: none;
     outline: none;
     border-radius: 1rem;
     background-color: var(--bodybg);
     color: var(--text);
     font-size: .8rem;
     font-weight: 400;
-    min-width: 200px;
+    min-width: 75px;
+    field-sizing: content;
 }
 body.dark .todo-input[type='datetime-local']::-webkit-calendar-picker-indicator {
     filter: invert(1);

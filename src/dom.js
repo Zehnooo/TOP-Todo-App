@@ -781,6 +781,7 @@ function buildModal(){
 
 function handleTodoModal(todo){
     const modal = buildModal();
+    modal.dataset.project_id = todo.project_id;
     const container = modal.querySelector('#cust-modal-container');
     container.append(buildTodoModalContent(todo));
     const closeBtn = document.createElement('button');
