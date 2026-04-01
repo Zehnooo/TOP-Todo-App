@@ -522,6 +522,7 @@ function handleNewProjectForm(){
         const wrap = document.createElement('div');
         wrap.id = 'new-project-form-wrap';
         let form = buildNewProjectForm();
+        if (!form) return;
         wrap.append(form);
         head.append(wrap);
         setTimeout(() => wrap.classList.add('reveal'), 25);
@@ -781,7 +782,7 @@ function buildModal(){
 
 function handleTodoModal(todo){
     const modal = buildModal();
-    modal.dataset.project_id = todo.project_id;
+    modal.dataset.todo_id = todo.id;
     const container = modal.querySelector('#cust-modal-container');
     container.append(buildTodoModalContent(todo));
     const closeBtn = document.createElement('button');
@@ -837,6 +838,8 @@ function buildTodoSection(arr, title) {
     const header = document.createElement('div');
     const sectionTitle = createBasicElement('h3', title);
     const newBtn = createBasicElement('button', title === 'Notes' ? 'Note' : 'List Item');
+    newBtn.addEventListener('click', () => {handleTodoSectionForm(title.toLowerCase());})
+
     const plus = document.createElement('span');
         plus.innerHTML = plussvg;
     newBtn.prepend(plus);
@@ -847,4 +850,30 @@ function buildTodoSection(arr, title) {
     arr?.length > 0 ? arr.forEach(item => { container.appendChild(createBasicElement('p', String(item))) }) : container.appendChild(buildPlaceholder('No items found'));
 
     return container;
+}
+
+function handleTodoSectionForm(title){
+    console.log(title);
+    let head = document.querySelector(`.cust-modal-${title}`).firstElementChild;
+    console.log(head);
+    let wrap = document.querySelector(`#cust-modal-${title}-form-wrap`);
+    if (!wrap){
+        const wrap = document.createElement('div');
+        wrap.id = `#cust-modal-${title}-form-wrap`;
+        let form = buildTodoSectionForm();
+        if (!form) {
+            console.log('no form')
+            return
+        }
+        wrap.append(form);
+        head.append(wrap);
+        setTimeout(() => wrap.classList.add('reveal'), 25);
+    } else {
+        wrap.classList.remove('reveal');
+        setTimeout(() => wrap.remove(), 200);
+    }
+}
+
+function buildTodoSectionForm(){
+    return null;
 }

@@ -830,7 +830,7 @@ select.todo-input {
 
 .selected {
     background-color: var(--blue) !important;
-    color: var(--text) !important;
+    color: white !important;
     box-shadow: var(--smlshadow);
     cursor: default;
 }
@@ -840,7 +840,7 @@ select.todo-input {
 }
 
 .selected span {
-    color: var(--text) !important;
+    color: white !important;
 }
 
 .priority {
