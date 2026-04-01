@@ -819,15 +819,19 @@ function buildTodoModalContent(todo){
     status.append(cDate, dDate, prio, completed);
 
     const section = document.createElement('div');
-    section.classList.add(`${prefix}main`);
+        section.classList.add(`${prefix}main`);
     const noteCon = document.createElement('div');
-    const noteHead = createBasicElement('h3', 'Notes');
+        noteCon.classList.add(`${prefix}notes`);
+
+    const noteHead = document.createElement('div');
+    const noteHeader = createBasicElement('h3', 'Notes');
     const noteBtn = createBasicElement('button', 'New Note');
     const plus = document.createElement('span');
     plus.innerHTML = plussvg;
     noteBtn.prepend(plus);
     noteBtn.classList.add('new-btn', 'btn');
-    noteCon.append(noteHead, noteBtn);
+    noteHead.append(noteHeader, noteBtn);
+    noteCon.append(noteHead);
     todo?.notes?.length > 0 ? todo.notes.forEach(note => { noteCon.appendChild(createBasicElement('p', String(note))) }) : noteCon.appendChild(buildPlaceholder('No Notes'))
 
 

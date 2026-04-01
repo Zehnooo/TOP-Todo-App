@@ -30,7 +30,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Datatype', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -39,8 +39,8 @@ body {
 }
 
 @font-face {
-    font-family: 'Datatype';
-    src: url('./assets/font.ttf');
+    font-family: 'Inter';
+    src: url('./assets/Inter.ttf');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -223,6 +223,7 @@ header h1 {
 
 .sidebar-list li:hover:not(.selected) {
     box-shadow: var(--smlshadow);
+    color: var(--text);
 }
 
 .sidebar-list-container li:active, .sidebar-list li:focus {
@@ -698,6 +699,7 @@ select.todo-input {
 
 .project-page-todo-table tbody tr {
     color: var(--text);
+    cursor: pointer;
 }
 
 .todo-checkbox {
@@ -1002,4 +1004,16 @@ select.todo-input {
 }
 .close-modal:hover {
     color: var(--text);
+}
+
+.cust-modal-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cust-modal-notes div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
