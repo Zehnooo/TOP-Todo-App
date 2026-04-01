@@ -825,16 +825,15 @@ function buildTodoModalContent(todo){
     const noteSection = buildTodoSection(todo.notes, 'Notes');
     const checklistSection = buildTodoSection(todo.checklist, 'Checklist');
 
-    section.append(head, noteSection, checklistSection);
+    section.append(head, checklistSection, noteSection);
     container.append(status, section);
     return container
 }
 
 function buildTodoSection(arr, title) {
-
     const container = document.createElement('div');
-    container.classList.add(`cust-modal-${title.toLowerCase()}`);
-
+    container.classList.add('cust-modal-section');
+    container.id = `cust-modal-${title.toLowerCase()}`;
     const header = document.createElement('div');
     const sectionTitle = createBasicElement('h3', title);
     const newBtn = createBasicElement('button', title === 'Notes' ? 'Note' : 'List Item');
@@ -853,20 +852,19 @@ function buildTodoSection(arr, title) {
 }
 
 function handleTodoSectionForm(title){
-    console.log(title);
-    let head = document.querySelector(`.cust-modal-${title}`).firstElementChild;
-    console.log(head);
+    let head = document.querySelector(`#cust-modal-${title}`).firstElementChild;
     let wrap = document.querySelector(`#cust-modal-${title}-form-wrap`);
     if (!wrap){
         const wrap = document.createElement('div');
-        wrap.id = `#cust-modal-${title}-form-wrap`;
-        let form = buildTodoSectionForm();
+        wrap.classList.add('form-wrap');
+        wrap.id = `cust-modal-${title}-form-wrap`;
+        let form = buildTodoSectionForm(title.toLowerCase());
         if (!form) {
             console.log('no form')
             return
         }
         wrap.append(form);
-        head.append(wrap);
+        head.after(wrap);
         setTimeout(() => wrap.classList.add('reveal'), 25);
     } else {
         wrap.classList.remove('reveal');
@@ -874,6 +872,20 @@ function handleTodoSectionForm(title){
     }
 }
 
-function buildTodoSectionForm(){
-    return null;
+function buildTodoSectionForm(title){
+    const f = document.createElement('form');
+    f.id = `cust-modal-${title}-form`;
+    f.classList.add('cust-modal-form');
+    f.addEventListener('submit', (e) => {
+        e.preventDefault();
+        console.log(e.target);
+    });
+    const ta = document.createElement('input');
+        ta.type = 'textarea';
+        ta.placeholder = title === 'notes' ? 'Buy floor cleaner for mop' : 'Mop floor';
+        ta.classList.add('modal-input');
+    const b = createSaveButton();
+
+    f.append(ta, b);
+    return f ? f : null;
 }
