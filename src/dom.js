@@ -98,7 +98,7 @@ function buildDefaultDash(){
         filter.placeholder = 'Project name...';
 
     const newBtn = document.createElement('button');
-        newBtn.textContent = 'New Project';
+        newBtn.textContent = 'Project';
         newBtn.classList.add('btn', 'new-btn');
         newBtn.addEventListener('click', () => handleNewProjectForm());
 
@@ -354,11 +354,11 @@ function buildProjectPageHead(project){
 
     const newTodoBtn = document.createElement('button');
     newTodoBtn.classList.add('new-btn', 'btn');
-    newTodoBtn.textContent = 'New Todo';
+    newTodoBtn.textContent = 'Todo';
     newTodoBtn.addEventListener('click', () => handleTodoForm());
 
     const plus = document.createElement('span');
-    plus.innerHTML = '+';
+    plus.innerHTML = plussvg;
 
 
     details.append(title, date, desc);
@@ -716,8 +716,8 @@ function createTodoRow(todo){
 
     const priority = document.createElement('td');
     const span = document.createElement('span');
-    console.log(todo.priority);
-    span.classList.add(`${todo.priority}-priority`, 'priority');
+
+    span.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
     span.textContent = todo.priority;
 
     priority.append(span);
@@ -801,15 +801,14 @@ function buildTodoModalContent(todo){
 
     const title = createBasicElement('h2', String(todo.title));
     title.classList.add(`${prefix}title`)
-    const cDate = createBasicElement('p', `Created On: ${String(todo.created)}`);
+    const cDate = createBasicElement('p', `Created: ${String(todo.created)}`);
     cDate.classList.add(`${prefix}cdate`);
-    const dDate = createBasicElement('p', `Due On: ${String(todo.due_date)}`);
+    const dDate = createBasicElement('p', `Due: ${String(todo.due_date)}`);
     dDate.classList.add(`${prefix}ddate`);
     const desc = createBasicElement('p', String(todo.description));
     desc.classList.add(`${prefix}desc`);
     const prio = createBasicElement('span', String(todo.priority));
-
-    prio.classList.add(`${todo.priority}-priority`, 'priority');
+    prio.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
     const completed = createBasicElement('span', String(todo.isCompleted ? 'Complete' : 'Incomplete'));
     completed.classList.add(`${prefix}check`);
     todo.isCompleted ? completed.classList.add('completed') : completed.classList.add('incomplete');
@@ -820,23 +819,31 @@ function buildTodoModalContent(todo){
 
     const section = document.createElement('div');
         section.classList.add(`${prefix}main`);
-    const noteCon = document.createElement('div');
-        noteCon.classList.add(`${prefix}notes`);
 
-    const noteHead = document.createElement('div');
-    const noteHeader = createBasicElement('h3', 'Notes');
-    const noteBtn = createBasicElement('button', 'New Note');
-    const plus = document.createElement('span');
-    plus.innerHTML = plussvg;
-    noteBtn.prepend(plus);
-    noteBtn.classList.add('new-btn', 'btn');
-    noteHead.append(noteHeader, noteBtn);
-    noteCon.append(noteHead);
-    todo?.notes?.length > 0 ? todo.notes.forEach(note => { noteCon.appendChild(createBasicElement('p', String(note))) }) : noteCon.appendChild(buildPlaceholder('No Notes'))
+    const noteSection = buildTodoSection(todo.notes, 'Notes');
+    const checklistSection = buildTodoSection(todo.checklist, 'Checklist');
 
-
-
-    section.append(status, noteCon);
-    container.append(head, section);
+    section.append(head, noteSection, checklistSection);
+    container.append(status, section);
     return container
+}
+
+function buildTodoSection(arr, title) {
+
+    const container = document.createElement('div');
+    container.classList.add(`cust-modal-${title.toLowerCase()}`);
+
+    const header = document.createElement('div');
+    const sectionTitle = createBasicElement('h3', title);
+    const newBtn = createBasicElement('button', title === 'Notes' ? 'Note' : 'List Item');
+    const plus = document.createElement('span');
+        plus.innerHTML = plussvg;
+    newBtn.prepend(plus);
+    newBtn.classList.add('new-btn', 'btn');
+    header.append(sectionTitle, newBtn);
+    container.append(header);
+
+    arr?.length > 0 ? arr.forEach(item => { container.appendChild(createBasicElement('p', String(item))) }) : container.appendChild(buildPlaceholder('No items found'));
+
+    return container;
 }

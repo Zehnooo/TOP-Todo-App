@@ -9,7 +9,7 @@ export function createTodo(project_id, title, description, due_date, priority, i
         isCompleted,
         created: currentDate('date-time'),
         due_date: formatDate(due_date,'date-time'),
-        priority: String(priority).toLowerCase(),
+        priority: String(priority),
         notes: [],
         checklist: [],
     };

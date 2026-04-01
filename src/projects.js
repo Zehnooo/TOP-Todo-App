@@ -1,5 +1,4 @@
 import { currentDate } from './date.js';
-import Swal from 'sweetalert2';
 
 const allProjects = [];
 
