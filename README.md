@@ -1,6 +1,10 @@
-The Odin Project - Todo App
-!-- This is still a work in progress so if you are viewing this for some reason please don't expect a finished product here --!
-Live WIP Build: [zehnooo.github.io/TOP-Todo-App/](https://zehnooo.github.io/TOP-Todo-App/)
+The Odin Project - Todo App  
+
+!-- This is still a work in progress so if you are viewing this for some reason please don't expect a finished product here --!  
+
+
+Live WIP Build: [zehnooo.github.io/TOP-Todo-App/](https://zehnooo.github.io/TOP-Todo-App/)  
+
 
 This is my version of a Todo App for The Odin Project.
 - Saves in local storage per the curriculum
