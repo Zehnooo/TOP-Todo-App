@@ -1,6 +1,6 @@
 import randomcolor from 'randomcolor';
 import {buildPlaceholder} from './dom.js';
-import {createProject, loadProjectStorage, removeTodoFromProject} from "./projects.js";
+import {createProject, loadProjectStorage, removeTodoFromProject, addItemToTodo, updateProjectStorage} from "./projects.js";
 import { createTodo } from "./todos.js";
 import Swal from "sweetalert2";
 
@@ -54,19 +54,33 @@ export function handleProjectFormSubmission(e){
     }
 }
 
-export function handleTodoFormSubmission(e, id){
+export function handleTodoFormSubmission(e, projId){
     e.preventDefault();
     const data = collectFormData(e);
     const title = data.get('title').trim() || null;
     const desc = data.get('desc').trim() || null;
     const due = data.get('due-date') || null;
     const prio = data.get('priority') || null;
-    if ( title === '' || desc === '' || prio === String(0) || prio === null)  {
+    if ( title === null || desc === null || prio === String(0) || prio === null)  {
         fireMissingDataError();
-    } else {
-        document.querySelector('#new-todo-form').reset();
-        return createTodo(id, title, desc, due, prio);
+        return;
     }
+        document.querySelector('#new-todo-form').reset();
+        return createTodo(projId, title, desc, due, prio);
+
+}
+
+export function handleModalFormSubmission(e, todoId, title) {
+    e.preventDefault();
+    const data = collectFormData(e);
+    const value = data.get('value').trim() || null;
+    if (value === '' || value === null) {
+        fireMissingDataError();
+        return;
+    }
+    const newItem = addItemToTodo(todoId, title, value);
+    updateProjectStorage();
+    return newItem;
 }
 
 function collectFormData(e){
@@ -75,11 +89,13 @@ function collectFormData(e){
 
 function fireMissingDataError(){
     const theme = getTheme();
+    const modal = document.querySelector('#cust-modal');
     Swal.fire({
         title: 'Missing Data',
         icon: 'error',
         text: 'Please fill out all options before saving',
-        theme: String(theme)
+        theme: String(theme),
+        target: modal || document.body
     });
 }
 

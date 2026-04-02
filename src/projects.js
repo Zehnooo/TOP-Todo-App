@@ -78,3 +78,11 @@ export function removeTodoFromProject(todoId){
     return null;
 }
 
+export function addItemToTodo(todoId, itemType, itemValue) {
+    const x = findTodoInProjects(todoId);
+    const newItem = String(itemValue);
+    if (Object.hasOwn(x.todo, String(itemType))){
+        x.todo[String(itemType)].push(newItem);
+    }
+    return newItem;
+}

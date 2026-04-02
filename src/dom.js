@@ -8,6 +8,7 @@ import {
     validateContent,
     handleProjectFormSubmission,
     handleTodoFormSubmission,
+    handleModalFormSubmission,
     loadLocalStorage,
     handleTodoCheck,
     useTodoOption,
@@ -510,7 +511,6 @@ function createSaveButton(){
     btn.type = 'submit';
     const span = document.createElement('span');
     span.innerHTML = savesvg;
-
     btn.prepend(span);
     return btn;
 }
@@ -800,7 +800,6 @@ function buildTodoModalContent(todo){
     const status = document.createElement('div');
     status.classList.add(`${prefix}status`)
 
-
     const title = createBasicElement('h2', String(todo.title));
     title.classList.add(`${prefix}title`)
     const cDate = createBasicElement('p', `Created: ${String(todo.created)}`);
@@ -815,16 +814,13 @@ function buildTodoModalContent(todo){
     completed.classList.add(`${prefix}check`);
     todo.isCompleted ? completed.classList.add('completed') : completed.classList.add('incomplete');
 
-
     head.append(title, desc);
     status.append(cDate, dDate, prio, completed);
 
     const section = document.createElement('div');
         section.classList.add(`${prefix}main`);
-
     const noteSection = buildTodoSection(todo.notes, 'Notes');
     const checklistSection = buildTodoSection(todo.checklist, 'Checklist');
-
     section.append(head, checklistSection, noteSection);
     container.append(status, section);
     return container
@@ -877,15 +873,24 @@ function buildTodoSectionForm(title){
     f.id = `cust-modal-${title}-form`;
     f.classList.add('cust-modal-form');
     f.addEventListener('submit', (e) => {
-        e.preventDefault();
-        console.log(e.target);
+        const todoId = document.querySelector('#cust-modal').dataset.todo_id;
+        handleModalFormSubmission(e, todoId, title);
+        f.reset();
     });
-    const ta = document.createElement('input');
-        ta.type = 'textarea';
-        ta.placeholder = title === 'notes' ? 'Buy floor cleaner for mop' : 'Mop floor';
-        ta.classList.add('modal-input');
-    const b = createSaveButton();
+    let inp;
+    if (title === 'notes') {
+        inp = document.createElement('textarea');
+        inp.classList.add('ta');
+        inp.placeholder = 'Task prerequisites, ideas, findings, etc.';
 
-    f.append(ta, b);
+    } else {
+        inp = document.createElement('input');
+        inp.placeholder = 'List of things to complete for the todo';
+    }
+    inp.name = 'value';
+    inp.id = `cust-modal-${title}-input`;
+    inp.classList.add('modal-input');
+    const b = createSaveButton();
+    f.append(inp, b);
     return f ? f : null;
 }
