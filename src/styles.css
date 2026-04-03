@@ -1019,7 +1019,7 @@ select.todo-input {
     position: relative;
     background: var(--bodybg);
     color: var(--text);
-    width: 75%;
+    width: 80vw;
     height: max-content;
     margin: auto;
     border: none;
@@ -1032,6 +1032,8 @@ select.todo-input {
 #cust-modal-container {
     margin: 0 auto;
     padding: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .cust-modal-main {
@@ -1157,17 +1159,18 @@ select.todo-input {
 }
 
 #cust-modal-checklist-content ol {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 200px));
+    display: flex;
+    flex-direction: column;
     gap: .8rem;
 }
 #cust-modal-checklist-content ol li {
     list-style-position: inside;
 }
 #cust-modal-checklist-content ol li::marker {
-    font-size: .8em;
+    font-size: .8rem;
     color: var(--blue);
     height: 100%;
+    padding: 1rem;
 }
 .cust-modal-list-item p {
     height: auto;
@@ -1176,11 +1179,26 @@ select.todo-input {
 .cust-modal-list-item {
     box-shadow: var(--smlshadow);
     background-color: var(--parentbg-light);
-    padding: .6em;
+    padding: 1.2rem;
     border-radius: 1rem;
     text-wrap: balance;
     width: 100%;
-    display: inline-flex;
-    justify-content: space-between;
+    height: auto;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+li.cust-modal-list-item {
+    display: list-item;
+}
+
+.checklist-item-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 2em);
+    gap: 0.5rem;
+    margin-left: .6em;
 }

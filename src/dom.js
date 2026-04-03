@@ -768,10 +768,11 @@ function removePlaceholder(selector) {
 
 function buildModal(){
     const dialog = document.createElement('dialog');
-    dialog.id = 'cust-modal';
-    dialog.addEventListener('close', () => dialog.remove())
+        dialog.id = 'cust-modal';
+        dialog.addEventListener('close', () => dialog.remove());
     const container = document.createElement('div');
-    container.id = 'cust-modal-container';
+        container.id = 'cust-modal-container';
+        container.classList.add('scroll');
     dialog.append(container);
     return dialog
 }
@@ -914,15 +915,19 @@ function createNoteCard(item){
 }
 
 function createChecklistCard(item){
-    const i = createBasicElement('li',String(item.value));
+    const i = document.createElement('li');
         i.classList.add('cust-modal-list-item');
         i.dataset.id = item.id;
+    const wrapper = document.createElement('span');
+        wrapper.classList.add('checklist-item-content');
+    const text = document.createTextNode(String(item.value));
     const b = buildDeleteButton();
         b.addEventListener('click', async () => {
             const deleted = await handleTodoItemDelete(item);
             if (deleted) removeTodoItemCard(item.id);
         });
-    i.append(b);
+    wrapper.append(text, b);
+    i.append(wrapper);
     return i;
 }
 function handleTodoSectionForm(title){
