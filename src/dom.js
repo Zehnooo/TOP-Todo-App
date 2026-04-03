@@ -12,7 +12,7 @@ import {
     loadLocalStorage,
     handleTodoCheck,
     useTodoOption,
-    confirmProjectDelete,
+    confirmProjectDelete, fireGenericError,
 } from './tools.js';
 import completesvg from './assets/complete.svg';
 import copysvg from './assets/copy.svg';
@@ -841,12 +841,88 @@ function buildTodoSection(arr, title) {
     newBtn.classList.add('new-btn', 'btn');
     header.append(sectionTitle, newBtn);
     container.append(header);
-
+    if (arr?.length > 0) {
+        const content = buildTodoListContent(arr, title.toLowerCase());
+        container.append(content);
+    } else {
+        const placeholder = buildPlaceholder('No items found');
+        placeholder.id = `cust-modal-${title.toLowerCase()}-placeholder`;
+        container.appendChild(placeholder);
+    }
+    /*
     arr?.length > 0 ? arr.forEach(item => { container.appendChild(createBasicElement('p', String(item))) }) : container.appendChild(buildPlaceholder('No items found'));
+     */
 
     return container;
 }
 
+function buildTodoListContent(arr, title) {
+    const container = document.createElement('div');
+    container.id = `cust-modal-${title}-content`;
+    container.classList.add('cust-modal-content');
+    switch(title){
+        case 'notes':
+        arr.forEach(item => {
+            const n = createNoteCard(item);
+            container.appendChild(n);
+        });
+            break;
+        case 'checklist':
+        const list = document.createElement('ol');
+        arr.forEach(item => {
+            const i = createChecklistCard(item);
+            list.appendChild(i);
+        });
+            container.append(list);
+            break;
+    }
+    return container;
+}
+
+function addNewTodoListContent(item, title){
+    const section = document.querySelector(`#cust-modal-${title}-content`);
+    if (!section) {
+        try {
+            removePlaceholder(`#cust-modal-${title}-placeholder`);
+            document.querySelector(`#cust-modal-${title.toLowerCase()}`).append(buildTodoListContent([item], title));
+            return;
+        } catch (err) {
+            fireGenericError(err);
+            return;
+        }
+    }
+    switch(title){
+        case 'notes':
+            try {
+                const n = createNoteCard(item);
+                section.appendChild(n);
+            } catch (err) { fireGenericError(err); return; }
+            break;
+        case 'checklist':
+            try {
+                const i = createChecklistCard(item);
+                section.firstElementChild.appendChild(i);
+            } catch (err) { fireGenericError(err); return; }
+            break;
+    }
+}
+function createNoteCard(item){
+    const w = document.createElement('pre');
+    w.dataset.id = item.id;
+    const p = createBasicElement('p', String(item.value));
+    w.classList.add('cust-modal-list-item');
+    w.append(p);
+    w.append(buildDeleteButton());
+    return w;
+}
+
+function createChecklistCard(item){
+    const i = createBasicElement('li',String(item.value));
+    i.append(buildDeleteButton());
+    i.classList.add('cust-modal-list-item');
+    i.dataset.id = item.id;
+    return i;
+}
 function handleTodoSectionForm(title){
     let head = document.querySelector(`#cust-modal-${title}`).firstElementChild;
     let wrap = document.querySelector(`#cust-modal-${title}-form-wrap`);
@@ -856,7 +932,7 @@ function handleTodoSectionForm(title){
         wrap.id = `cust-modal-${title}-form-wrap`;
         let form = buildTodoSectionForm(title.toLowerCase());
         if (!form) {
-            console.log('no form')
+            console.log('no form');
             return
         }
         wrap.append(form);
@@ -874,7 +950,8 @@ function buildTodoSectionForm(title){
     f.classList.add('cust-modal-form');
     f.addEventListener('submit', (e) => {
         const todoId = document.querySelector('#cust-modal').dataset.todo_id;
-        handleModalFormSubmission(e, todoId, title);
+        const newItem = handleModalFormSubmission(e, todoId, title);
+        addNewTodoListContent(newItem, title);
         f.reset();
     });
     let inp;
@@ -893,4 +970,11 @@ function buildTodoSectionForm(title){
     const b = createSaveButton();
     f.append(inp, b);
     return f ? f : null;
+}
+
+function buildDeleteButton(){
+    const b = document.createElement('button');
+    b.innerHTML = deletesvg;
+    b.classList.add('del-btn', 'btn');
+    return b;
 }

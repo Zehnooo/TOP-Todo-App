@@ -1,4 +1,4 @@
-import { format, addDays } from 'date-fns';
+import { format } from 'date-fns';
 
 export function formatDate(date, type) {
     switch (type) {
@@ -11,8 +11,4 @@ export function formatDate(date, type) {
 
 export function currentDate(type){
     return formatDate(new Date(), type);
-}
-
-export function dueDate(days){
-    return formatDate(addDays(new Date(), Number(days)), 'date');
 }

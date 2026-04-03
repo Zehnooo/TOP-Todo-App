@@ -1,7 +1,7 @@
 import randomcolor from 'randomcolor';
 import {buildPlaceholder} from './dom.js';
-import {createProject, loadProjectStorage, removeTodoFromProject, addItemToTodo, updateProjectStorage} from "./projects.js";
-import { createTodo } from "./todos.js";
+import {createProject, loadProjectStorage, removeTodoFromProject, updateProjectStorage} from "./projects.js";
+import {createTodo, createTodoItem, addItemToTodo} from "./todos.js";
 import Swal from "sweetalert2";
 
 export function getColor(){
@@ -78,7 +78,8 @@ export function handleModalFormSubmission(e, todoId, title) {
         fireMissingDataError();
         return;
     }
-    const newItem = addItemToTodo(todoId, title, value);
+    const newItem = createTodoItem(todoId, title, value);
+    addItemToTodo(newItem);
     updateProjectStorage();
     return newItem;
 }
@@ -99,6 +100,19 @@ function fireMissingDataError(){
     });
 }
 
+export function fireGenericError(error){
+    console.log(Object.entries(error));
+    const theme = getTheme();
+    const modal = document.querySelector('#cust-modal');
+    Swal.fire({
+        title: 'Oops...',
+        icon: 'error',
+        text: `An error occurred while processing your request: ${error.message}`,
+        theme: String(theme),
+        target: modal || document.body
+    });
+
+}
 
 const selectedTodos = [];
 export function handleTodoCheck(e){

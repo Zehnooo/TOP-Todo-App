@@ -16,7 +16,20 @@ export function createTodo(project_id, title, description, due_date, priority, i
     };
 }
 
-export function createNote(todoId){
-    const todo = findTodoInProjects(todoId);
+export function createTodoItem(todoId, itemType, itemValue){
+    return {
+        todo_id: todoId,
+        id: crypto.randomUUID(),
+        date_created: currentDate('date-time'),
+        value: String(itemValue),
+        type: String(itemType)
+    }
+}
 
+export function addItemToTodo(item) {
+    const x = findTodoInProjects(item.todo_id).todo;
+    if (Object.hasOwn(x, String(item.type))){
+        x[String(item.type)].push(item);
+    }
+    return item;
 }
