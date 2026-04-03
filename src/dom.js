@@ -22,6 +22,7 @@ import plussvg from './assets/plus.svg';
 import savesvg from './assets/save.svg';
 import homesvg from './assets/home.svg';
 import moonsvg from './assets/moon.svg';
+import {handleTodoItemDelete} from "./todos.js";
 
 export const buildDom = (() => {
     loadLocalStorage();
@@ -99,7 +100,6 @@ function buildDefaultDash(){
         filter.placeholder = 'Project name...';
 
     const newBtn = document.createElement('button');
-        newBtn.textContent = 'Project';
         newBtn.classList.add('btn', 'new-btn');
         newBtn.addEventListener('click', () => handleNewProjectForm());
 
@@ -354,13 +354,10 @@ function buildProjectPageHead(project){
         p3.append(incompleteTodos);
 
     const newTodoBtn = document.createElement('button');
-    newTodoBtn.classList.add('new-btn', 'btn');
-    newTodoBtn.textContent = 'Todo';
-    newTodoBtn.addEventListener('click', () => handleTodoForm());
-
+        newTodoBtn.classList.add('new-btn', 'btn');
+        newTodoBtn.addEventListener('click', () => handleTodoForm());
     const plus = document.createElement('span');
-    plus.innerHTML = plussvg;
-
+        plus.innerHTML = plussvg;
 
     details.append(title, date, desc);
     newTodoBtn.prepend(plus);
@@ -506,7 +503,6 @@ function buildNewProjectForm(){
 
 function createSaveButton(){
     const btn = document.createElement('button');
-    btn.textContent = 'Save';
     btn.classList.add('btn', 'save-btn');
     btn.type = 'submit';
     const span = document.createElement('span');
@@ -832,7 +828,7 @@ function buildTodoSection(arr, title) {
     container.id = `cust-modal-${title.toLowerCase()}`;
     const header = document.createElement('div');
     const sectionTitle = createBasicElement('h3', title);
-    const newBtn = createBasicElement('button', title === 'Notes' ? 'Note' : 'List Item');
+    const newBtn = createBasicElement('button');
     newBtn.addEventListener('click', () => {handleTodoSectionForm(title.toLowerCase());})
 
     const plus = document.createElement('span');
@@ -849,10 +845,6 @@ function buildTodoSection(arr, title) {
         placeholder.id = `cust-modal-${title.toLowerCase()}-placeholder`;
         container.appendChild(placeholder);
     }
-    /*
-    arr?.length > 0 ? arr.forEach(item => { container.appendChild(createBasicElement('p', String(item))) }) : container.appendChild(buildPlaceholder('No items found'));
-     */
-
     return container;
 }
 
@@ -912,15 +904,25 @@ function createNoteCard(item){
     const p = createBasicElement('p', String(item.value));
     w.classList.add('cust-modal-list-item');
     w.append(p);
-    w.append(buildDeleteButton());
+    const b = buildDeleteButton();
+    b.addEventListener('click', async () => {
+        const deleted = await handleTodoItemDelete(item);
+        if (deleted) removeTodoItemCard(item.id);
+    });
+    w.append(b);
     return w;
 }
 
 function createChecklistCard(item){
     const i = createBasicElement('li',String(item.value));
-    i.append(buildDeleteButton());
-    i.classList.add('cust-modal-list-item');
-    i.dataset.id = item.id;
+        i.classList.add('cust-modal-list-item');
+        i.dataset.id = item.id;
+    const b = buildDeleteButton();
+        b.addEventListener('click', async () => {
+            const deleted = await handleTodoItemDelete(item);
+            if (deleted) removeTodoItemCard(item.id);
+        });
+    i.append(b);
     return i;
 }
 function handleTodoSectionForm(title){
@@ -951,8 +953,9 @@ function buildTodoSectionForm(title){
     f.addEventListener('submit', (e) => {
         const todoId = document.querySelector('#cust-modal').dataset.todo_id;
         const newItem = handleModalFormSubmission(e, todoId, title);
-        addNewTodoListContent(newItem, title);
         f.reset();
+        if (!newItem) return;
+        addNewTodoListContent(newItem, title);
     });
     let inp;
     if (title === 'notes') {
@@ -977,4 +980,8 @@ function buildDeleteButton(){
     b.innerHTML = deletesvg;
     b.classList.add('del-btn', 'btn');
     return b;
+}
+
+function removeTodoItemCard(id){
+    document.querySelector(`[data-id='${id}']`).remove();
 }

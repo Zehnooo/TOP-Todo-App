@@ -1,16 +1,23 @@
 import randomcolor from 'randomcolor';
 import {buildPlaceholder} from './dom.js';
-import {createProject, loadProjectStorage, removeTodoFromProject, updateProjectStorage} from "./projects.js";
+import {createProject, removeTodoFromProject} from "./projects.js";
 import {createTodo, createTodoItem, addItemToTodo} from "./todos.js";
+import {
+    initializeStorage,
+    saveProjectsToStorage,
+    saveTheme,
+    getTheme
+} from "./storage.js";
 import Swal from "sweetalert2";
+
+export { saveTheme, getTheme };
 
 export function getColor(){
     return randomcolor({luminosity: 'bright', hue: 'random'});
 }
 
 export function loadLocalStorage(){
-    loadProjectStorage();
-    localStorage.removeItem('user-todos');
+    initializeStorage();
 }
 
 export function sumTodos(projects, type) {
@@ -22,15 +29,6 @@ export function sumTodos(projects, type) {
         case 'all':
             return projects.reduce((sum, pj) => sum + (pj?.todos?.length || 0), 0);
     }
-}
-
-export function saveTheme(){
-    const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-    localStorage.setItem('theme', theme);
-}
-
-export function getTheme(){
-    return localStorage.getItem('theme') || 'light';
 }
 
 export function validateContent(arr, contentName){
@@ -74,14 +72,16 @@ export function handleModalFormSubmission(e, todoId, title) {
     e.preventDefault();
     const data = collectFormData(e);
     const value = data.get('value').trim() || null;
+    console.log('value', value);
     if (value === '' || value === null) {
         fireMissingDataError();
-        return;
+        return false;
+    } else {
+        const newItem = createTodoItem(todoId, title, value);
+        addItemToTodo(newItem);
+        saveProjectsToStorage();
+        return newItem;
     }
-    const newItem = createTodoItem(todoId, title, value);
-    addItemToTodo(newItem);
-    updateProjectStorage();
-    return newItem;
 }
 
 function collectFormData(e){
@@ -101,7 +101,6 @@ function fireMissingDataError(){
 }
 
 export function fireGenericError(error){
-    console.log(Object.entries(error));
     const theme = getTheme();
     const modal = document.querySelector('#cust-modal');
     Swal.fire({
@@ -152,27 +151,35 @@ export async function useTodoOption(e) {
     }
 }
 
-async function confirmDelete(str){
+export async function confirmDelete(str){
     const prompt = String(str);
+    const theme = getTheme();
+    const modal = document.querySelector('#cust-modal');
     return Swal.fire({
         title: prompt,
         icon: 'warning',
+        theme: String(theme),
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#007FFF',
         confirmButtonText: 'DELETE',
+        target: modal || document.body
     });
 }
 
 export async function confirmProjectDelete(project){
-    let prompt = `Are you sure you want to delete <span style="color: red; font-weight: 800;">${project.title}</span>?`
+    let prompt = `Are you sure you want to delete <span style="color: red; font-weight: 800;">${project.title}</span>?`;
+    const modal = document.querySelector('#cust-modal');
+    const theme = getTheme();
     return Swal.fire({
         title: prompt,
         icon: 'warning',
+        theme: String(theme),
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#007FFF',
         confirmButtonText: 'DELETE',
+        target: modal || document.body
     });
 }
 

@@ -1,27 +1,14 @@
 import { currentDate } from './date.js';
-
-const allProjects = [];
-
-function storeProject(project){
-    allProjects.push(project);
-}
-
-export function updateProjectStorage(){
-     localStorage.setItem('user-projects', JSON.stringify(allProjects));
-}
-
-export function loadProjectStorage(){
-    const projects = JSON.parse(localStorage.getItem('user-projects'));
-    console.log(projects);
-    if (projects) {
-        projects.forEach(pj => {
-            storeProject(pj);
-        });
-    }
-}
+import {
+    getProjectsRef,
+    saveProjectsToStorage,
+    addProjectToMemory,
+    removeProjectFromMemory,
+    reloadStorage
+} from './storage.js';
 
 export function getProjects(){
-    return [...allProjects];
+    return [...getProjectsRef()];
 }
 
 window.getProjects = getProjects;
@@ -34,19 +21,20 @@ export function createProject(title, description){
         todos: [],
         created: currentDate('date-time'),
     }
-    storeProject(project);
-    updateProjectStorage();
+    addProjectToMemory(project);
+    saveProjectsToStorage();
     return project;
 }
 
 export function findProject(projectId){
-    return allProjects.find(pj => pj.id === projectId);
+    return getProjectsRef().find(pj => pj.id === projectId);
 }
 
 export function deleteProject(projectId){
     const project = findProject(projectId);
-    allProjects.splice(allProjects.indexOf(project), 1);
-    updateProjectStorage();
+    const projects = getProjectsRef();
+    removeProjectFromMemory(projects.indexOf(project));
+    saveProjectsToStorage();
     return project;
 }
 
@@ -54,12 +42,12 @@ export function addTodoToProject(todo){
     const project = findProject(todo.project_id);
     if (project) {
         project.todos.push(todo);
-        updateProjectStorage();
+        saveProjectsToStorage();
     }
 }
 
 export function findTodoInProjects(todoId){
-    for (const project of allProjects) {
+    for (const project of getProjectsRef()) {
         const todo = project.todos.find(td => td.id === todoId);
         if (todo) return { project, todo };
     }
@@ -72,7 +60,7 @@ export function removeTodoFromProject(todoId){
         const { project, todo } = result;
         const index = project.todos.indexOf(todo);
         project.todos.splice(index, 1);
-        updateProjectStorage();
+        saveProjectsToStorage();
         return todo;
     }
     return null;

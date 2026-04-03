@@ -1,5 +1,7 @@
 import {currentDate, formatDate} from './date.js';
 import {findTodoInProjects} from './projects.js';
+import {fireGenericError, confirmDelete} from "./tools.js";
+import {saveProjectsToStorage} from "./storage.js";
 
 export function createTodo(project_id, title, description, due_date, priority, isCompleted = false) {
     return {
@@ -32,4 +34,41 @@ export function addItemToTodo(item) {
         x[String(item.type)].push(item);
     }
     return item;
+}
+
+function removeItemFromTodo(arr, itemIndex){
+    console.log('Index removed', itemIndex);
+    return arr.splice(itemIndex, 1);
+}
+
+export async function handleTodoItemDelete(item) {
+    const confirm = await confirmDelete(`Are you sure you want to delete this item?`);
+    if (!confirm.isConfirmed) return false;
+    const todo = findTodoInProjects(item.todo_id).todo;
+    const itemArray = todo[item.type];
+    console.log("Todo to delete from: ", todo);
+    if (!todo) {
+        console.error('Todo not found');
+        return false;
+    }
+    try {
+        const index = getTodoItemIndex(itemArray, item);
+        if (index === null) {
+            console.error('Item not found in todo', JSON.stringify({todo, item}, null, 1));
+            return false;
+        }
+        removeItemFromTodo(itemArray, index);
+        saveProjectsToStorage();
+        console.log(todo);
+        return true;
+    } catch (err) {
+        fireGenericError(err);
+        return false;
+    }
+}
+
+function getTodoItemIndex(arr, item){
+    let i;
+    i = arr?.findIndex(n => n.id === item.id);
+    return i !== undefined && i !== -1 ? i : null;
 }
