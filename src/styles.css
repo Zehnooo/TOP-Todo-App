@@ -824,7 +824,7 @@ select.todo-input {
     justify-content: center;
     align-items: center;
     gap: .5rem;
-    width: 150px;
+    width: auto;
     background: transparent;
 }
 
@@ -1039,8 +1039,7 @@ select.todo-input {
 .cust-modal-main {
     width: 100%;
     height: 100%;
-    margin: 0 auto;
-    padding: 1rem;
+    margin: 1rem auto;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -1055,7 +1054,7 @@ select.todo-input {
     padding: .4rem;
     width: 100%;
     height: auto;
-    background-color: var(--parentbg-light);
+    background-color: var(--parentbg);
     border-radius: 1rem;
 }
 
@@ -1076,7 +1075,7 @@ select.todo-input {
 }
 
 .cust-modal-cdate {
-    color: var(--text-1);
+    color: var(--text);
 }
 
 .cust-modal-ddate {
@@ -1086,10 +1085,11 @@ select.todo-input {
 .close-modal {
     position: absolute;
     top: 0;
-    right: 4px;
+    right: 2px;
     color: var(--red);
     background: transparent;
     transition: color 0.3s ease;
+    font-size: .8rem;
 }
 .close-modal:hover {
     color: var(--text);
@@ -1115,7 +1115,7 @@ select.todo-input {
 }
 
 .cust-modal-form {
-    padding: .6rem;
+    padding: 0;
     gap: .6rem;
     border-radius: 1rem;
     display: flex;
