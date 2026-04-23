@@ -262,18 +262,16 @@ header h1 {
 }
 
 .dash-top-bar {
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     padding: .8rem;
     background-color: var(--parentbg);
     width: 100%;
     border-radius: 1rem;
     height: auto;
     box-shadow: var(--bigshadow);
-    gap: 1.2em;
-
+    gap: .6rem;
+    place-items: start;
 }
 
 .dash-top-inputs {
@@ -316,6 +314,9 @@ header h1 {
 #new-project-form-wrap.reveal, #todo-form-wrap.reveal {
     max-height: 400px;
     opacity: 1;
+    background-color: var(--parentbg-light);
+    padding: .6rem;
+    border-radius: .4rem;
 }
 
 #new-project-form-wrap form, #todo-form-wrap form {
@@ -333,14 +334,14 @@ header h1 {
     align-self: flex-end;
 }
 
-.dash-top-inputs label, .dash-top-bar form div label {
+.dash-top-bar label, .dash-top-bar form div label {
     min-width: 0;
     width: stretch;
     max-width: 400px;
     display: flex;
-    flex-direction:column;
+    flex-direction: row;
     justify-content: center;
-    align-items: start;
+    align-items: center;
     gap: .8rem;
     font-size: .8rem;
     font-weight: 600;
@@ -348,20 +349,20 @@ header h1 {
     padding: .4rem;
 }
 
-.dash-top-inputs label input, .dash-top-bar form div label input {
+.dash-top-bar label input, .dash-top-bar form div label input {
     width: 100%;
     field-sizing: content;
-    padding: .4em;
+    padding: .2rem;
     border: 1px solid transparent;
     outline: none;
-    border-radius: 1rem;
+    border-radius: .6rem;
     background-color: var(--bodybg);
     color: var(--text);
-    font-size: .8rem;
+    font-size: .6rem;
     font-weight: 600;
 }
 
-.dash-top-inputs label input::placeholder, .dash-top-bar form div label input::placeholder, .todo-input::placeholder {  font-style: italic; padding: .2rem; color: var(--text);}
+.dash-top-bar label input::placeholder, .dash-top-bar form div label input::placeholder, .todo-input::placeholder {  font-style: italic; padding: .2rem; color: var(--text);}
 
 .dash-top-bar form  {
     width: 100%;
@@ -523,7 +524,7 @@ select.todo-input {
 
 .project-count.empty {
     color: var(--text-1);
-    background-color: var(--parentbg);
+    background-color: var(--parentbg-light);
 }
 
 .project-count.completed, .cust-modal-check.completed {
@@ -825,6 +826,7 @@ select.todo-input {
     align-items: center;
     gap: .5rem;
     width: auto;
+    max-width: 75px;
     background: transparent;
 }
 
@@ -957,17 +959,19 @@ select.todo-input {
 
 .measures {
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    display: flex;
+    justify-content: space-evenly;
+    gap: .6rem;
     place-items: center;
-    gap: .8rem;
-    border-radius: 1rem;
+    border-radius: .4rem;
     padding: .6rem;
     height: auto;
     margin: 0 auto;
+    background-color: var(--parentbg-light);
 }
 
 .measure-card {
+    font-size: .6rem;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -975,10 +979,8 @@ select.todo-input {
     gap: .4rem;
     border: none;
     border-radius: .8rem;
-    padding: .6rem;
-    max-width: 250px;
-    min-height: 100px;
-    max-height: 200px;
+    padding: .2rem;
+    max-width: 100px;
     height: 100%;
     width: 100%;
 }
@@ -1025,7 +1027,6 @@ select.todo-input {
     border: none;
     outline: none;
     border-radius: 1rem;
-    padding: 1rem;
     box-shadow: var(--bigshadow);
 }
 
@@ -1085,7 +1086,7 @@ select.todo-input {
 .close-modal {
     position: absolute;
     top: 0;
-    right: 2px;
+    right: .6rem;
     color: var(--red);
     background: transparent;
     transition: color 0.3s ease;
@@ -1140,12 +1141,12 @@ select.todo-input {
     line-height: 1.15;
 }
 
-.modal-input:hover, .dash-top-inputs label input:hover, .dash-top-bar form div label input:hover, .todo-input:hover  {
+.modal-input:hover, .dash-top-bar label input:hover, .dash-top-bar form div label input:hover, .todo-input:hover  {
     background-color: var(--parentbg-light);
     color: var(--text);
 }
 
-.modal-input:focus, .dash-top-inputs label input:focus, .dash-top-bar form div label input:focus, .todo-input:focus {
+.modal-input:focus, .dash-top-bar label input:focus, .dash-top-bar form div label input:focus, .todo-input:focus {
     border: 1px solid var(--blue);
 }
 

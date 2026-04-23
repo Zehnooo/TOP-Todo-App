@@ -106,12 +106,14 @@ function buildDefaultDash(){
     const plus = document.createElement('span');
     plus.innerHTML = plussvg;
 
+    const measures = buildProjectMeasures(projects);
+
     newBtn.prepend(plus);
     label.append(filter);
-    headContainer.append(label, newBtn);
-    head.append(headContainer);
+    // headContainer.append(, );
+    head.append(label, measures, newBtn);
     container.append(head);
-    container.append(buildProjectMeasures(projects));
+    container.append();
 
     const dash = document.createElement('div');
     dash.classList.add('dash', 'scroll');
