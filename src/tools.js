@@ -141,9 +141,11 @@ export async function useTodoOption(e) {
             break;
         case 'edit':
             console.log('b');
+            comingSoonError();
             break;
         case 'copy':
             console.log('c');
+            comingSoonError();
             break;
         case 'complete':
             console.log('d');
@@ -215,4 +217,14 @@ export function checkIfZeroTodos(project){
         incomplete,
         complete,
     }
+}
+
+function comingSoonError(){
+    Swal.fire({
+        title: 'Coming Soon',
+        icon: 'info',
+        text: 'This feature is coming soon',
+        theme: String(getTheme()),
+        target: document.body
+    });
 }
