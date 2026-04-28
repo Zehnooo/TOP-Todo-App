@@ -11,8 +11,6 @@ export function getProjects(){
     return [...getProjectsRef()];
 }
 
-window.getProjects = getProjects;
-
 export function createProject(title, description){
     const project = {
         id: crypto.randomUUID(),

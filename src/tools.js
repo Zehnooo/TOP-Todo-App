@@ -1,7 +1,7 @@
 import randomcolor from 'randomcolor';
-import {buildPlaceholder} from './dom.js';
-import {createProject, removeTodoFromProject} from "./projects.js";
-import {createTodo, createTodoItem, addItemToTodo} from "./todos.js";
+import {buildPlaceholder, moveTodoCard, removeTable} from './dom.js';
+import {createProject, removeTodoFromProject, findTodoInProjects} from "./projects.js";
+import {createTodo, createTodoItem, addItemToTodo, completeTodo} from "./todos.js";
 import {
     initializeStorage,
     saveProjectsToStorage,
@@ -147,6 +147,7 @@ export async function useTodoOption(e) {
             break;
         case 'complete':
             console.log('d');
+            updateTodosStatus(selectedTodos);
             break;
     }
 }
@@ -191,5 +192,27 @@ function deleteTodos(arr) {
             if (row) row.remove();
         }
         selectedTodos.length = 0;
+    }
+}
+
+function updateTodosStatus(arr) {
+    if (arr.length > 0) {
+        for (const todoId of arr) {
+            const data = findTodoInProjects(todoId);
+            const { todo } = data;
+            const { project } = data;
+            completeTodo(todo);
+            moveTodoCard(todo);
+            removeTable(project);
+    }
+}
+}
+
+export function checkIfZeroTodos(project){
+    const incomplete = project.todos.filter(td => !td.isCompleted).length;
+    const complete = project.todos.filter(td => td.isCompleted).length;
+    return {
+        incomplete,
+        complete,
     }
 }

@@ -13,6 +13,7 @@ import {
     handleTodoCheck,
     useTodoOption,
     confirmProjectDelete, fireGenericError,
+    checkIfZeroTodos,
 } from './tools.js';
 import completesvg from './assets/complete.svg';
 import copysvg from './assets/copy.svg';
@@ -991,4 +992,33 @@ function buildDeleteButton(){
 
 function removeTodoItemCard(id){
     document.querySelector(`[data-id='${id}']`).remove();
+}
+
+export function moveTodoCard(todo){
+    const bool = todo.isCompleted ? true : false;
+    const table = bool ? 'complete' : 'incomplete';
+    const row = document.querySelector(`[data-todo_id="${todo.id}"]`);
+    console.log({bool, table, row});
+    const tbody = document.querySelector(`#todo-table-tbody-${table}`);
+    console.log({tbody});
+    if (tbody) {
+        tbody.appendChild(row);
+    } else {
+        const tbody = updateTable(table);
+        tbody.appendChild(row);
+    }
+
+}
+
+export function removeTable(project){
+    const counts = checkIfZeroTodos(project);
+            Object.entries(counts).forEach(([key, value]) => {
+                if (value === 0) {
+                    const table = document.querySelector(`#project-page-${key}-table`);
+                if (table) {
+                    table.remove();
+                    document.querySelector(`#project-page-${key}-table-wrap`).appendChild(buildPlaceholder(`No ${key} todos`, `empty-${key}-todos`));
+                }
+                }
+            });
 }

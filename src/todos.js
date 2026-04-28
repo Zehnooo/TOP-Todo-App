@@ -72,3 +72,9 @@ function getTodoItemIndex(arr, item){
     i = arr?.findIndex(n => n.id === item.id);
     return i !== undefined && i !== -1 ? i : null;
 }
+
+export function completeTodo(todo){
+    todo.isCompleted ? todo.isCompleted = false : todo.isCompleted = true;
+    saveProjectsToStorage();
+    return todo;
+}
