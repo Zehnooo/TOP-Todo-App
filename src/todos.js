@@ -3,7 +3,7 @@ import {findTodoInProjects} from './projects.js';
 import {fireGenericError, confirmDelete} from "./tools.js";
 import {saveProjectsToStorage} from "./storage.js";
 
-export function createTodo(project_id, title, description, due_date, priority, isCompleted = false) {
+export function createTodo(project_id, title, description, due_date, priority, isCompleted = false, notes = [], checklist = []) {
     return {
         project_id,
         id: crypto.randomUUID(),
@@ -13,8 +13,8 @@ export function createTodo(project_id, title, description, due_date, priority, i
         created: currentDate('date-time'),
         due_date: formatDate(due_date,'date-time'),
         priority: String(priority),
-        notes: [],
-        checklist: [],
+        notes,
+        checklist,
     };
 }
 

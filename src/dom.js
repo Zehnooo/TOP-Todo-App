@@ -726,7 +726,7 @@ function createTodoRow(todo){
     return row;
 }
 
-function addTodoToList(td){
+export function addTodoToList(td){
     const newRow = createTodoRow(td);
     let name = td.isCompleted ? "complete"  : "incomplete";
     const tbody = document.querySelector(`#todo-table-tbody-${name}`);

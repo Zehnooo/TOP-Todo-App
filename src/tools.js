@@ -1,6 +1,6 @@
 import randomcolor from 'randomcolor';
-import {buildPlaceholder, moveTodoCard, removeTable} from './dom.js';
-import {createProject, removeTodoFromProject, findTodoInProjects} from "./projects.js";
+import {buildPlaceholder, moveTodoCard, removeTable, addTodoToList} from './dom.js';
+import {createProject, removeTodoFromProject, findTodoInProjects, addTodoToProject} from "./projects.js";
 import {createTodo, createTodoItem, addItemToTodo, completeTodo} from "./todos.js";
 import {
     initializeStorage,
@@ -144,8 +144,7 @@ export async function useTodoOption(e) {
             comingSoonError();
             break;
         case 'copy':
-            console.log('c');
-            comingSoonError();
+            duplicateTodos(selectedTodos);
             break;
         case 'complete':
             console.log('d');
@@ -208,6 +207,19 @@ function updateTodosStatus(arr) {
             removeTable(project);
     }
 }
+}
+
+function duplicateTodos(arr) {
+    if (arr.length > 0) {
+        for (const todoId of arr) {
+            const data = findTodoInProjects(todoId);
+            const { todo } = data;
+            const { project } = data;
+            const newTodo = createTodo(project.id, todo.title, todo.description, todo.due_date, todo.priority, todo.isCompleted, todo.notes, todo.checklist);
+            addTodoToProject(newTodo);
+            addTodoToList(newTodo);
+        }
+        }
 }
 
 export function checkIfZeroTodos(project){
