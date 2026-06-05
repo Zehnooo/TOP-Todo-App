@@ -477,6 +477,10 @@ select.todo-input {
     font-size: .8rem;
 }
 
+.project-head .del-btn {
+    color: var(--text);
+}
+
 .project-body {
     display: flex;
     flex-direction: column;
@@ -972,7 +976,6 @@ select.todo-input {
     padding: .6rem;
     height: auto;
     margin: 0 auto;
-    background-color: var(--parentbg-light);
 }
 
 .measure-card {
@@ -1208,3 +1211,16 @@ li.cust-modal-list-item {
     gap: 0.5rem;
     margin-left: .6em;
 }
+
+.todo-edit {
+    opacity: 0;
+    width: 0;
+}
+
+.todo-edit.reveal {
+    opacity: 1;
+    field-sizing: content;
+    min-width: 150px;
+
+}
+

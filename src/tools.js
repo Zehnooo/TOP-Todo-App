@@ -9,6 +9,7 @@ import {
     getTheme
 } from "./storage.js";
 import Swal from "sweetalert2";
+import { getTodoRowsDom } from './dom.js';
 
 export { saveTheme, getTheme };
 
@@ -130,7 +131,6 @@ export function handleTodoCheck(e){
 }
 
 export async function useTodoOption(e) {
-    const todos = selectedTodos;
 
     const op = String(e.target.id).replace('todo-', '');
     switch (op) {
@@ -140,14 +140,13 @@ export async function useTodoOption(e) {
             deleteTodos(selectedTodos);
             break;
         case 'edit':
-            console.log('b');
+            getTodoRowsDom(selectedTodos);
             comingSoonError();
             break;
         case 'copy':
             duplicateTodos(selectedTodos);
             break;
         case 'complete':
-            console.log('d');
             updateTodosStatus(selectedTodos);
             break;
     }

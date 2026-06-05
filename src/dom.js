@@ -24,9 +24,11 @@ import savesvg from './assets/save.svg';
 import homesvg from './assets/home.svg';
 import moonsvg from './assets/moon.svg';
 import {handleTodoItemDelete} from "./todos.js";
+import { checkFirstVisit } from './firstVisit.js';
 
 export const buildDom = (() => {
     loadLocalStorage();
+    checkFirstVisit();
     getTheme() === 'dark' ? document.body.classList.add('dark') : document.body.classList.remove('dark');
     document.body.append(buildFooter());
     return buildDefaultMain();
@@ -91,14 +93,6 @@ function buildDefaultDash(){
     const headContainer = document.createElement('div');
     headContainer.classList.add('dash-top-inputs');
 
-    const label = document.createElement('label');
-        label.textContent = 'Search';
-        label.htmlFor = 'filter';
-
-    const filter = document.createElement('input');
-        filter.id = 'filter';
-        filter.type = 'text';
-        filter.placeholder = 'Project name...';
 
     const newBtn = document.createElement('button');
         newBtn.classList.add('btn', 'new-btn');
@@ -107,12 +101,9 @@ function buildDefaultDash(){
     const plus = document.createElement('span');
     plus.innerHTML = plussvg;
 
-    const measures = buildProjectMeasures(projects);
-
     newBtn.prepend(plus);
-    label.append(filter);
-    // headContainer.append(, );
-    head.append(label, measures, newBtn);
+
+    head.append(newBtn);
     container.append(head);
     container.append();
 
@@ -128,43 +119,6 @@ function buildDefaultDash(){
         }) : dash.append(buildPlaceholder("No projects"));
 
     return container;
-}
-
-function buildProjectMeasures(projects){
-    const measures = document.createElement('div');
-    measures.classList.add('measures');
-    console.log(projects);
-
-    const projectMeasure = buildMeasureCard('Projects', projects.length);
-        projectMeasure.classList.add('project-count', 'empty');
-
-    const allTodos = buildMeasureCard('Todos', sumTodos(projects, 'all'));
-        allTodos.classList.add('project-count', 'count');
-
-    const incompleteMeasure = buildMeasureCard('Incomplete Todos',  sumTodos(projects, 'incomplete'));
-        incompleteMeasure.classList.add('project-count', 'incomplete');
-
-    const completeMeasure = buildMeasureCard('Complete Todos', sumTodos(projects, 'complete'));
-        completeMeasure.classList.add('project-count', 'completed');
-
-    measures.append(projectMeasure, allTodos, completeMeasure, incompleteMeasure)
-    return measures
-}
-
-function buildMeasureCard(title, count){
-    const card = document.createElement('div');
-        card.classList.add('measure-card');
-
-    const hr = document.createElement('hr');
-        hr.classList.add('measure-hr');
-
-    const t = document.createElement('h3');
-        t.textContent = String(title);
-    const c = document.createElement('p');
-        c.textContent = String(count);
-
-    card.append(t, hr, c);
-    return card;
 }
 
 function buildProjectCard(project){
@@ -706,23 +660,52 @@ function createTodoRow(todo){
     check.checked = false;
 
     const date = document.createElement('td');
-    date.textContent = formatDate(todo.created, 'date');
+    date.textContent = formatDate(todo.created, 'date-time');
 
     const title = document.createElement('td');
     title.textContent = todo.title;
+    title.id = 'todo-title';
+
+
+    const titleInput = document.createElement('input');
+    titleInput.classList.add('todo-edit');
+    titleInput.id = 'todo-title-edit';
 
     const due = document.createElement('td');
     due.textContent = formatDate(todo.due_date, 'date-time');
+    due.id = 'todo-due-date';
+
+    const dueInput = document.createElement('input');
+    dueInput.classList.add('todo-edit');
+    dueInput.id = 'todo-due-date-edit';
 
     const priority = document.createElement('td');
+    priority.id = 'todo-priority';
+
     const span = document.createElement('span');
+    const priorityInput = document.createElement('select');
+    priorityInput.classList.add('todo-edit');
+    priorityInput.id = 'todo-priority-edit';
+
+    const priorityOptions = [
+        {value: 'None', text: '-'},
+        {value: 'Low', text: 'Low'},
+        {value: 'Medium', text: 'Medium'},
+        {value: 'High', text: 'High'}
+    ];
+    priorityOptions.forEach(op => {
+        const x = document.createElement('option');
+        x.value = op.value;
+        x.textContent = op.text;
+        priorityInput.appendChild(x);
+    });
 
     span.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
     span.textContent = todo.priority;
 
     priority.append(span);
     checkbox.append(check);
-    row.append(checkbox, date, title, due, priority);
+    row.append(checkbox, date, title, titleInput, due, dueInput, priority, priorityInput);
     return row;
 }
 
@@ -1021,4 +1004,52 @@ export function removeTable(project){
                 }
                 }
             });
+}
+
+export function getTodoRowsDom(selectedTodoIds = []){
+    for (const id of selectedTodoIds){
+        const row = document.querySelector(`[data-todo_id='${id}']`);
+        const editCells = row.querySelectorAll('.todo-edit');
+        
+        
+        console.log('selected row', row);
+        console.log('edit cells', editCells);
+        const title = row.querySelector('#todo-title');
+        const dueDate = row.querySelector('#todo-due-date');
+        const priority = row.querySelector('#todo-priority');
+        toggleDataCells([title, dueDate, priority]);
+        toggleEditCells(editCells, [title, dueDate, priority]);
+        console.log(title, dueDate, priority);
+    }
+}
+
+function toggleDataCells(cells){
+    for (const cell of cells){
+        cell.textContent = '';
+        
+    }
+}
+
+function toggleEditCells(cells, dataCells){
+    const [title, dueDate, priority] = dataCells;
+    for (const cell of cells) {
+        cell.classList.add('reveal');
+        let match = String(cell.id).replace('todo-', '').replace('-edit', '');
+        switch(match){
+            case 'title':
+                cell.value = title.value;
+                break;
+            
+            case 'due-date':
+                cell.value = dueDate.value;
+                break;
+
+            case 'priority':
+
+                break;
+        }
+        console.log(match);
+        console.log(cell);
+       
+    }
 }

@@ -1,4 +1,4 @@
-import { buildDom }  from './dom.js'
+import { buildDom }  from './dom.js';
 import "./normalize.css";
 import "./styles.css";
 

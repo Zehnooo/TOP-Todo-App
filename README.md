@@ -1,4 +1,4 @@
-The Odin Project - Todo App  
+## The Odin Project - Todo App  
 
 !-- This is still a work in progress so if you are viewing this for some reason please don't expect a finished product here --!  
 
