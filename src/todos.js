@@ -78,3 +78,22 @@ export function completeTodo(todo){
     saveProjectsToStorage();
     return todo;
 }
+
+export function saveTodoEdits(id, data){
+    try {
+        const res = findTodoInProjects(id);
+        const todo = res.todo;
+        
+        if (!res) { throw Error('Todo not found. Please try again');}
+        
+
+        todo.title = data.newTitle;
+        todo.due_date = data.newDue;
+        todo.priority = data.newPriority;
+        saveProjectsToStorage();
+
+    } catch (error) {
+        fireGenericError(error);
+    }
+    
+}

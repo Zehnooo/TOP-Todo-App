@@ -23,8 +23,15 @@ import plussvg from './assets/plus.svg';
 import savesvg from './assets/save.svg';
 import homesvg from './assets/home.svg';
 import moonsvg from './assets/moon.svg';
-import {handleTodoItemDelete} from "./todos.js";
+import { handleTodoItemDelete, saveTodoEdits } from "./todos.js";
 import { checkFirstVisit } from './firstVisit.js';
+
+const priorityOptions = [
+    {value: 'None', text: '-'},
+    {value: 'Low', text: 'Low'},
+    {value: 'Medium', text: 'Medium'},
+    {value: 'High', text: 'High'}
+];
 
 export const buildDom = (() => {
     loadLocalStorage();
@@ -46,7 +53,7 @@ function buildDefaultMain(){
 
 function buildDefaultSidebar(){
     const projects = getProjects();
-    console.log(projects);
+
     const sidebar = document.createElement('div');
         sidebar.classList.add('sidebar');
 
@@ -604,12 +611,7 @@ function buildTodoForm(){
     const priorityInput = document.createElement('select');
     priorityInput.name = 'priority';
     priorityInput.classList.add('todo-input');
-        const priorityOptions = [
-            {value: 'None', text: '-'},
-            {value: 'Low', text: 'Low'},
-            {value: 'Medium', text: 'Medium'},
-            {value: 'High', text: 'High'}
-        ];
+      
         priorityOptions.forEach(op => {
             const x = document.createElement('option');
             x.value = op.value;
@@ -659,40 +661,52 @@ function createTodoRow(todo){
     check.type = 'checkbox';
     check.checked = false;
 
-    const date = document.createElement('td');
+    const dateCell = document.createElement('td');
+        dateCell.id = 'date-cell';
+    const date = document.createElement('span');
     date.textContent = formatDate(todo.created, 'date-time');
 
-    const title = document.createElement('td');
-    title.textContent = todo.title;
-    title.id = 'todo-title';
+    dateCell.append(date);
 
-
+    const titleCell = document.createElement('td');
+        titleCell.id = 'title-cell';
+    const title = document.createElement('span');
+        title.textContent = todo.title;
+        title.id = 'todo-title';
     const titleInput = document.createElement('input');
-    titleInput.classList.add('todo-edit');
-    titleInput.id = 'todo-title-edit';
+        titleInput.classList.add('todo-edit');
+        titleInput.id = 'todo-title-edit';
+        titleInput.addEventListener('click', stopPropagation);
 
-    const due = document.createElement('td');
-    due.textContent = formatDate(todo.due_date, 'date-time');
-    due.id = 'todo-due-date';
-
+    titleCell.append(title, titleInput);
+    
+    
+    const dueCell = document.createElement('td');
+        dueCell.id = 'due-cell';
+    const due = document.createElement('span');
+        due.textContent = formatDate(todo.due_date, 'date-time');
+        due.id = 'todo-due-date';
     const dueInput = document.createElement('input');
-    dueInput.classList.add('todo-edit');
-    dueInput.id = 'todo-due-date-edit';
+        dueInput.classList.add('todo-edit');
+        dueInput.type = 'datetime-local';
+        dueInput.id = 'todo-due-date-edit';
+        dueInput.addEventListener('click', stopPropagation);
 
-    const priority = document.createElement('td');
-    priority.id = 'todo-priority';
+    dueCell.append(due, dueInput);
 
-    const span = document.createElement('span');
+    const priorityCell = document.createElement('td');
+        priorityCell.id = 'priority-cell';
+    const priority = document.createElement('span');
+        priority.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
+        priority.textContent = todo.priority[0].toUpperCase() + todo.priority.slice(1,todo.priority.length); 
     const priorityInput = document.createElement('select');
-    priorityInput.classList.add('todo-edit');
-    priorityInput.id = 'todo-priority-edit';
+        priorityInput.classList.add('todo-edit');
+        priorityInput.id = 'todo-priority-edit';
+        priorityInput.addEventListener('click', stopPropagation);
 
-    const priorityOptions = [
-        {value: 'None', text: '-'},
-        {value: 'Low', text: 'Low'},
-        {value: 'Medium', text: 'Medium'},
-        {value: 'High', text: 'High'}
-    ];
+    priorityCell.append(priority, priorityInput);
+
+    
     priorityOptions.forEach(op => {
         const x = document.createElement('option');
         x.value = op.value;
@@ -700,12 +714,8 @@ function createTodoRow(todo){
         priorityInput.appendChild(x);
     });
 
-    span.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
-    span.textContent = todo.priority;
-
-    priority.append(span);
     checkbox.append(check);
-    row.append(checkbox, date, title, titleInput, due, dueInput, priority, priorityInput);
+    row.append(checkbox, dateCell, titleCell, dueCell, priorityCell);
     return row;
 }
 
@@ -714,11 +724,11 @@ export function addTodoToList(td){
     let name = td.isCompleted ? "complete"  : "incomplete";
     const tbody = document.querySelector(`#todo-table-tbody-${name}`);
     if (tbody) {
-        console.log('tbody found', tbody);
+       
         tbody.appendChild(newRow);
     }
     else {
-        console.log('tbody not found... creating');
+      
         const tbody = updateTable(name);
         tbody.appendChild(newRow);
     }
@@ -924,10 +934,7 @@ function handleTodoSectionForm(title){
         wrap.classList.add('form-wrap');
         wrap.id = `cust-modal-${title}-form-wrap`;
         let form = buildTodoSectionForm(title.toLowerCase());
-        if (!form) {
-            console.log('no form');
-            return
-        }
+        if (!form) {  return   }
         wrap.append(form);
         head.after(wrap);
         setTimeout(() => wrap.classList.add('reveal'), 25);
@@ -981,9 +988,9 @@ export function moveTodoCard(todo){
     const bool = todo.isCompleted ? true : false;
     const table = bool ? 'complete' : 'incomplete';
     const row = document.querySelector(`[data-todo_id="${todo.id}"]`);
-    console.log({bool, table, row});
+
     const tbody = document.querySelector(`#todo-table-tbody-${table}`);
-    console.log({tbody});
+  
     if (tbody) {
         tbody.appendChild(row);
     } else {
@@ -1007,49 +1014,72 @@ export function removeTable(project){
 }
 
 export function getTodoRowsDom(selectedTodoIds = []){
+    if (!selectedTodoIds.length){ alert('No todos selected, please try again.');}
     for (const id of selectedTodoIds){
         const row = document.querySelector(`[data-todo_id='${id}']`);
         const editCells = row.querySelectorAll('.todo-edit');
         
-        
-        console.log('selected row', row);
-        console.log('edit cells', editCells);
-        const title = row.querySelector('#todo-title');
-        const dueDate = row.querySelector('#todo-due-date');
-        const priority = row.querySelector('#todo-priority');
-        toggleDataCells([title, dueDate, priority]);
-        toggleEditCells(editCells, [title, dueDate, priority]);
-        console.log(title, dueDate, priority);
+        const title = row.querySelector('#title-cell').querySelector('span');
+        const dueDate = row.querySelector('#due-cell').querySelector('span');
+        const priority = row.querySelector('#priority-cell').querySelector('span');
+     
+        showEditCells(editCells, [title, dueDate, priority]);
+        hideDataCells([title, dueDate, priority]);
+        const save = createSaveButton();
+        save.addEventListener('click', stopPropagation);
+        save.addEventListener('click', () => {
+            const newTitle = row.querySelector('#todo-title-edit').value;
+            const newDue = row.querySelector('#todo-due-date-edit').value;
+            const newPriority = row.querySelector('#todo-priority-edit').value;
+            const data = {newTitle, newDue, newPriority}
+            console.log(data);
+            console.log(`saved row ${id}`);
+            saveTodoEdits(id, data);
+            console.log(editCells);
+            for (const cell of editCells){
+                cell.classList.remove('reveal');
+            }
+        });
+        row.append(save);
     }
 }
 
-function toggleDataCells(cells){
+function hideDataCells(cells){
     for (const cell of cells){
         cell.textContent = '';
-        
+        cell.style.opacity = 0;
     }
 }
 
-function toggleEditCells(cells, dataCells){
+function showEditCells(cells, dataCells){
     const [title, dueDate, priority] = dataCells;
+   
     for (const cell of cells) {
         cell.classList.add('reveal');
         let match = String(cell.id).replace('todo-', '').replace('-edit', '');
         switch(match){
             case 'title':
-                cell.value = title.value;
+                cell.value = title.textContent;
                 break;
             
             case 'due-date':
-                cell.value = dueDate.value;
+                const dateVal = dueDate.textContent;
+                const date = new Date(dateVal).toISOString().slice(0, 16);
+                cell.value = date;
+               
                 break;
 
             case 'priority':
-
+                console.log(priority);
+                cell.value = priority.textContent;
                 break;
         }
-        console.log(match);
-        console.log(cell);
+      
        
     }
 }
+
+function stopPropagation(e){
+    e.stopPropagation();
+}
+

@@ -1149,12 +1149,12 @@ select.todo-input {
     line-height: 1.15;
 }
 
-.modal-input:hover, .dash-top-bar label input:hover, .dash-top-bar form div label input:hover, .todo-input:hover  {
+.modal-input:hover, .dash-top-bar label input:hover, .dash-top-bar form div label input:hover, .todo-input:hover, .todo-edit:hover  {
     background-color: var(--parentbg-light);
     color: var(--text);
 }
 
-.modal-input:focus, .dash-top-bar label input:focus, .dash-top-bar form div label input:focus, .todo-input:focus {
+.modal-input:focus, .dash-top-bar label input:focus, .dash-top-bar form div label input:focus, .todo-input:focus, .todo-edit:focus {
     border: 1px solid var(--blue);
 }
 
@@ -1221,6 +1221,11 @@ li.cust-modal-list-item {
     opacity: 1;
     field-sizing: content;
     min-width: 150px;
-
+    padding: .6em;
+    border: 1px solid transparent;
+    outline: none;
+    border-radius: 1rem;
+    background-color: var(--bodybg);
+    color: var(--text);
 }
 

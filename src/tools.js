@@ -141,7 +141,7 @@ export async function useTodoOption(e) {
             break;
         case 'edit':
             getTodoRowsDom(selectedTodos);
-            comingSoonError();
+           
             break;
         case 'copy':
             duplicateTodos(selectedTodos);
