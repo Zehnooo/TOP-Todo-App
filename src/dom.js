@@ -1,1085 +1,1223 @@
-import { getProjects, deleteProject, addTodoToProject } from './projects.js';
-import { formatDate } from './date.js';
+import { getProjects, deleteProject, addTodoToProject } from "./projects.js";
+import { formatDate } from "./date.js";
 import {
-    getColor,
-    getTheme,
-    saveTheme,
-    sumTodos,
-    validateContent,
-    handleProjectFormSubmission,
-    handleTodoFormSubmission,
-    handleModalFormSubmission,
-    loadLocalStorage,
-    handleTodoCheck,
-    useTodoOption,
-    confirmProjectDelete, fireGenericError,
-    checkIfZeroTodos,
-} from './tools.js';
-import completesvg from './assets/complete.svg';
-import copysvg from './assets/copy.svg';
-import deletesvg from './assets/delete.svg';
-import editsvg from './assets/edit.svg';
-import plussvg from './assets/plus.svg';
-import savesvg from './assets/save.svg';
-import homesvg from './assets/home.svg';
-import moonsvg from './assets/moon.svg';
+	getColor,
+	getTheme,
+	saveTheme,
+	sumTodos,
+	validateContent,
+	handleProjectFormSubmission,
+	handleTodoFormSubmission,
+	handleModalFormSubmission,
+	loadLocalStorage,
+	handleTodoCheck,
+	useTodoOption,
+	confirmProjectDelete,
+	fireGenericError,
+	checkIfZeroTodos,
+} from "./tools.js";
+import completesvg from "./assets/complete.svg";
+import copysvg from "./assets/copy.svg";
+import deletesvg from "./assets/delete.svg";
+import editsvg from "./assets/edit.svg";
+import plussvg from "./assets/plus.svg";
+import savesvg from "./assets/save.svg";
+import homesvg from "./assets/home.svg";
+import moonsvg from "./assets/moon.svg";
 import { handleTodoItemDelete, saveTodoEdits } from "./todos.js";
-import { checkFirstVisit } from './firstVisit.js';
+import { checkFirstVisit } from "./firstVisit.js";
 
 const priorityOptions = [
-    {value: 'None', text: '-'},
-    {value: 'Low', text: 'Low'},
-    {value: 'Medium', text: 'Medium'},
-    {value: 'High', text: 'High'}
+	{ value: "None", text: "-" },
+	{ value: "Low", text: "Low" },
+	{ value: "Medium", text: "Medium" },
+	{ value: "High", text: "High" },
 ];
 
 export const buildDom = (() => {
-    loadLocalStorage();
-    checkFirstVisit();
-    getTheme() === 'dark' ? document.body.classList.add('dark') : document.body.classList.remove('dark');
-    document.body.append(buildFooter());
-    return buildDefaultMain();
+	loadLocalStorage();
+	checkFirstVisit();
+	getTheme() === "dark"
+		? document.body.classList.add("dark")
+		: document.body.classList.remove("dark");
+	document.body.append(buildFooter());
+	return buildDefaultMain();
 })();
 
-function buildDefaultMain(){
-    const grid = document.createElement('div');
-    grid.classList.add('grid');
-    grid.id = 'default';
-    const sidebar = buildDefaultSidebar();
-    const dash = buildDefaultDash();
-    grid.append(sidebar, dash);
-    return grid;
+function buildDefaultMain() {
+	const grid = document.createElement("div");
+	grid.classList.add("grid");
+	grid.id = "default";
+	const sidebar = buildDefaultSidebar();
+	const dash = buildDefaultDash();
+	grid.append(sidebar, dash);
+	return grid;
 }
 
-function buildDefaultSidebar(){
-    const projects = getProjects();
+function buildDefaultSidebar() {
+	const projects = getProjects();
 
-    const sidebar = document.createElement('div');
-        sidebar.classList.add('sidebar');
+	const sidebar = document.createElement("div");
+	sidebar.classList.add("sidebar");
 
-    const listContainer = document.createElement('div');
-    listContainer.classList.add('sidebar-list-container');
+	const listContainer = document.createElement("div");
+	listContainer.classList.add("sidebar-list-container");
 
-    const list = document.createElement('ul');
-    list.classList.add('sidebar-list', 'scroll');
-    if (projects.length > 0) {
-        projects.forEach(pj => {
-            const item = createSidebarItem(pj);
-            list.appendChild(item);
-        });
-    } else {
-        const placeholder = buildPlaceholder('No projects');
-        placeholder.classList.add('sidebar-placeholder');
-        list.append(placeholder);
-    }
-        const home = document.createElement('button');
-        home.innerHTML = homesvg;
-        home.addEventListener('click', () => { goHome(); setSelectedItem('home'); });
-        home.id = 'home';
-        home.classList.add('selected', 'btn', 'home-btn');
+	const list = document.createElement("ul");
+	list.classList.add("sidebar-list", "scroll");
+	if (projects.length > 0) {
+		projects.forEach((pj) => {
+			const item = createSidebarItem(pj);
+			list.appendChild(item);
+		});
+	} else {
+		const placeholder = buildPlaceholder("No projects");
+		placeholder.classList.add("sidebar-placeholder");
+		list.append(placeholder);
+	}
+	const home = document.createElement("button");
+	home.innerHTML = homesvg;
+	home.addEventListener("click", () => {
+		goHome();
+		setSelectedItem("home");
+	});
+	home.id = "home";
+	home.classList.add("selected", "btn", "home-btn");
 
-    sidebar.prepend(home);
-    sidebar.appendChild(list);
-    return sidebar;
+	sidebar.prepend(home);
+	sidebar.appendChild(list);
+	return sidebar;
 }
 
-function goHome(){
-    const root = document.getElementById('root');
-    root.innerHTML = '';
-    root.append(buildDefaultMain());
+function goHome() {
+	const root = document.getElementById("root");
+	root.innerHTML = "";
+	root.append(buildDefaultMain());
 }
 
-function buildDefaultDash(){
-    const projects = getProjects();
-    const container = document.createElement('div');
-    container.id = 'default-dash';
+function buildDefaultDash() {
+	const projects = getProjects();
+	const container = document.createElement("div");
+	container.id = "default-dash";
 
-    const head = document.createElement('div');
-    head.classList.add('dash-top-bar');
+	const head = document.createElement("div");
+	head.classList.add("dash-top-bar");
 
-    const headContainer = document.createElement('div');
-    headContainer.classList.add('dash-top-inputs');
+	const headContainer = document.createElement("div");
+	headContainer.classList.add("dash-top-inputs");
 
+	const newBtn = document.createElement("button");
+	newBtn.classList.add("btn", "new-btn");
+	newBtn.addEventListener("click", () => handleNewProjectForm());
 
-    const newBtn = document.createElement('button');
-        newBtn.classList.add('btn', 'new-btn');
-        newBtn.addEventListener('click', () => handleNewProjectForm());
+	const plus = document.createElement("span");
+	plus.innerHTML = plussvg;
 
-    const plus = document.createElement('span');
-    plus.innerHTML = plussvg;
+	newBtn.prepend(plus);
 
-    newBtn.prepend(plus);
+	head.append(newBtn);
+	container.append(head);
+	container.append();
 
-    head.append(newBtn);
-    container.append(head);
-    container.append();
+	const dash = document.createElement("div");
+	dash.classList.add("dash", "scroll");
+	container.append(dash);
 
-    const dash = document.createElement('div');
-    dash.classList.add('dash', 'scroll');
-    container.append(dash);
+	projects.length > 0
+		? projects.forEach((pj) => {
+				const c = buildProjectCard(pj);
+				dash.append(c);
+			})
+		: dash.append(buildPlaceholder("No projects"));
 
-
-    projects.length > 0 ?
-        projects.forEach(pj => {
-            const c = buildProjectCard(pj);
-            dash.append(c);
-        }) : dash.append(buildPlaceholder("No projects"));
-
-    return container;
+	return container;
 }
 
-function buildProjectCard(project){
-    const card = document.createElement('div');
-    card.classList.add('project-card');
+function buildProjectCard(project) {
+	const card = document.createElement("div");
+	card.classList.add("project-card");
 
-    const head = document.createElement('div');
-        head.classList.add('project-head');
+	const head = document.createElement("div");
+	head.classList.add("project-head");
 
-    const title = document.createElement('h3');
-        title.textContent = project.title;
+	const title = document.createElement("h3");
+	title.textContent = project.title;
 
-    const date = document.createElement('p');
-        date.textContent = formatDate(project.created, 'date');
+	const date = document.createElement("p");
+	date.textContent = formatDate(project.created, "date");
 
-    const delBtn = document.createElement('button');
-        delBtn.innerHTML = '&#8942;';
-        delBtn.classList.add('del-btn', 'btn');
-        delBtn.dataset.id = project.id;
-        delBtn.addEventListener('click',  async (e) => {
-        const confirm = await confirmProjectDelete(project);
-            if (confirm.isConfirmed){
-                deleteProject(e.target.dataset.id);
-                removeDOMCard(e.target.parentElement.parentElement);
-                removeSidebarItem(e.target.dataset.id);
-            }
-    });
+	const delBtn = document.createElement("button");
+	delBtn.innerHTML = "&#8942;";
+	delBtn.classList.add("del-btn", "btn");
+	delBtn.dataset.id = project.id;
+	delBtn.addEventListener("click", async (e) => {
+		const confirm = await confirmProjectDelete(project);
+		if (confirm.isConfirmed) {
+			deleteProject(e.target.dataset.id);
+			removeDOMCard(e.target.parentElement.parentElement);
+			removeSidebarItem(e.target.dataset.id);
+		}
+	});
 
-    head.append(title, delBtn);
+	head.append(title, delBtn);
 
-    const body = document.createElement('div');
-        body.classList.add('project-body');
+	const body = document.createElement("div");
+	body.classList.add("project-body");
 
-    const desc = document.createElement('p');
-        desc.textContent = project.description;
-        desc.classList.add('project-desc');
+	const desc = document.createElement("p");
+	desc.textContent = project.description;
+	desc.classList.add("project-desc");
 
-    const counts = document.createElement('div');
-    counts.classList.add('project-counts');
+	const counts = document.createElement("div");
+	counts.classList.add("project-counts");
 
-    const totalCount = project.todos?.length;
-    const todoCount = document.createElement('span');
-    totalCount === 1 ? todoCount.textContent = `${totalCount} todo` : todoCount.textContent = `${totalCount} todos`;
-    totalCount > 0 ? todoCount.classList.add('project-count', 'count') : todoCount.classList.add('project-count', 'empty');
+	const totalCount = project.todos?.length;
+	const todoCount = document.createElement("span");
+	totalCount === 1
+		? (todoCount.textContent = `${totalCount} todo`)
+		: (todoCount.textContent = `${totalCount} todos`);
+	totalCount > 0
+		? todoCount.classList.add("project-count", "count")
+		: todoCount.classList.add("project-count", "empty");
 
-    counts.append(todoCount);
-    body.append(desc, counts);
+	counts.append(todoCount);
+	body.append(desc, counts);
 
-    if (project.todos?.length > 0) {
+	if (project.todos?.length > 0) {
+		const completedCount = project.todos.filter((td) => td.isCompleted).length;
 
-        const completedCount = project.todos.filter(td => td.isCompleted).length;
+		if (completedCount > 0) {
+			const completed = document.createElement("span");
+			completed.textContent = `${completedCount} completed`;
+			completed.classList.add("project-count", "completed");
+			counts.append(completed);
+		}
+		const incompleteCount = totalCount - completedCount;
+		if (incompleteCount > 0) {
+			const incomplete = document.createElement("span");
+			incomplete.textContent = `${incompleteCount} incomplete`;
+			incomplete.classList.add("project-count", "incomplete");
+			counts.append(incomplete);
+		}
+	}
 
-        if (completedCount > 0) {
-            const completed = document.createElement('span');
-            completed.textContent = `${completedCount} completed`;
-            completed.classList.add('project-count', 'completed');
-            counts.append(completed);
-        }
-        const incompleteCount = totalCount - completedCount;
-        if (incompleteCount > 0) {
-            const incomplete = document.createElement('span');
-            incomplete.textContent = `${incompleteCount} incomplete`;
-            incomplete.classList.add('project-count', 'incomplete');
-            counts.append(incomplete);
-        }
-    }
-
-    card.append(head, body);
-    return card;
+	card.append(head, body);
+	return card;
 }
 
 function removeDOMCard(card) {
-    const dash = document.querySelector('.dash');
-    const check = validateContent(getProjects(), 'No projects');
-    if (check) {  dash.append(check); }
-    card.remove();
+	const dash = document.querySelector(".dash");
+	const check = validateContent(getProjects(), "No projects");
+	if (check) {
+		dash.append(check);
+	}
+	card.remove();
 }
 
-function removeSidebarItem(id){
-    const item = document.querySelector(`[data-id="${(id)}"]`);
-    const list = item.parentElement;
-    const check = validateContent(getProjects(), 'No projects');
-    if (item) item.remove();
-    if (check) { check.classList.add('sidebar-placeholder'); list.append(check); }
+function removeSidebarItem(id) {
+	const item = document.querySelector(`[data-id="${id}"]`);
+	const list = item.parentElement;
+	const check = validateContent(getProjects(), "No projects");
+	if (item) item.remove();
+	if (check) {
+		check.classList.add("sidebar-placeholder");
+		list.append(check);
+	}
 }
 
-function setSelectedItem(id){
-    const selected = document.querySelector('.selected');
-    if (selected) selected.classList.remove('selected');
-    let item;
-    id !== 'home' ? item = document.querySelector(`[data-id="${(id)}"]`) : item = document.getElementById('home');
-    if (item) item.classList.add('selected');
+function setSelectedItem(id) {
+	const selected = document.querySelector(".selected");
+	if (selected) selected.classList.remove("selected");
+	let item;
+	id !== "home"
+		? (item = document.querySelector(`[data-id="${id}"]`))
+		: (item = document.getElementById("home"));
+	if (item) item.classList.add("selected");
 }
 
-function showProjectPage(id){
-    let dash = document.getElementById('default-dash');
-    if (dash === null) { dash = document.getElementById('project-dash') }
-    dash.id = 'project-dash';
-    const projectPage = buildProjectPage(getProjects().find(pj => pj.id === id));
-    dash.innerHTML = '';
-    dash.append(projectPage);
+function showProjectPage(id) {
+	let dash = document.getElementById("default-dash");
+	if (dash === null) {
+		dash = document.getElementById("project-dash");
+	}
+	dash.id = "project-dash";
+	const projectPage = buildProjectPage(
+		getProjects().find((pj) => pj.id === id),
+	);
+	dash.innerHTML = "";
+	dash.append(projectPage);
 }
 
-function buildProjectPage(project){
+function buildProjectPage(project) {
+	const copy = { ...project };
+	const todos = copy.todos;
+	const container = document.createElement("div");
+	container.classList.add("project-page", "scroll");
+	container.dataset.project_id = project.id;
 
-    const copy = {...project};
-    const todos = copy.todos;
-    const container = document.createElement('div');
-        container.classList.add('project-page', 'scroll');
-        container.dataset.project_id = project.id;
+	const pageHead = buildProjectPageHead(copy);
 
-    const pageHead = buildProjectPageHead(copy);
+	const todoContainer = document.createElement("div");
+	todoContainer.classList.add("project-page-todo-container");
 
+	const todoHeader = document.createElement("div");
+	todoHeader.classList.add("project-page-todo-header");
 
+	const todoHeading = document.createElement("h2");
+	todoHeading.textContent = "Todos";
 
-    const todoContainer = document.createElement('div');
-        todoContainer.classList.add('project-page-todo-container');
+	todoHeader.append(todoHeading);
+	container.append(pageHead);
 
-     const todoHeader = document.createElement('div');
-        todoHeader.classList.add('project-page-todo-header');
+	let incompleteTable;
+	let incompleteTodos = todos.filter((td) => !td.isCompleted);
+	const incompleteWrap = buildTableWrap("Incomplete");
+	incompleteTodos.length > 0
+		? (incompleteTable = buildProjectTodoTable("incomplete", incompleteTodos))
+		: (incompleteTable = buildPlaceholder(
+				"No incomplete todos",
+				"empty-incomplete-todos",
+			));
+	if (incompleteTable) {
+		incompleteWrap.append(incompleteTable);
+		todoContainer.append(incompleteWrap);
+	}
 
-    const todoHeading = document.createElement('h2');
-        todoHeading.textContent = 'Todos';
+	let completeTable;
+	let completeTodos = todos.filter((td) => td.isCompleted);
+	const completeWrap = buildTableWrap("Complete");
+	completeTodos.length > 0
+		? (completeTable = buildProjectTodoTable("complete", completeTodos))
+		: (completeTable = buildPlaceholder(
+				"No complete todos",
+				"empty-complete-todos",
+			));
+	if (completeTable) {
+		completeWrap.append(completeTable);
+		todoContainer.append(completeWrap);
+	}
 
-
-
-
-    todoHeader.append(todoHeading);
-    container.append(pageHead);
-
-    let incompleteTable;
-    let incompleteTodos = todos.filter(td => !td.isCompleted);
-    const incompleteWrap = buildTableWrap('Incomplete');
-    incompleteTodos.length > 0 ? incompleteTable = buildProjectTodoTable('incomplete', incompleteTodos) : incompleteTable = buildPlaceholder('No incomplete todos', 'empty-incomplete-todos');
-    if (incompleteTable) { incompleteWrap.append(incompleteTable); todoContainer.append(incompleteWrap);
-    }
-
-    let completeTable;
-    let completeTodos = todos.filter(td => td.isCompleted);
-    const completeWrap = buildTableWrap('Complete');
-    completeTodos.length > 0 ? completeTable = buildProjectTodoTable('complete', completeTodos) : completeTable = buildPlaceholder('No complete todos', 'empty-complete-todos');
-    if (completeTable) { completeWrap.append(completeTable); todoContainer.append(completeWrap)
-    }
-
-    container.append(todoContainer);
-    return container;
+	container.append(todoContainer);
+	return container;
 }
 
-function buildProjectPageHead(project){
-    const pageHeadCon = document.createElement('div');
-    pageHeadCon.classList.add('project-page-head-container');
+function buildProjectPageHead(project) {
+	const pageHeadCon = document.createElement("div");
+	pageHeadCon.classList.add("project-page-head-container");
 
-    const pageHead = document.createElement('div');
-    pageHead.classList.add('project-page-head');
+	const pageHead = document.createElement("div");
+	pageHead.classList.add("project-page-head");
 
-    const details = document.createElement('div');
-    details.classList.add('project-page-head-details');
+	const details = document.createElement("div");
+	details.classList.add("project-page-head-details");
 
-    const title = document.createElement('h2');
-    title.textContent = project.title;
-    title.classList.add('project-page-title');
+	const title = document.createElement("h2");
+	title.textContent = project.title;
+	title.classList.add("project-page-title");
 
-    const date = document.createElement('p');
-    const d = formatDate(project.created, 'date');
-    date.textContent = `Created on ${d}`;
-    date.classList.add('project-page-date');
+	const date = document.createElement("p");
+	const d = formatDate(project.created, "date");
+	date.textContent = `Created on ${d}`;
+	date.classList.add("project-page-date");
 
-    const desc = document.createElement('p');
-    desc.textContent = project.description;
-    desc.classList.add('project-page-desc');
+	const desc = document.createElement("p");
+	desc.textContent = project.description;
+	desc.classList.add("project-page-desc");
 
+	const todoCounts = document.createElement("div");
+	todoCounts.classList.add("project-page-head-counts");
+	let todos = project.todos;
+	const p1 = createBasicElement("p", "Todos");
+	p1.classList.add("project-count", "count");
+	const totalTodos = createBasicElement("span", String(todos.length));
+	p1.append(totalTodos);
+	let completed = todos.filter((td) => td.isCompleted);
+	const p2 = createBasicElement("p", "Complete");
+	p2.classList.add("project-count", "completed");
+	const completeTodos = createBasicElement("span", String(completed.length));
+	p2.append(completeTodos);
+	let incomplete = todos.filter((td) => !td.isCompleted);
+	const p3 = createBasicElement("p", "Incomplete");
+	p3.classList.add("project-count", "incomplete");
+	const incompleteTodos = createBasicElement("span", String(incomplete.length));
+	p3.append(incompleteTodos);
 
+	const newTodoBtn = document.createElement("button");
+	newTodoBtn.classList.add("new-btn", "btn");
+	newTodoBtn.addEventListener("click", () => handleTodoForm());
+	const plus = document.createElement("span");
+	plus.innerHTML = plussvg;
 
-    const todoCounts = document.createElement('div');
-        todoCounts.classList.add('project-page-head-counts');
-    let todos = project.todos;
-        const p1 = createBasicElement('p', 'Todos');
-        p1.classList.add('project-count', 'count');
-        const totalTodos = createBasicElement('span', String(todos.length));
-        p1.append(totalTodos);
-    let completed = todos.filter(td => td.isCompleted);
-        const p2 = createBasicElement('p', 'Complete');
-        p2.classList.add('project-count', 'completed');
-        const completeTodos = createBasicElement('span', String(completed.length));
-        p2.append(completeTodos);
-    let incomplete = todos.filter(td => !td.isCompleted);
-        const p3 = createBasicElement('p', 'Incomplete');
-        p3.classList.add('project-count', 'incomplete');
-        const incompleteTodos = createBasicElement('span', String(incomplete.length));
-        p3.append(incompleteTodos);
+	details.append(title, date, desc);
+	newTodoBtn.prepend(plus);
+	todoCounts.append(p1, p2, p3);
+	pageHead.append(details, todoCounts, newTodoBtn);
+	pageHeadCon.append(pageHead);
 
-    const newTodoBtn = document.createElement('button');
-        newTodoBtn.classList.add('new-btn', 'btn');
-        newTodoBtn.addEventListener('click', () => handleTodoForm());
-    const plus = document.createElement('span');
-        plus.innerHTML = plussvg;
-
-    details.append(title, date, desc);
-    newTodoBtn.prepend(plus);
-    todoCounts.append(p1, p2, p3);
-    pageHead.append(details, todoCounts, newTodoBtn);
-    pageHeadCon.append(pageHead);
-
-    return pageHeadCon;
+	return pageHeadCon;
 }
 
-function buildTableWrap(type){
-    const wrap = document.createElement('div');
-        wrap.id = `project-page-${type.toLowerCase()}-table-wrap`;
-        wrap.classList.add('project-page-table-wrap');
+function buildTableWrap(type) {
+	const wrap = document.createElement("div");
+	wrap.id = `project-page-${type.toLowerCase()}-table-wrap`;
+	wrap.classList.add("project-page-table-wrap");
 
-    const headWrap = document.createElement('div');
-    headWrap.classList.add('project-page-table-head');
-    const tableHead = document.createElement('h3');
-        tableHead.textContent = `${type} Todos`;
-        tableHead.id = `${type}-heading`;
+	const headWrap = document.createElement("div");
+	headWrap.classList.add("project-page-table-head");
+	const tableHead = document.createElement("h3");
+	tableHead.textContent = `${type} Todos`;
+	tableHead.id = `${type}-heading`;
 
-    headWrap.append(tableHead);
-    wrap.append(headWrap);
-    return wrap;
+	headWrap.append(tableHead);
+	wrap.append(headWrap);
+	return wrap;
 }
 
-export function buildPlaceholder(text, id = null){
-    const placeholder = document.createElement('div');
-    const p = document.createElement('p');
-    p.textContent = String(text);
-    placeholder.classList.add('empty-placeholder');
-    placeholder.append(p);
-    if (id) placeholder.id = id;
-    return placeholder;
+export function buildPlaceholder(text, id = null) {
+	const placeholder = document.createElement("div");
+	const p = document.createElement("p");
+	p.textContent = String(text);
+	placeholder.classList.add("empty-placeholder");
+	placeholder.append(p);
+	if (id) placeholder.id = id;
+	return placeholder;
 }
 
-function buildProjectTodoTable(type, todos){
-    const table = document.createElement('table');
-    table.id = `project-page-${type}-table`;
-    table.classList.add('project-page-todo-table');
-    const thead = document.createElement('thead');
-    const tr = document.createElement('tr');
-    const mark = document.createElement('th');
-        mark.textContent = ' ';
-        mark.classList.add('small-col');
+function buildProjectTodoTable(type, todos) {
+	const table = document.createElement("table");
+	table.id = `project-page-${type}-table`;
+	table.classList.add("project-page-todo-table");
+	const thead = document.createElement("thead");
+	const tr = document.createElement("tr");
+	const mark = document.createElement("th");
+	mark.textContent = " ";
+	mark.classList.add("small-col");
 
-    const date = document.createElement('th');
-        date.textContent = 'Date';
+	const date = document.createElement("th");
+	date.textContent = "Date";
 
-    const title = document.createElement('th');
-        title.textContent = 'Title';
+	const title = document.createElement("th");
+	title.textContent = "Title";
 
-    const due = document.createElement('th');
-        due.textContent = 'Due';
+	const due = document.createElement("th");
+	due.textContent = "Due";
 
-    const priority = document.createElement('th');
-        priority.textContent = 'Priority';
+	const priority = document.createElement("th");
+	priority.textContent = "Priority";
 
-    tr.append(mark, date, title, due, priority);
-    thead.append(tr);
-    table.append(thead);
+	tr.append(mark, date, title, due, priority);
+	thead.append(tr);
+	table.append(thead);
 
-    const tbody = document.createElement('tbody');
-    tbody.id = `todo-table-tbody-${type}`;
+	const tbody = document.createElement("tbody");
+	tbody.id = `todo-table-tbody-${type}`;
 
-    if (todos?.length > 0) {
-        todos.forEach(td => {const row = createTodoRow(td); tbody.append(row);});
-    }
+	if (todos?.length > 0) {
+		todos.forEach((td) => {
+			const row = createTodoRow(td);
+			tbody.append(row);
+		});
+	}
 
-    table.append(tbody);
-    return table;
+	table.append(tbody);
+	return table;
 }
 
-
-function handleTodoOptions(){
-    const head = document.querySelector('.project-page-head-container');
-    const exists = document.querySelector('.project-page-todo-options');
-    if (!exists) {
-        const options = buildTodoOptions();
-        head.append(options);
-    }
+function handleTodoOptions() {
+	const head = document.querySelector(".project-page-head-container");
+	const exists = document.querySelector(".project-page-todo-options");
+	if (!exists) {
+		const options = buildTodoOptions();
+		head.append(options);
+	}
 }
 
+function buildTodoOptions() {
+	const options = document.createElement("div");
+	options.classList.add("project-page-todo-options");
+	const buttonTypes = [
+		{ name: "delete", img: deletesvg },
+		{ name: "edit", img: editsvg },
+		{ name: "copy", img: copysvg },
+		{ name: "complete", img: completesvg },
+	];
+	buttonTypes.forEach((btn) => {
+		const b = document.createElement("button");
+		const s = document.createElement("span");
+		s.innerHTML = btn.img;
+		b.id = `todo-${btn.name}`;
+		b.classList.add("btn", "todo-option");
+		b.addEventListener("click", (e) => {
+			useTodoOption(e);
+		});
+		b.append(s);
+		options.append(b);
+	});
 
-function buildTodoOptions(){
-    const options = document.createElement('div');
-    options.classList.add('project-page-todo-options');
-    const buttonTypes = [
-        {name: 'delete', img: deletesvg}, {name: 'edit', img: editsvg}, {name: 'copy', img: copysvg}, {name: 'complete', img: completesvg}];
-    buttonTypes.forEach(btn => {
-        const b = document.createElement('button');
-        const s = document.createElement('span');
-        s.innerHTML = btn.img;
-        b.id = `todo-${btn.name}`;
-        b.classList.add('btn','todo-option');
-        b.addEventListener("click",  (e) => {useTodoOption(e);})
-        b.append(s);
-        options.append(b);
-    });
-
-    return options;
+	return options;
 }
 
+function buildNewProjectForm() {
+	const form = document.createElement("form");
+	form.id = "new-project-form";
+	form.addEventListener("submit", (e) => {
+		let newProject = handleProjectFormSubmission(e);
+		if (newProject === undefined) return;
+		addNewCard(newProject);
+		addNewSidebarOption(newProject);
+	});
 
-function buildNewProjectForm(){
-    const form = document.createElement('form');
-    form.id = 'new-project-form';
-    form.addEventListener('submit', (e) => {
-        let newProject = handleProjectFormSubmission(e);
-        if (newProject === undefined) return;
-        addNewCard(newProject);
-        addNewSidebarOption(newProject);
-    });
+	const container = document.createElement("div");
 
-    const container = document.createElement('div');
+	const label1 = document.createElement("label");
+	label1.textContent = "Title";
 
-    const label1 = document.createElement('label');
-        label1.textContent = 'Title';
+	const titleInput = document.createElement("input");
+	titleInput.type = "text";
+	titleInput.name = "title";
+	titleInput.placeholder = "Household";
+	titleInput.id = "input-project-title";
+	label1.htmlFor = "input-project-title";
+	label1.append(titleInput);
 
-    const titleInput = document.createElement('input');
-        titleInput.type = 'text';
-        titleInput.name = 'title';
-        titleInput.placeholder = 'Household';
-        titleInput.id = 'input-project-title';
-        label1.htmlFor = 'input-project-title';
-    label1.append(titleInput);
+	const label2 = document.createElement("label");
+	label2.textContent = "Description";
+	const descInput = document.createElement("input");
+	descInput.type = "text";
+	descInput.name = "desc";
+	descInput.placeholder = "Manage cleaning, maintenance, etc.";
+	descInput.id = "input-project-desc";
+	label2.htmlFor = "input-project-desc";
+	label2.append(descInput);
 
-    const label2 = document.createElement('label');
-        label2.textContent = 'Description';
-    const descInput = document.createElement('input');
-        descInput.type = 'text';
-        descInput.name = 'desc';
-        descInput.placeholder = 'Manage cleaning, maintenance, etc.';
-        descInput.id = 'input-project-desc';
-        label2.htmlFor = 'input-project-desc';
-    label2.append(descInput);
-
-    const btn = createSaveButton();
-    container.append(label1, label2)
-    form.append(container, btn);
-    return form;
+	const btn = createSaveButton();
+	container.append(label1, label2);
+	form.append(container, btn);
+	return form;
 }
 
-function createSaveButton(){
-    const btn = document.createElement('button');
-    btn.classList.add('btn', 'save-btn');
-    btn.type = 'submit';
-    const span = document.createElement('span');
-    span.innerHTML = savesvg;
-    btn.prepend(span);
-    return btn;
+function createSaveButton() {
+	const btn = document.createElement("button");
+	btn.classList.add("btn", "save-btn");
+	btn.type = "submit";
+	const span = document.createElement("span");
+	span.innerHTML = savesvg;
+	btn.prepend(span);
+	return btn;
 }
 
-function handleNewProjectForm(){
-    const head = document.querySelector('.dash-top-bar');
-    let wrap = document.querySelector('#new-project-form-wrap');
-    if (!wrap){
-        const wrap = document.createElement('div');
-        wrap.id = 'new-project-form-wrap';
-        let form = buildNewProjectForm();
-        if (!form) return;
-        wrap.append(form);
-        head.append(wrap);
-        setTimeout(() => wrap.classList.add('reveal'), 25);
-    } else {
-        wrap.classList.remove('reveal');
-        setTimeout(() => wrap.remove(), 200);
-    }
+function handleNewProjectForm() {
+	const head = document.querySelector(".dash-top-bar");
+	let wrap = document.querySelector("#new-project-form-wrap");
+	if (!wrap) {
+		const wrap = document.createElement("div");
+		wrap.id = "new-project-form-wrap";
+		let form = buildNewProjectForm();
+		if (!form) return;
+		wrap.append(form);
+		head.append(wrap);
+		setTimeout(() => wrap.classList.add("reveal"), 25);
+	} else {
+		wrap.classList.remove("reveal");
+		setTimeout(() => wrap.remove(), 200);
+	}
 }
 
-
-
-function addNewCard(project){
-    removePlaceholder('.dash .empty-placeholder');
-    const dash = document.querySelector('.dash');
-    const c = buildProjectCard(project);
-    dash.append(c);
+function addNewCard(project) {
+	removePlaceholder(".dash .empty-placeholder");
+	const dash = document.querySelector(".dash");
+	const c = buildProjectCard(project);
+	dash.append(c);
 }
 
-function addNewSidebarOption(project){
-    removePlaceholder('.sidebar-list .sidebar-placeholder');
-    const list = document.querySelector('.sidebar-list');
-    const item = createSidebarItem(project);
-    list.append(item);
+function addNewSidebarOption(project) {
+	removePlaceholder(".sidebar-list .sidebar-placeholder");
+	const list = document.querySelector(".sidebar-list");
+	const item = createSidebarItem(project);
+	list.append(item);
 }
 
-function createSidebarItem(project){
-    const item = document.createElement('li');
-    item.dataset.id = project.id;
-    item.classList.add('sidebar-item');
+function createSidebarItem(project) {
+	const item = document.createElement("li");
+	item.dataset.id = project.id;
+	item.classList.add("sidebar-item");
 
-    const label = document.createElement('span');
-    label.textContent = project.title;
-    label.classList.add('sidebar-item-label');
+	const label = document.createElement("span");
+	label.textContent = project.title;
+	label.classList.add("sidebar-item-label");
 
-    item.addEventListener('click', () => {
-        setSelectedItem(item.dataset.id);
-        showProjectPage(item.dataset.id);
-    });
+	item.addEventListener("click", () => {
+		setSelectedItem(item.dataset.id);
+		showProjectPage(item.dataset.id);
+	});
 
-    const mark = document.createElement('span');
-    mark.innerHTML = '&#9632';
-    mark.style.color = getColor();
+	const mark = document.createElement("span");
+	mark.innerHTML = "&#9632";
+	mark.style.color = getColor();
 
-    item.append(mark, label);
-    return item;
+	item.append(mark, label);
+	return item;
 }
-function buildFooter(){
-    const footer = document.createElement('footer');
-    footer.classList.add('site-footer');
+function buildFooter() {
+	const footer = document.createElement("footer");
+	footer.classList.add("site-footer");
 
-    const footerWrap = document.createElement('div');
-    footerWrap.classList.add('footer-wrap');
+	const footerWrap = document.createElement("div");
+	footerWrap.classList.add("footer-wrap");
 
-    const textContainer = document.createElement('div');
-    textContainer.classList.add('footer-text-container');
-    const p = document.createElement('p');
-    p.innerHTML = `Zehno's Todo App &copy; 2026 Zehno All Rights Reserved.`;
+	const textContainer = document.createElement("div");
+	textContainer.classList.add("footer-text-container");
+	const p = document.createElement("p");
+	p.innerHTML = `Zehno's Todo App &copy; 2026 Zehno All Rights Reserved.`;
 
-    const a = document.createElement('a');
-    a.href = 'https://github.com/Zehnooo';
-    a.target = '_blank';
-    a.textContent = 'My Github';
-    a.classList.add('footer-link');
+	const a = document.createElement("a");
+	a.href = "https://github.com/Zehnooo";
+	a.target = "_blank";
+	a.textContent = "My Github";
+	a.classList.add("footer-link");
 
-    const options = buildOptions();
+	const options = buildOptions();
 
-    textContainer.append(p, a);
-    footerWrap.append(options, textContainer);
-    footer.append(footerWrap);
-    return footer;
-}
-
-function buildOptions(){
-    const options = document.createElement('div');
-    options.id = 'options';
-
-    const themeToggle = document.createElement('button');
-    themeToggle.classList.add('theme-toggle', 'btn');
-    themeToggle.innerHTML = moonsvg;
-
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark')
-        saveTheme();
-    });
-
-
-    options.append(themeToggle);
-    return options;
+	textContainer.append(p, a);
+	footerWrap.append(options, textContainer);
+	footer.append(footerWrap);
+	return footer;
 }
 
-function buildTodoForm(){
-    const form = document.createElement('form');
-    form.id = 'new-todo-form';
-    form.addEventListener('submit', (e) => {
-        const projectId = document.querySelector('.project-page').dataset.project_id;
-        const newTodo = handleTodoFormSubmission(e, projectId);
-        if (newTodo === undefined) return;
-        addTodoToList(newTodo);
-        addTodoToProject(newTodo);
-    });
-    const container = document.createElement('div');
+function buildOptions() {
+	const options = document.createElement("div");
+	options.id = "options";
 
-    const label1 = createBasicElement('label');
-    const span1 = createBasicElement('span', 'Title');
-        label1.htmlFor = 'input-todo-title';
-    const titleInput = createInput('input-todo-title', 'text', 'title', 'Clean Kitchen');
-    titleInput.classList.add('todo-input');
-    label1.append(span1, titleInput);
+	const themeToggle = document.createElement("button");
+	themeToggle.classList.add("theme-toggle", "btn");
+	themeToggle.innerHTML = moonsvg;
 
-    const label2 = createBasicElement('label');
-    const span2 = createBasicElement('span', 'Description');
-        label2.htmlFor = 'input-todo-desc';
-    const descInput = createInput('input-todo-desc', 'text', 'desc', 'Do the dishes, mop the floor...');
-    descInput.classList.add('todo-input');
-    label2.append(span2, descInput);
+	themeToggle.addEventListener("click", () => {
+		document.body.classList.toggle("dark");
+		saveTheme();
+	});
 
-    const label3 = createBasicElement('label');
-    const span3 = createBasicElement('span', 'Due Date');
-        label3.htmlFor = 'input-todo-date';
-    const dueDateInput = createInput('input-todo-date', 'datetime-local', 'due-date');
-    dueDateInput.classList.add('todo-input');
-    label3.append(span3, dueDateInput);
-
-    const label4 = createBasicElement('label');
-    const span4 = createBasicElement('span', 'Priority');
-    const priorityInput = document.createElement('select');
-    priorityInput.name = 'priority';
-    priorityInput.classList.add('todo-input');
-      
-        priorityOptions.forEach(op => {
-            const x = document.createElement('option');
-            x.value = op.value;
-            x.textContent = op.text;
-            priorityInput.appendChild(x);
-        });
-    label4.append(span4, priorityInput);
-
-    const btn = createSaveButton();
-
-    container.append(label1, label2, label3, label4)
-    form.append(container, btn);
-    return form;
+	options.append(themeToggle);
+	return options;
 }
 
-function handleTodoForm(){
-    const head = document.querySelector('.project-page-head-container');
-    let wrap = document.querySelector('#todo-form-wrap');
-    if (!wrap) {
-        const wrap = document.createElement('div');
-        wrap.id = 'todo-form-wrap';
-        let form = buildTodoForm();
-        wrap.append(form);
-        head.appendChild(wrap);
-        setTimeout(() => wrap.classList.add('reveal'), 25);
-    } else {
-        wrap.classList.remove('reveal');
-        setTimeout(() => wrap.remove(), 200);
-    }
+function buildTodoForm() {
+	const form = document.createElement("form");
+	form.id = "new-todo-form";
+	form.addEventListener("submit", (e) => {
+		const projectId =
+			document.querySelector(".project-page").dataset.project_id;
+		const newTodo = handleTodoFormSubmission(e, projectId);
+		if (newTodo === undefined) return;
+		addTodoToList(newTodo);
+		addTodoToProject(newTodo);
+	});
+	const container = document.createElement("div");
+
+	const label1 = createBasicElement("label");
+	const span1 = createBasicElement("span", "Title");
+	label1.htmlFor = "input-todo-title";
+	const titleInput = createInput(
+		"input-todo-title",
+		"text",
+		"title",
+		"Clean Kitchen",
+	);
+	titleInput.classList.add("todo-input");
+	label1.append(span1, titleInput);
+
+	const label2 = createBasicElement("label");
+	const span2 = createBasicElement("span", "Description");
+	label2.htmlFor = "input-todo-desc";
+	const descInput = createInput(
+		"input-todo-desc",
+		"text",
+		"desc",
+		"Do the dishes, mop the floor...",
+	);
+	descInput.classList.add("todo-input");
+	label2.append(span2, descInput);
+
+	const label3 = createBasicElement("label");
+	const span3 = createBasicElement("span", "Due Date");
+	label3.htmlFor = "input-todo-date";
+	const dueDateInput = createInput(
+		"input-todo-date",
+		"datetime-local",
+		"due-date",
+	);
+	dueDateInput.classList.add("todo-input");
+	label3.append(span3, dueDateInput);
+
+	const label4 = createBasicElement("label");
+	const span4 = createBasicElement("span", "Priority");
+	const priorityInput = document.createElement("select");
+	priorityInput.name = "priority";
+	priorityInput.classList.add("todo-input");
+
+	priorityOptions.forEach((op) => {
+		const x = document.createElement("option");
+		x.value = op.value;
+		x.textContent = op.text;
+		priorityInput.appendChild(x);
+	});
+	label4.append(span4, priorityInput);
+
+	const btn = createSaveButton();
+
+	container.append(label1, label2, label3, label4);
+	form.append(container, btn);
+	return form;
 }
 
-function createTodoRow(todo){
-    const row = document.createElement('tr');
-    row.dataset.todo_id = todo.id;
-    row.addEventListener('click', () => handleTodoModal(todo));
-
-    const checkbox = document.createElement('td');
-    checkbox.classList.add('small-col');
-
-    const check = document.createElement('input');
-    check.classList.add('todo-checkbox');
-    check.addEventListener('click', (e) => e.stopPropagation());
-    check.addEventListener('change', (e) => {
-        const check = handleTodoCheck(e);
-        if (check !== null) {handleTodoOptions();} else {document.querySelector('.project-page-todo-options')?.remove();}
-    });
-    check.type = 'checkbox';
-    check.checked = false;
-
-    const dateCell = document.createElement('td');
-        dateCell.id = 'date-cell';
-    const date = document.createElement('span');
-    date.textContent = formatDate(todo.created, 'date-time');
-
-    dateCell.append(date);
-
-    const titleCell = document.createElement('td');
-        titleCell.id = 'title-cell';
-    const title = document.createElement('span');
-        title.textContent = todo.title;
-        title.id = 'todo-title';
-    const titleInput = document.createElement('input');
-        titleInput.classList.add('todo-edit');
-        titleInput.id = 'todo-title-edit';
-        titleInput.addEventListener('click', stopPropagation);
-
-    titleCell.append(title, titleInput);
-    
-    
-    const dueCell = document.createElement('td');
-        dueCell.id = 'due-cell';
-    const due = document.createElement('span');
-        due.textContent = formatDate(todo.due_date, 'date-time');
-        due.id = 'todo-due-date';
-    const dueInput = document.createElement('input');
-        dueInput.classList.add('todo-edit');
-        dueInput.type = 'datetime-local';
-        dueInput.id = 'todo-due-date-edit';
-        dueInput.addEventListener('click', stopPropagation);
-
-    dueCell.append(due, dueInput);
-
-    const priorityCell = document.createElement('td');
-        priorityCell.id = 'priority-cell';
-    const priority = document.createElement('span');
-        priority.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
-        priority.textContent = todo.priority[0].toUpperCase() + todo.priority.slice(1,todo.priority.length); 
-    const priorityInput = document.createElement('select');
-        priorityInput.classList.add('todo-edit');
-        priorityInput.id = 'todo-priority-edit';
-        priorityInput.addEventListener('click', stopPropagation);
-
-    priorityCell.append(priority, priorityInput);
-
-    
-    priorityOptions.forEach(op => {
-        const x = document.createElement('option');
-        x.value = op.value;
-        x.textContent = op.text;
-        priorityInput.appendChild(x);
-    });
-
-    checkbox.append(check);
-    row.append(checkbox, dateCell, titleCell, dueCell, priorityCell);
-    return row;
+function handleTodoForm() {
+	const head = document.querySelector(".project-page-head-container");
+	let wrap = document.querySelector("#todo-form-wrap");
+	if (!wrap) {
+		const wrap = document.createElement("div");
+		wrap.id = "todo-form-wrap";
+		let form = buildTodoForm();
+		wrap.append(form);
+		head.appendChild(wrap);
+		setTimeout(() => wrap.classList.add("reveal"), 25);
+	} else {
+		wrap.classList.remove("reveal");
+		setTimeout(() => wrap.remove(), 200);
+	}
 }
 
-export function addTodoToList(td){
-    const newRow = createTodoRow(td);
-    let name = td.isCompleted ? "complete"  : "incomplete";
-    const tbody = document.querySelector(`#todo-table-tbody-${name}`);
-    if (tbody) {
-       
-        tbody.appendChild(newRow);
-    }
-    else {
-      
-        const tbody = updateTable(name);
-        tbody.appendChild(newRow);
-    }
+function createTodoRow(todo) {
+	const row = document.createElement("tr");
+	row.dataset.todo_id = todo.id;
+	row.addEventListener("click", () => handleTodoModal(todo));
+
+	const checkbox = document.createElement("td");
+	checkbox.classList.add("small-col");
+
+	const check = document.createElement("input");
+	check.classList.add("todo-checkbox");
+	check.addEventListener("click", (e) => e.stopPropagation());
+	check.addEventListener("change", (e) => {
+		const check = handleTodoCheck(e);
+		if (check !== null) {
+			handleTodoOptions();
+			showSelectedTodoCount(check.length);
+		} else {
+			document.querySelector(".project-page-todo-options")?.remove();
+			hideSelectedTodoCount();
+			hideEditCells(document.querySelectorAll(".todo-edit"));
+			showDataCells(document.querySelectorAll(".hide"));
+			document.querySelectorAll(".row-save").forEach((btn) => btn.remove());
+		}
+	});
+	check.type = "checkbox";
+	check.checked = false;
+
+	const dateCell = document.createElement("td");
+	dateCell.id = "date-cell";
+	const date = document.createElement("span");
+	date.textContent = formatDate(todo.created, "date-time");
+
+	dateCell.append(date);
+
+	const titleCell = document.createElement("td");
+	titleCell.id = "title-cell";
+	const title = document.createElement("span");
+	title.textContent = todo.title;
+	title.id = "todo-title";
+	const titleInput = document.createElement("input");
+	titleInput.classList.add("todo-edit");
+	titleInput.id = "todo-title-edit";
+	titleInput.addEventListener("click", stopPropagation);
+
+	titleCell.append(title, titleInput);
+
+	const dueCell = document.createElement("td");
+	dueCell.id = "due-cell";
+	const due = document.createElement("span");
+	due.textContent = formatDate(todo.due_date, "date-time");
+	due.id = "todo-due-date";
+	const dueInput = document.createElement("input");
+	dueInput.classList.add("todo-edit");
+	dueInput.type = "datetime-local";
+	dueInput.id = "todo-due-date-edit";
+	dueInput.addEventListener("click", stopPropagation);
+
+	dueCell.append(due, dueInput);
+
+	const priorityCell = document.createElement("td");
+	priorityCell.id = "priority-cell";
+	const priority = document.createElement("span");
+	priority.id = "todo-priority";
+	priority.classList.add(`${todo.priority.toLowerCase()}-priority`, "priority");
+	priority.textContent =
+		todo.priority[0].toUpperCase() +
+		todo.priority.slice(1, todo.priority.length);
+	const priorityInput = document.createElement("select");
+	priorityInput.classList.add("todo-edit");
+	priorityInput.id = "todo-priority-edit";
+	priorityInput.addEventListener("click", stopPropagation);
+
+	priorityCell.append(priority, priorityInput);
+
+	priorityOptions.forEach((op) => {
+		const x = document.createElement("option");
+		x.value = op.value;
+		x.textContent = op.text;
+		priorityInput.appendChild(x);
+	});
+
+	checkbox.append(check);
+	row.append(checkbox, dateCell, titleCell, dueCell, priorityCell);
+	return row;
 }
 
-function updateTable(name){
-    removePlaceholder(`#empty-${name}-todos`);
-    const wrap = document.querySelector(`#project-page-${name}-table-wrap`);
-    const table = buildProjectTodoTable(name);
-    wrap.appendChild(table);
-    return document.querySelector(`#todo-table-tbody-${name}`)
+export function addTodoToList(td) {
+	const newRow = createTodoRow(td);
+	let name = td.isCompleted ? "complete" : "incomplete";
+	const tbody = document.querySelector(`#todo-table-tbody-${name}`);
+	if (tbody) {
+		tbody.appendChild(newRow);
+	} else {
+		const tbody = updateTable(name);
+		tbody.appendChild(newRow);
+	}
 }
 
-function createBasicElement(name, text = null){
-    const el = document.createElement(String(name));
-    if (text) el.textContent = String(text);
-    return el;
+function updateTable(name) {
+	removePlaceholder(`#empty-${name}-todos`);
+	const wrap = document.querySelector(`#project-page-${name}-table-wrap`);
+	const table = buildProjectTodoTable(name);
+	wrap.appendChild(table);
+	return document.querySelector(`#todo-table-tbody-${name}`);
 }
 
-function createInput(id, type, name, placeholder = null){
-    const input = document.createElement('input');
-    input.id = id;
-    input.type = type;
-    input.name = name;
-    if (placeholder) input.placeholder = placeholder;
-    return input;
+function createBasicElement(name, text = null) {
+	const el = document.createElement(String(name));
+	if (text) el.textContent = String(text);
+	return el;
+}
+
+function createInput(id, type, name, placeholder = null) {
+	const input = document.createElement("input");
+	input.id = id;
+	input.type = type;
+	input.name = name;
+	if (placeholder) input.placeholder = placeholder;
+	return input;
 }
 
 function removePlaceholder(selector) {
-    const placeholder = document.querySelector(String(selector));
-    if (placeholder) placeholder.remove();
+	const placeholder = document.querySelector(String(selector));
+	if (placeholder) placeholder.remove();
 }
 
-function buildModal(){
-    const dialog = document.createElement('dialog');
-        dialog.id = 'cust-modal';
-        dialog.addEventListener('close', () => dialog.remove());
-    const container = document.createElement('div');
-        container.id = 'cust-modal-container';
-        container.classList.add('scroll');
-    dialog.append(container);
-    return dialog
+function buildModal() {
+	const dialog = document.createElement("dialog");
+	dialog.id = "cust-modal";
+	dialog.addEventListener("close", () => dialog.remove());
+	const container = document.createElement("div");
+	container.id = "cust-modal-container";
+	container.classList.add("scroll");
+	dialog.append(container);
+	return dialog;
 }
 
-function handleTodoModal(todo){
-    const modal = buildModal();
-    modal.dataset.todo_id = todo.id;
-    const container = modal.querySelector('#cust-modal-container');
-    container.append(buildTodoModalContent(todo));
-    const closeBtn = document.createElement('button');
-        closeBtn.textContent = 'X';
-        closeBtn.classList.add('btn', 'close-modal');
-    closeBtn.addEventListener('click', () => document.querySelector('#cust-modal').close());
-    modal.appendChild(closeBtn);
-    if (modal) document.body.append(modal); modal.showModal();
+function handleTodoModal(todo) {
+	const modal = buildModal();
+	modal.dataset.todo_id = todo.id;
+	const container = modal.querySelector("#cust-modal-container");
+	container.append(buildTodoModalContent(todo));
+	const closeBtn = document.createElement("button");
+	closeBtn.textContent = "X";
+	closeBtn.classList.add("btn", "close-modal");
+	closeBtn.addEventListener("click", () =>
+		document.querySelector("#cust-modal").close(),
+	);
+	modal.appendChild(closeBtn);
+	if (modal) document.body.append(modal);
+	modal.showModal();
 }
 
-function buildTodoModalContent(todo){
-    const prefix = 'cust-modal-';
-    const container = document.createElement('div');
-    const head = document.createElement('div');
-    const status = document.createElement('div');
-    status.classList.add(`${prefix}status`)
+function buildTodoModalContent(todo) {
+	const prefix = "cust-modal-";
+	const container = document.createElement("div");
+	const head = document.createElement("div");
+	const status = document.createElement("div");
+	status.classList.add(`${prefix}status`);
 
-    const title = createBasicElement('h2', String(todo.title));
-    title.classList.add(`${prefix}title`)
-    const cDate = createBasicElement('p', `Created: ${String(todo.created)}`);
-    cDate.classList.add(`${prefix}cdate`);
-    const dDate = createBasicElement('p', `Due: ${String(todo.due_date)}`);
-    dDate.classList.add(`${prefix}ddate`);
-    const desc = createBasicElement('p', String(todo.description));
-    desc.classList.add(`${prefix}desc`);
-    const prio = createBasicElement('span', String(todo.priority));
-    prio.classList.add(`${todo.priority.toLowerCase()}-priority`, 'priority');
-    const completed = createBasicElement('span', String(todo.isCompleted ? 'Complete' : 'Incomplete'));
-    completed.classList.add(`${prefix}check`);
-    todo.isCompleted ? completed.classList.add('completed') : completed.classList.add('incomplete');
+	const title = createBasicElement("h2", String(todo.title));
+	title.classList.add(`${prefix}title`);
+	const cDate = createBasicElement("p", `Created: ${String(todo.created)}`);
+	cDate.classList.add(`${prefix}cdate`);
+	const dDate = createBasicElement("p", `Due: ${String(todo.due_date)}`);
+	dDate.classList.add(`${prefix}ddate`);
+	const desc = createBasicElement("p", String(todo.description));
+	desc.classList.add(`${prefix}desc`);
+	const prio = createBasicElement("span", String(todo.priority));
+	prio.classList.add(`${todo.priority.toLowerCase()}-priority`, "priority");
+	const completed = createBasicElement(
+		"span",
+		String(todo.isCompleted ? "Complete" : "Incomplete"),
+	);
+	completed.classList.add(`${prefix}check`);
+	todo.isCompleted
+		? completed.classList.add("completed")
+		: completed.classList.add("incomplete");
 
-    head.append(title, desc);
-    status.append(cDate, dDate, prio, completed);
+	head.append(title, desc);
+	status.append(cDate, dDate, prio, completed);
 
-    const section = document.createElement('div');
-        section.classList.add(`${prefix}main`);
-    const noteSection = buildTodoSection(todo.notes, 'Notes');
-    const checklistSection = buildTodoSection(todo.checklist, 'Checklist');
-    section.append(head, checklistSection, noteSection);
-    container.append(status, section);
-    return container
+	const section = document.createElement("div");
+	section.classList.add(`${prefix}main`);
+	const noteSection = buildTodoSection(todo.notes, "Notes");
+	const checklistSection = buildTodoSection(todo.checklist, "Checklist");
+	section.append(head, checklistSection, noteSection);
+	container.append(status, section);
+	return container;
 }
 
 function buildTodoSection(arr, title) {
-    const container = document.createElement('div');
-    container.classList.add('cust-modal-section');
-    container.id = `cust-modal-${title.toLowerCase()}`;
-    const header = document.createElement('div');
-    const sectionTitle = createBasicElement('h3', title);
-    const newBtn = createBasicElement('button');
-    newBtn.addEventListener('click', () => {handleTodoSectionForm(title.toLowerCase());})
+	const container = document.createElement("div");
+	container.classList.add("cust-modal-section");
+	container.id = `cust-modal-${title.toLowerCase()}`;
+	const header = document.createElement("div");
+	const sectionTitle = createBasicElement("h3", title);
+	const newBtn = createBasicElement("button");
+	newBtn.addEventListener("click", () => {
+		handleTodoSectionForm(title.toLowerCase());
+	});
 
-    const plus = document.createElement('span');
-        plus.innerHTML = plussvg;
-    newBtn.prepend(plus);
-    newBtn.classList.add('new-btn', 'btn');
-    header.append(sectionTitle, newBtn);
-    container.append(header);
-    if (arr?.length > 0) {
-        const content = buildTodoListContent(arr, title.toLowerCase());
-        container.append(content);
-    } else {
-        const placeholder = buildPlaceholder('No items found');
-        placeholder.id = `cust-modal-${title.toLowerCase()}-placeholder`;
-        container.appendChild(placeholder);
-    }
-    return container;
+	const plus = document.createElement("span");
+	plus.innerHTML = plussvg;
+	newBtn.prepend(plus);
+	newBtn.classList.add("new-btn", "btn");
+	header.append(sectionTitle, newBtn);
+	container.append(header);
+	if (arr?.length > 0) {
+		const content = buildTodoListContent(arr, title.toLowerCase());
+		container.append(content);
+	} else {
+		const placeholder = buildPlaceholder("No items found");
+		placeholder.id = `cust-modal-${title.toLowerCase()}-placeholder`;
+		container.appendChild(placeholder);
+	}
+	return container;
 }
 
 function buildTodoListContent(arr, title) {
-    const container = document.createElement('div');
-    container.id = `cust-modal-${title}-content`;
-    container.classList.add('cust-modal-content');
-    switch(title){
-        case 'notes':
-        arr.forEach(item => {
-            const n = createNoteCard(item);
-            container.appendChild(n);
-        });
-            break;
-        case 'checklist':
-        const list = document.createElement('ol');
-        arr.forEach(item => {
-            const i = createChecklistCard(item);
-            list.appendChild(i);
-        });
-            container.append(list);
-            break;
-    }
-    return container;
+	const container = document.createElement("div");
+	container.id = `cust-modal-${title}-content`;
+	container.classList.add("cust-modal-content");
+	switch (title) {
+		case "notes":
+			arr.forEach((item) => {
+				const n = createNoteCard(item);
+				container.appendChild(n);
+			});
+			break;
+		case "checklist":
+			const list = document.createElement("ol");
+			arr.forEach((item) => {
+				const i = createChecklistCard(item);
+				list.appendChild(i);
+			});
+			container.append(list);
+			break;
+	}
+	return container;
 }
 
-function addNewTodoListContent(item, title){
-    const section = document.querySelector(`#cust-modal-${title}-content`);
-    if (!section) {
-        try {
-            removePlaceholder(`#cust-modal-${title}-placeholder`);
-            document.querySelector(`#cust-modal-${title.toLowerCase()}`).append(buildTodoListContent([item], title));
-            return;
-        } catch (err) {
-            fireGenericError(err);
-            return;
-        }
-    }
-    switch(title){
-        case 'notes':
-            try {
-                const n = createNoteCard(item);
-                section.appendChild(n);
-            } catch (err) { fireGenericError(err); return; }
-            break;
-        case 'checklist':
-            try {
-                const i = createChecklistCard(item);
-                section.firstElementChild.appendChild(i);
-            } catch (err) { fireGenericError(err); return; }
-            break;
-    }
+function addNewTodoListContent(item, title) {
+	const section = document.querySelector(`#cust-modal-${title}-content`);
+	if (!section) {
+		try {
+			removePlaceholder(`#cust-modal-${title}-placeholder`);
+			document
+				.querySelector(`#cust-modal-${title.toLowerCase()}`)
+				.append(buildTodoListContent([item], title));
+			return;
+		} catch (err) {
+			fireGenericError(err);
+			return;
+		}
+	}
+	switch (title) {
+		case "notes":
+			try {
+				const n = createNoteCard(item);
+				section.appendChild(n);
+			} catch (err) {
+				fireGenericError(err);
+				return;
+			}
+			break;
+		case "checklist":
+			try {
+				const i = createChecklistCard(item);
+				section.firstElementChild.appendChild(i);
+			} catch (err) {
+				fireGenericError(err);
+				return;
+			}
+			break;
+	}
 }
-function createNoteCard(item){
-    const w = document.createElement('pre');
-    w.dataset.id = item.id;
-    const p = createBasicElement('p', String(item.value));
-    w.classList.add('cust-modal-list-item');
-    w.append(p);
-    const b = buildDeleteButton();
-    b.addEventListener('click', async () => {
-        const deleted = await handleTodoItemDelete(item);
-        if (deleted) removeTodoItemCard(item.id);
-    });
-    w.append(b);
-    return w;
-}
-
-function createChecklistCard(item){
-    const i = document.createElement('li');
-        i.classList.add('cust-modal-list-item');
-        i.dataset.id = item.id;
-    const wrapper = document.createElement('span');
-        wrapper.classList.add('checklist-item-content');
-    const text = document.createTextNode(String(item.value));
-    const b = buildDeleteButton();
-        b.addEventListener('click', async () => {
-            const deleted = await handleTodoItemDelete(item);
-            if (deleted) removeTodoItemCard(item.id);
-        });
-    wrapper.append(text, b);
-    i.append(wrapper);
-    return i;
-}
-function handleTodoSectionForm(title){
-    let head = document.querySelector(`#cust-modal-${title}`).firstElementChild;
-    let wrap = document.querySelector(`#cust-modal-${title}-form-wrap`);
-    if (!wrap){
-        const wrap = document.createElement('div');
-        wrap.classList.add('form-wrap');
-        wrap.id = `cust-modal-${title}-form-wrap`;
-        let form = buildTodoSectionForm(title.toLowerCase());
-        if (!form) {  return   }
-        wrap.append(form);
-        head.after(wrap);
-        setTimeout(() => wrap.classList.add('reveal'), 25);
-    } else {
-        wrap.classList.remove('reveal');
-        setTimeout(() => wrap.remove(), 200);
-    }
+function createNoteCard(item) {
+	const w = document.createElement("pre");
+	w.dataset.id = item.id;
+	const p = createBasicElement("p", String(item.value));
+	w.classList.add("cust-modal-list-item");
+	w.append(p);
+	const b = buildDeleteButton();
+	b.addEventListener("click", async () => {
+		const deleted = await handleTodoItemDelete(item);
+		if (deleted) removeTodoItemCard(item.id);
+	});
+	w.append(b);
+	return w;
 }
 
-function buildTodoSectionForm(title){
-    const f = document.createElement('form');
-    f.id = `cust-modal-${title}-form`;
-    f.classList.add('cust-modal-form');
-    f.addEventListener('submit', (e) => {
-        const todoId = document.querySelector('#cust-modal').dataset.todo_id;
-        const newItem = handleModalFormSubmission(e, todoId, title);
-        f.reset();
-        if (!newItem) return;
-        addNewTodoListContent(newItem, title);
-    });
-    let inp;
-    if (title === 'notes') {
-        inp = document.createElement('textarea');
-        inp.classList.add('ta');
-        inp.placeholder = 'Task prerequisites, ideas, findings, etc.';
-
-    } else {
-        inp = document.createElement('input');
-        inp.placeholder = 'List of things to complete for the todo';
-    }
-    inp.name = 'value';
-    inp.id = `cust-modal-${title}-input`;
-    inp.classList.add('modal-input');
-    const b = createSaveButton();
-    f.append(inp, b);
-    return f ? f : null;
+function createChecklistCard(item) {
+	const i = document.createElement("li");
+	i.classList.add("cust-modal-list-item");
+	i.dataset.id = item.id;
+	const wrapper = document.createElement("span");
+	wrapper.classList.add("checklist-item-content");
+	const text = document.createTextNode(String(item.value));
+	const b = buildDeleteButton();
+	b.addEventListener("click", async () => {
+		const deleted = await handleTodoItemDelete(item);
+		if (deleted) removeTodoItemCard(item.id);
+	});
+	wrapper.append(text, b);
+	i.append(wrapper);
+	return i;
+}
+function handleTodoSectionForm(title) {
+	let head = document.querySelector(`#cust-modal-${title}`).firstElementChild;
+	let wrap = document.querySelector(`#cust-modal-${title}-form-wrap`);
+	if (!wrap) {
+		const wrap = document.createElement("div");
+		wrap.classList.add("form-wrap");
+		wrap.id = `cust-modal-${title}-form-wrap`;
+		let form = buildTodoSectionForm(title.toLowerCase());
+		if (!form) {
+			return;
+		}
+		wrap.append(form);
+		head.after(wrap);
+		setTimeout(() => wrap.classList.add("reveal"), 25);
+	} else {
+		wrap.classList.remove("reveal");
+		setTimeout(() => wrap.remove(), 200);
+	}
 }
 
-function buildDeleteButton(){
-    const b = document.createElement('button');
-    b.innerHTML = deletesvg;
-    b.classList.add('del-btn', 'btn');
-    return b;
+function buildTodoSectionForm(title) {
+	const f = document.createElement("form");
+	f.id = `cust-modal-${title}-form`;
+	f.classList.add("cust-modal-form");
+	f.addEventListener("submit", (e) => {
+		const todoId = document.querySelector("#cust-modal").dataset.todo_id;
+		const newItem = handleModalFormSubmission(e, todoId, title);
+		f.reset();
+		if (!newItem) return;
+		addNewTodoListContent(newItem, title);
+	});
+	let inp;
+	if (title === "notes") {
+		inp = document.createElement("textarea");
+		inp.classList.add("ta");
+		inp.placeholder = "Task prerequisites, ideas, findings, etc.";
+	} else {
+		inp = document.createElement("input");
+		inp.placeholder = "List of things to complete for the todo";
+	}
+	inp.name = "value";
+	inp.id = `cust-modal-${title}-input`;
+	inp.classList.add("modal-input");
+	const b = createSaveButton();
+	f.append(inp, b);
+	return f ? f : null;
 }
 
-function removeTodoItemCard(id){
-    document.querySelector(`[data-id='${id}']`).remove();
+function buildDeleteButton() {
+	const b = document.createElement("button");
+	b.innerHTML = deletesvg;
+	b.classList.add("del-btn", "btn");
+	return b;
 }
 
-export function moveTodoCard(todo){
-    const bool = todo.isCompleted ? true : false;
-    const table = bool ? 'complete' : 'incomplete';
-    const row = document.querySelector(`[data-todo_id="${todo.id}"]`);
-
-    const tbody = document.querySelector(`#todo-table-tbody-${table}`);
-  
-    if (tbody) {
-        tbody.appendChild(row);
-    } else {
-        const tbody = updateTable(table);
-        tbody.appendChild(row);
-    }
-
+function removeTodoItemCard(id) {
+	document.querySelector(`[data-id='${id}']`).remove();
 }
 
-export function removeTable(project){
-    const counts = checkIfZeroTodos(project);
-            Object.entries(counts).forEach(([key, value]) => {
-                if (value === 0) {
-                    const table = document.querySelector(`#project-page-${key}-table`);
-                if (table) {
-                    table.remove();
-                    document.querySelector(`#project-page-${key}-table-wrap`).appendChild(buildPlaceholder(`No ${key} todos`, `empty-${key}-todos`));
-                }
-                }
-            });
+export function moveTodoCard(todo) {
+	const bool = todo.isCompleted ? true : false;
+	const table = bool ? "complete" : "incomplete";
+	const row = document.querySelector(`[data-todo_id="${todo.id}"]`);
+
+	const tbody = document.querySelector(`#todo-table-tbody-${table}`);
+
+	if (tbody) {
+		tbody.appendChild(row);
+	} else {
+		const tbody = updateTable(table);
+		tbody.appendChild(row);
+	}
 }
 
-export function getTodoRowsDom(selectedTodoIds = []){
-    if (!selectedTodoIds.length){ alert('No todos selected, please try again.');}
-    for (const id of selectedTodoIds){
-        const row = document.querySelector(`[data-todo_id='${id}']`);
-        const editCells = row.querySelectorAll('.todo-edit');
-        
-        const title = row.querySelector('#title-cell').querySelector('span');
-        const dueDate = row.querySelector('#due-cell').querySelector('span');
-        const priority = row.querySelector('#priority-cell').querySelector('span');
-     
-        showEditCells(editCells, [title, dueDate, priority]);
-        hideDataCells([title, dueDate, priority]);
-        const save = createSaveButton();
-        save.addEventListener('click', stopPropagation);
-        save.addEventListener('click', () => {
-            const newTitle = row.querySelector('#todo-title-edit').value;
-            const newDue = row.querySelector('#todo-due-date-edit').value;
-            const newPriority = row.querySelector('#todo-priority-edit').value;
-            const data = {newTitle, newDue, newPriority}
-            console.log(data);
-            console.log(`saved row ${id}`);
-            saveTodoEdits(id, data);
-            console.log(editCells);
-            for (const cell of editCells){
-                cell.classList.remove('reveal');
-            }
-        });
-        row.append(save);
-    }
+export function removeTable(project) {
+	const counts = checkIfZeroTodos(project);
+	Object.entries(counts).forEach(([key, value]) => {
+		if (value === 0) {
+			const table = document.querySelector(`#project-page-${key}-table`);
+			if (table) {
+				table.remove();
+				document
+					.querySelector(`#project-page-${key}-table-wrap`)
+					.appendChild(
+						buildPlaceholder(`No ${key} todos`, `empty-${key}-todos`),
+					);
+			}
+		}
+	});
 }
 
-function hideDataCells(cells){
-    for (const cell of cells){
-        cell.textContent = '';
-        cell.style.opacity = 0;
-    }
+export function getTodoRowsDom(selectedTodoIds = []) {
+	const editBtn = document.querySelector("#todo-edit");
+	editBtn.disabled = true;
+	if (!selectedTodoIds.length) {
+		editBtn.disabled = false;
+		return;
+	}
+	for (const id of selectedTodoIds) {
+		const row = document.querySelector(`[data-todo_id='${id}']`);
+		if (row.querySelector(".row-save")) continue;
+		const editCells = row.querySelectorAll(".todo-edit");
+
+		const title = row.querySelector("#title-cell").querySelector("span");
+		const dueDate = row.querySelector("#due-cell").querySelector("span");
+		const priority = row.querySelector("#priority-cell").querySelector("span");
+
+		showEditCells(editCells, [title, dueDate, priority]);
+		hideDataCells([title, dueDate, priority]);
+		const save = createSaveButton();
+		save.addEventListener("click", (e) => {
+			stopPropagation(e);
+
+			const newTitle = row.querySelector("#todo-title-edit").value;
+			const newDue = row.querySelector("#todo-due-date-edit").value;
+			const newPriority = row.querySelector("#todo-priority-edit").value;
+			const data = { newTitle, newDue, newPriority };
+
+			showDataCells([title, dueDate, priority], data);
+			saveTodoEdits(id, data);
+			hideEditCells(editCells);
+			editBtn.disabled = false;
+			save.remove();
+		});
+		save.classList.add("row-save");
+		row.append(save);
+	}
 }
 
-function showEditCells(cells, dataCells){
-    const [title, dueDate, priority] = dataCells;
-   
-    for (const cell of cells) {
-        cell.classList.add('reveal');
-        let match = String(cell.id).replace('todo-', '').replace('-edit', '');
-        switch(match){
-            case 'title':
-                cell.value = title.textContent;
-                break;
-            
-            case 'due-date':
-                const dateVal = dueDate.textContent;
-                const date = new Date(dateVal).toISOString().slice(0, 16);
-                cell.value = date;
-               
-                break;
-
-            case 'priority':
-                console.log(priority);
-                cell.value = priority.textContent;
-                break;
-        }
-      
-       
-    }
+function hideDataCells(cells) {
+	for (const cell of cells) {
+		cell.classList.add("hide");
+	}
 }
 
-function stopPropagation(e){
-    e.stopPropagation();
+function showDataCells(cells, newData = null) {
+	console.log(newData);
+	for (const cell of cells) {
+		console.log(cell);
+		let match = String(cell.id).replace("todo-", "");
+		switch (match) {
+			case "title":
+				if (newData) {
+					cell.textContent = newData.newTitle;
+				}
+				break;
+			case "due-date":
+				if (newData) {
+					cell.textContent = formatDate(newData.newDue, "date-time");
+				}
+				break;
+			case "priority":
+				if (newData) {
+					cell.textContent = newData.newPriority;
+					cell.className = "";
+					cell.classList.add(
+						`${newData.newPriority.toLowerCase()}-priority`,
+						"priority",
+					);
+				}
+				break;
+		}
+		cell.classList.remove("hide");
+	}
 }
 
+function showEditCells(cells, dataCells) {
+	const [title, dueDate, priority] = dataCells;
+
+	for (const cell of cells) {
+		cell.classList.add("reveal");
+		let match = String(cell.id).replace("todo-", "").replace("-edit", "");
+		switch (match) {
+			case "title":
+				cell.value = title.textContent;
+				break;
+
+			case "due-date":
+				const dateVal = dueDate.textContent;
+				const d = new Date(dateVal);
+				const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+					.toISOString()
+					.slice(0, 16);
+
+				cell.value = local;
+
+				break;
+
+			case "priority":
+				console.log(priority);
+				cell.value = priority.textContent;
+				break;
+		}
+	}
+}
+
+function hideEditCells(cells) {
+	for (const cell of cells) {
+		cell.classList.remove("reveal");
+	}
+}
+
+function stopPropagation(e) {
+	e.stopPropagation();
+}
+
+function showSelectedTodoCount(count) {
+	const el = document.querySelector(".selected-todo-count");
+	if (el) {
+		el.textContent = `Selected ${count} todos`;
+		return;
+	} else {
+		const p = document.querySelector(".project-page-todo-options");
+		const s = document.createElement("span");
+		s.classList.add("selected-todo-count");
+		count = 1
+			? (s.textContent = `Selected ${count} todo`)
+			: (s.textContent = `Selected ${count} todos`);
+		p.prepend(s);
+	}
+}
+
+function hideSelectedTodoCount() {
+	const count = document.querySelector(".selected-todo-count");
+	if (count) count.remove();
+	else return;
+}

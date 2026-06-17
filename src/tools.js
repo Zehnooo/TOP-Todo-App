@@ -1,241 +1,273 @@
-import randomcolor from 'randomcolor';
-import {buildPlaceholder, moveTodoCard, removeTable, addTodoToList} from './dom.js';
-import {createProject, removeTodoFromProject, findTodoInProjects, addTodoToProject} from "./projects.js";
-import {createTodo, createTodoItem, addItemToTodo, completeTodo} from "./todos.js";
+import randomcolor from "randomcolor";
 import {
-    initializeStorage,
-    saveProjectsToStorage,
-    saveTheme,
-    getTheme
+	buildPlaceholder,
+	moveTodoCard,
+	removeTable,
+	addTodoToList,
+} from "./dom.js";
+import {
+	createProject,
+	removeTodoFromProject,
+	findTodoInProjects,
+	addTodoToProject,
+} from "./projects.js";
+import {
+	createTodo,
+	createTodoItem,
+	addItemToTodo,
+	completeTodo,
+} from "./todos.js";
+import {
+	initializeStorage,
+	saveProjectsToStorage,
+	saveTheme,
+	getTheme,
 } from "./storage.js";
 import Swal from "sweetalert2";
-import { getTodoRowsDom } from './dom.js';
+import { getTodoRowsDom } from "./dom.js";
 
 export { saveTheme, getTheme };
 
-export function getColor(){
-    return randomcolor({luminosity: 'bright', hue: 'random'});
+export function getColor() {
+	return randomcolor({ luminosity: "bright", hue: "random" });
 }
 
-export function loadLocalStorage(){
-    initializeStorage();
+export function loadLocalStorage() {
+	initializeStorage();
 }
 
 export function sumTodos(projects, type) {
-    switch(type) {
-        case 'incomplete':
-            return projects.reduce((sum, pj) => sum + (pj?.todos?.filter(td => !td.isCompleted)?.length || 0), 0);
-        case 'complete':
-            return projects.reduce((sum, pj) => sum + (pj?.todos?.filter(td => td.isCompleted)?.length || 0), 0);
-        case 'all':
-            return projects.reduce((sum, pj) => sum + (pj?.todos?.length || 0), 0);
-    }
+	switch (type) {
+		case "incomplete":
+			return projects.reduce(
+				(sum, pj) =>
+					sum + (pj?.todos?.filter((td) => !td.isCompleted)?.length || 0),
+				0,
+			);
+		case "complete":
+			return projects.reduce(
+				(sum, pj) =>
+					sum + (pj?.todos?.filter((td) => td.isCompleted)?.length || 0),
+				0,
+			);
+		case "all":
+			return projects.reduce((sum, pj) => sum + (pj?.todos?.length || 0), 0);
+	}
 }
 
-export function validateContent(arr, contentName){
-    if (arr.length === 0) {
-        return buildPlaceholder(String(contentName));
-    } else return null
+export function validateContent(arr, contentName) {
+	if (arr.length === 0) {
+		return buildPlaceholder(String(contentName));
+	} else return null;
 }
 
-export function handleProjectFormSubmission(e){
-    e.preventDefault();
-    const data = collectFormData(e);
-    const title = data.get('title').trim() || null;
-    const desc = data.get('desc').trim() || null;
-    console.log("t", title);
-    console.log("d", desc);
-    if (title === null || desc === null) {
-       fireMissingDataError();
-    } else {
-        document.querySelector('#new-project-form').reset();
-        return createProject(title, desc);
-    }
+export function handleProjectFormSubmission(e) {
+	e.preventDefault();
+	const data = collectFormData(e);
+	const title = data.get("title").trim() || null;
+	const desc = data.get("desc").trim() || null;
+	console.log("t", title);
+	console.log("d", desc);
+	if (title === null || desc === null) {
+		fireMissingDataError();
+	} else {
+		document.querySelector("#new-project-form").reset();
+		return createProject(title, desc);
+	}
 }
 
-export function handleTodoFormSubmission(e, projId){
-    e.preventDefault();
-    const data = collectFormData(e);
-    const title = data.get('title').trim() || null;
-    const desc = data.get('desc').trim() || null;
-    const due = data.get('due-date') || null;
-    const prio = data.get('priority') || null;
-    if ( title === null || desc === null || prio === String(0) || prio === null)  {
-        fireMissingDataError();
-        return;
-    }
-        document.querySelector('#new-todo-form').reset();
-        return createTodo(projId, title, desc, due, prio);
-
+export function handleTodoFormSubmission(e, projId) {
+	e.preventDefault();
+	const data = collectFormData(e);
+	const title = data.get("title").trim() || null;
+	const desc = data.get("desc").trim() || null;
+	const due = data.get("due-date") || null;
+	const prio = data.get("priority") || null;
+	if (title === null || desc === null || prio === String(0) || prio === null) {
+		fireMissingDataError();
+		return;
+	}
+	document.querySelector("#new-todo-form").reset();
+	return createTodo(projId, title, desc, due, prio);
 }
 
 export function handleModalFormSubmission(e, todoId, title) {
-    e.preventDefault();
-    const data = collectFormData(e);
-    const value = data.get('value').trim() || null;
-    console.log('value', value);
-    if (value === '' || value === null) {
-        fireMissingDataError();
-        return false;
-    } else {
-        const newItem = createTodoItem(todoId, title, value);
-        addItemToTodo(newItem);
-        saveProjectsToStorage();
-        return newItem;
-    }
+	e.preventDefault();
+	const data = collectFormData(e);
+	const value = data.get("value").trim() || null;
+	console.log("value", value);
+	if (value === "" || value === null) {
+		fireMissingDataError();
+		return false;
+	} else {
+		const newItem = createTodoItem(todoId, title, value);
+		addItemToTodo(newItem);
+		saveProjectsToStorage();
+		return newItem;
+	}
 }
 
-function collectFormData(e){
-    return new FormData(e.target);
+function collectFormData(e) {
+	return new FormData(e.target);
 }
 
-function fireMissingDataError(){
-    const theme = getTheme();
-    const modal = document.querySelector('#cust-modal');
-    Swal.fire({
-        title: 'Missing Data',
-        icon: 'error',
-        text: 'Please fill out all options before saving',
-        theme: String(theme),
-        target: modal || document.body
-    });
+function fireMissingDataError() {
+	const theme = getTheme();
+	const modal = document.querySelector("#cust-modal");
+	Swal.fire({
+		title: "Missing Data",
+		icon: "error",
+		text: "Please fill out all options before saving",
+		theme: String(theme),
+		target: modal || document.body,
+	});
 }
 
-export function fireGenericError(error){
-    const theme = getTheme();
-    const modal = document.querySelector('#cust-modal');
-    Swal.fire({
-        title: 'Oops...',
-        icon: 'error',
-        text: `An error occurred while processing your request: ${error.message}`,
-        theme: String(theme),
-        target: modal || document.body
-    });
-
+export function fireGenericError(error) {
+	const theme = getTheme();
+	const modal = document.querySelector("#cust-modal");
+	Swal.fire({
+		title: "Oops...",
+		icon: "error",
+		text: `An error occurred while processing your request: ${error.message}`,
+		theme: String(theme),
+		target: modal || document.body,
+	});
 }
 
 const selectedTodos = [];
-export function handleTodoCheck(e){
-    try {
-        const status = e.target.checked || false;
-        const todoId = e.target.parentElement.parentElement.dataset.todo_id;
-        if (status) {
-            selectedTodos.push(todoId);
-        } else {
-            selectedTodos.splice(selectedTodos.indexOf(todoId));
-        }
-    } catch (err) {
-        throw err
-    }
-    return selectedTodos.length > 0 ? selectedTodos : null;
+export function handleTodoCheck(e) {
+	try {
+		const status = e.target.checked;
+		const todoId = e.target.parentElement.parentElement.dataset.todo_id;
+		if (status) {
+			selectedTodos.push(todoId);
+		} else {
+			selectedTodos.splice(selectedTodos.indexOf(todoId), 1);
+		}
+	} catch (err) {
+		throw err;
+	}
+	console.log(selectedTodos);
+	return selectedTodos.length > 0 ? selectedTodos : null;
 }
 
 export async function useTodoOption(e) {
-
-    const op = String(e.target.id).replace('todo-', '');
-    switch (op) {
-        case 'delete':
-            const confirm = await confirmDelete('Are you sure you want to delete the selected todos?');
-            if (!confirm.isConfirmed) return;
-            deleteTodos(selectedTodos);
-            break;
-        case 'edit':
-            getTodoRowsDom(selectedTodos);
-           
-            break;
-        case 'copy':
-            duplicateTodos(selectedTodos);
-            break;
-        case 'complete':
-            updateTodosStatus(selectedTodos);
-            break;
-    }
+	const op = String(e.target.id).replace("todo-", "");
+	switch (op) {
+		case "delete":
+			const confirm = await confirmDelete(
+				"Are you sure you want to delete the selected todos?",
+			);
+			if (!confirm.isConfirmed) return;
+			deleteTodos(selectedTodos);
+			break;
+		case "edit":
+			getTodoRowsDom(selectedTodos);
+			break;
+		case "copy":
+			duplicateTodos(selectedTodos);
+			break;
+		case "complete":
+			updateTodosStatus(selectedTodos);
+			break;
+	}
 }
 
-export async function confirmDelete(str){
-    const prompt = String(str);
-    const theme = getTheme();
-    const modal = document.querySelector('#cust-modal');
-    return Swal.fire({
-        title: prompt,
-        icon: 'warning',
-        theme: String(theme),
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#007FFF',
-        confirmButtonText: 'DELETE',
-        target: modal || document.body
-    });
+export async function confirmDelete(str) {
+	const prompt = String(str);
+	const theme = getTheme();
+	const modal = document.querySelector("#cust-modal");
+	return Swal.fire({
+		title: prompt,
+		icon: "warning",
+		theme: String(theme),
+		showCancelButton: true,
+		confirmButtonColor: "#d33",
+		cancelButtonColor: "#007FFF",
+		confirmButtonText: "DELETE",
+		target: modal || document.body,
+	});
 }
 
-export async function confirmProjectDelete(project){
-    let prompt = `Are you sure you want to delete <span style="color: red; font-weight: 800;">${project.title}</span>?`;
-    const modal = document.querySelector('#cust-modal');
-    const theme = getTheme();
-    return Swal.fire({
-        title: prompt,
-        icon: 'warning',
-        theme: String(theme),
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#007FFF',
-        confirmButtonText: 'DELETE',
-        target: modal || document.body
-    });
+export async function confirmProjectDelete(project) {
+	let prompt = `Are you sure you want to delete <span style="color: red; font-weight: 800;">${project.title}</span>?`;
+	const modal = document.querySelector("#cust-modal");
+	const theme = getTheme();
+	return Swal.fire({
+		title: prompt,
+		icon: "warning",
+		theme: String(theme),
+		showCancelButton: true,
+		confirmButtonColor: "#d33",
+		cancelButtonColor: "#007FFF",
+		confirmButtonText: "DELETE",
+		target: modal || document.body,
+	});
 }
 
 function deleteTodos(arr) {
-    if (arr.length > 0) {
-        for (const todoId of arr) {
-            removeTodoFromProject(todoId);
-            const row = document.querySelector(`[data-todo_id="${todoId}"]`);
-            if (row) row.remove();
-        }
-        selectedTodos.length = 0;
-    }
+	if (arr.length > 0) {
+		for (const todoId of arr) {
+			removeTodoFromProject(todoId);
+			const row = document.querySelector(`[data-todo_id="${todoId}"]`);
+			if (row) row.remove();
+		}
+		selectedTodos.length = 0;
+	}
 }
 
 function updateTodosStatus(arr) {
-    if (arr.length > 0) {
-        for (const todoId of arr) {
-            const data = findTodoInProjects(todoId);
-            const { todo } = data;
-            const { project } = data;
-            completeTodo(todo);
-            moveTodoCard(todo);
-            removeTable(project);
-    }
-}
+	if (arr.length > 0) {
+		for (const todoId of arr) {
+			const data = findTodoInProjects(todoId);
+			const { todo } = data;
+			const { project } = data;
+			completeTodo(todo);
+			moveTodoCard(todo);
+			removeTable(project);
+		}
+	}
 }
 
 function duplicateTodos(arr) {
-    if (arr.length > 0) {
-        for (const todoId of arr) {
-            const data = findTodoInProjects(todoId);
-            const { todo } = data;
-            const { project } = data;
-            const newTodo = createTodo(project.id, todo.title, todo.description, todo.due_date, todo.priority, todo.isCompleted, todo.notes, todo.checklist);
-            addTodoToProject(newTodo);
-            addTodoToList(newTodo);
-        }
-        }
+	if (arr.length > 0) {
+		for (const todoId of arr) {
+			const data = findTodoInProjects(todoId);
+			const { todo } = data;
+			const { project } = data;
+			const newTodo = createTodo(
+				project.id,
+				todo.title,
+				todo.description,
+				todo.due_date,
+				todo.priority,
+				todo.isCompleted,
+				todo.notes,
+				todo.checklist,
+			);
+			addTodoToProject(newTodo);
+			addTodoToList(newTodo);
+		}
+	}
 }
 
-export function checkIfZeroTodos(project){
-    const incomplete = project.todos.filter(td => !td.isCompleted).length;
-    const complete = project.todos.filter(td => td.isCompleted).length;
-    return {
-        incomplete,
-        complete,
-    }
+export function checkIfZeroTodos(project) {
+	const incomplete = project.todos.filter((td) => !td.isCompleted).length;
+	const complete = project.todos.filter((td) => td.isCompleted).length;
+	return {
+		incomplete,
+		complete,
+	};
 }
 
-function comingSoonError(){
-    Swal.fire({
-        title: 'Coming Soon',
-        icon: 'info',
-        text: 'This feature is coming soon',
-        theme: String(getTheme()),
-        target: document.body
-    });
+// not used anymore, was used to block access to features that were not yet implemented
+function comingSoonError() {
+	Swal.fire({
+		title: "Coming Soon",
+		icon: "info",
+		text: "This feature is coming soon",
+		theme: String(getTheme()),
+		target: document.body,
+	});
 }
